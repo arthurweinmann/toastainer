@@ -106,7 +106,7 @@ func main() {
 
 		err = objectstorage.Init()
 		if err != nil {
-			log.Fatal("could not initialize SQL Database", err)
+			log.Fatal("could not initialize File Object Storage", err)
 		}
 
 		err = email.Init()

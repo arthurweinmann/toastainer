@@ -48,6 +48,10 @@ var ObjectStorage struct {
 		PrivKey string
 		Bucket  string
 	}
+
+	LocalFS struct {
+		Path string
+	}
 }
 
 var EmailProvider struct {

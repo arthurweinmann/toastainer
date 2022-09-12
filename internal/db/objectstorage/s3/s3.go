@@ -26,22 +26,25 @@ const (
 	S3KeyPrefix string = "toastcloud/"
 )
 
-type S3Handler struct {
+type s3Handler struct {
 	s3svc  *s3.S3
 	s3up   *s3manager.Uploader
 	s3down *s3manager.Downloader
 }
 
-func NewHandler() *S3Handler {
-	h := &S3Handler{}
-	h.setup()
-	return h
+func NewHandler() (*s3Handler, error) {
+	h := &s3Handler{}
+	err := h.setup()
+	if err != nil {
+		return nil, err
+	}
+	return h, nil
 }
 
-func (h *S3Handler) setup() {
+func (h *s3Handler) setup() error {
 	err := os.MkdirAll(filepath.Join(config.Home, "tmp"), 0777)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	awsCfg := aws.NewConfig().WithRegion(config.ObjectStorage.AWSS3.Region)
@@ -52,9 +55,11 @@ func (h *S3Handler) setup() {
 
 	h.s3down = s3manager.NewDownloader(session.New(awsCfg))
 	h.s3down.Concurrency = 1 // force sequential downloads to stream them into the false io.WriterAt which is the http.ResponseWriter
+
+	return nil
 }
 
-func (h *S3Handler) DownloadFileInto(w http.ResponseWriter, remotePath string) error {
+func (h *s3Handler) DownloadFileInto(w http.ResponseWriter, remotePath string) error {
 	dest := filepath.Join(S3KeyPrefix, remotePath)
 
 	tmppath := filepath.Join(config.Home, "tmp", xid.New().String())
@@ -129,7 +134,7 @@ F:
 	return nil
 }
 
-func (h *S3Handler) PushReader(f io.Reader, destPath string) error {
+func (h *s3Handler) PushReader(f io.Reader, destPath string) error {
 	dest := filepath.Join(S3KeyPrefix, destPath)
 	_, err := h.s3up.Upload(&s3manager.UploadInput{
 		Bucket: &config.ObjectStorage.AWSS3.Bucket,
@@ -139,7 +144,7 @@ func (h *S3Handler) PushReader(f io.Reader, destPath string) error {
 	return err
 }
 
-func (h *S3Handler) PushFolderTar(folder, destPath string) error {
+func (h *s3Handler) PushFolderTar(folder, destPath string) error {
 	cmd := exec.Command("tar", "cz", "./")
 	cmd.Dir = folder
 	dest := filepath.Join(S3KeyPrefix, destPath)
@@ -162,23 +167,7 @@ func (h *S3Handler) PushFolderTar(folder, destPath string) error {
 	return nil
 }
 
-func (h *S3Handler) DeleteFolder(remotePath string) error {
-	dest := filepath.Join(S3KeyPrefix, remotePath)
-
-	iter := s3manager.NewDeleteListIterator(h.s3svc, &s3.ListObjectsInput{
-		Bucket: &config.ObjectStorage.AWSS3.Bucket,
-		Prefix: &dest,
-	})
-
-	err := s3manager.NewBatchDeleteWithClient(h.s3svc).Delete(context.Background(), iter)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (h *S3Handler) PullFolderTar(remotePath, destination string) error {
+func (h *s3Handler) PullFolderTar(remotePath, destination string) error {
 	dest := filepath.Join(S3KeyPrefix, remotePath)
 	obj, err := h.s3svc.GetObject(&s3.GetObjectInput{
 		Bucket: &config.ObjectStorage.AWSS3.Bucket,
@@ -196,5 +185,21 @@ func (h *S3Handler) PullFolderTar(remotePath, destination string) error {
 	if err != nil {
 		return fmt.Errorf("%v: %v", err, buf.String())
 	}
+	return nil
+}
+
+func (h *s3Handler) DeleteFolder(remotePath string) error {
+	dest := filepath.Join(S3KeyPrefix, remotePath)
+
+	iter := s3manager.NewDeleteListIterator(h.s3svc, &s3.ListObjectsInput{
+		Bucket: &config.ObjectStorage.AWSS3.Bucket,
+		Prefix: &dest,
+	})
+
+	err := s3manager.NewBatchDeleteWithClient(h.s3svc).Delete(context.Background(), iter)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

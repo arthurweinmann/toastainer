@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/toastate/toastcloud/internal/config"
+	localfs "github.com/toastate/toastcloud/internal/db/objectstorage/fs"
 	"github.com/toastate/toastcloud/internal/db/objectstorage/s3"
 )
 
@@ -23,13 +24,18 @@ var Client interface {
 }
 
 func Init() error {
+	var err error
+
 	switch config.ObjectStorage.Name {
 	case "awss3":
-		Client = s3.NewHandler()
+		Client, err = s3.NewHandler()
+
+	case "localfs":
+		Client, err = localfs.NewHandler()
 
 	default:
 		return fmt.Errorf("not yet supported object storage: %s", config.ObjectStorage.Name)
 	}
 
-	return nil
+	return err
 }

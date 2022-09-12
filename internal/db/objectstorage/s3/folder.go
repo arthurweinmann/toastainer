@@ -12,7 +12,7 @@ import (
 	"github.com/toastate/toastcloud/internal/config"
 )
 
-func (h *S3Handler) UploadFolder(folder, dest string) error {
+func (h *s3Handler) UploadFolder(folder, dest string) error {
 	dest = filepath.Join(S3KeyPrefix, dest)
 
 	var rels []string

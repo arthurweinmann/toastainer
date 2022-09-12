@@ -27,7 +27,9 @@ type loadedConfig struct {
 	LocalPrivateIP string `json:"node_local_private_network_ip" yaml:"node_local_private_network_ip"`
 	Region         string `json:"region" yaml:"region"`
 
-	AWSS3  loadedConfigAWSS3  `json:"aws_s3" yaml:"aws_s3"`
+	AWSS3   loadedConfigAWSS3   `json:"aws_s3" yaml:"aws_s3"`
+	LocalFS loadedConfigLocalFS `json:"local_filestorage" yaml:"local_filestorage"`
+
 	AWSSES loadedConfigAWSSES `json:"aws_ses" yaml:"aws_ses"`
 
 	Redis loadedConfigRedis `json:"redis" yaml:"redis"`
@@ -44,6 +46,10 @@ type loadedConfigAWSS3 struct {
 	PubKey  string `json:"public_key" yaml:"public_key"`
 	PrivKey string `json:"private_key" yaml:"private_key"`
 	Bucket  string `json:"bucket" yaml:"bucket"`
+}
+
+type loadedConfigLocalFS struct {
+	Path string `json:"path" yaml:"path"`
 }
 
 type loadedConfigAWSSES struct {
@@ -131,6 +137,10 @@ func LoadConfig(path string) error {
 		ObjectStorage.AWSS3.PubKey = lc.AWSS3.PubKey
 		ObjectStorage.AWSS3.PrivKey = lc.AWSS3.PrivKey
 		ObjectStorage.AWSS3.Bucket = lc.AWSS3.Bucket
+
+	case lc.LocalFS.Path != "":
+		ObjectStorage.Name = "localfs"
+		ObjectStorage.LocalFS.Path = lc.LocalFS.Path
 
 	default:
 		return fmt.Errorf("you must configure one object storage")
