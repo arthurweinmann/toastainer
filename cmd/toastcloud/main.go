@@ -9,26 +9,46 @@ import (
 	"github.com/alexflint/go-arg"
 	"github.com/mitchellh/go-homedir"
 	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/db/objectdb"
-	"github.com/toastate/toastcloud/internal/db/objectstorage"
-	"github.com/toastate/toastcloud/internal/db/redisdb"
-	"github.com/toastate/toastcloud/internal/email"
-	"github.com/toastate/toastcloud/internal/nodes"
-	"github.com/toastate/toastcloud/internal/runner"
+	"github.com/toastate/toastcloud/internal/supervisor"
 	"github.com/toastate/toastcloud/internal/utils"
 )
 
 var args struct {
-	Start *StartCmd `arg:"subcommand:start" help:"start toastcloud server"`
-	Quiet bool      `arg:"-q" help:"turn off logging"`
-	Home  string    `arg:"-h" help:"Default is ~/.toastcloud"`
+	Start            *StartCmd            `arg:"subcommand:start" help:"start toastcloud server"`
+	GenConfigExample *GenConfigExampleCmd `arg:"subcommand:configexpl" help:"Generate a configuration file example"`
+
+	Quiet bool   `arg:"-q" help:"turn off logging"`
+	Home  string `arg:"-h" help:"Default is ~/.toastcloud"`
 }
 
 type StartCmd struct {
 }
 
+type GenConfigExampleCmd struct {
+	Path string `arg:"-p" help:"Either a JSON or YAML filepath"`
+}
+
 func main() {
 	arg.MustParse(&args)
+
+	switch {
+	case args.GenConfigExample != nil:
+		if args.GenConfigExample.Path == "" {
+			log.Fatal("you must provide a path for your configuration example file")
+		}
+
+		b, err := json.Marshal(config.DefaultConfig())
+		if err != nil {
+			log.Fatal("could not marshall configuration example", err)
+		}
+
+		err = os.WriteFile(args.GenConfigExample.Path, b, 0644)
+		if err != nil {
+			log.Fatal("could not write configuration example file", err)
+		}
+
+		return
+	}
 
 	if args.Home == "" {
 		d, err := homedir.Dir()
@@ -69,7 +89,7 @@ func main() {
 
 	err := config.LoadConfig(configFile)
 	if err != nil {
-		log.Fatal("could not load configuration", err)
+		log.Fatal("configuration:", err)
 	}
 
 	config.Home = args.Home
@@ -83,52 +103,18 @@ func main() {
 		}
 	}
 
+	if args.Quiet {
+		config.LogLevel = "quiet"
+	}
 	utils.InitLogging()
 
 	switch {
 	case args.Start != nil:
-		err = nodes.Init()
+		wat, err := supervisor.Start()
 		if err != nil {
-			log.Fatal("could not initialize nodes", err)
+			log.Fatal("could not start supervisor: ", err)
 		}
-
-		err = redisdb.Init()
-		if err != nil {
-			log.Fatal("could not initialize Redis", err)
-		}
-
-		if config.IsAPI {
-			err = objectdb.Init()
-			if err != nil {
-				log.Fatal("could not initialize SQL Database", err)
-			}
-		}
-
-		err = objectstorage.Init()
-		if err != nil {
-			log.Fatal("could not initialize File Object Storage", err)
-		}
-
-		err = email.Init()
-		if err != nil {
-			log.Fatal("could not initialize Email client", err)
-		}
-
-		if config.IsRunner {
-			err = runner.Init()
-			if err != nil {
-				log.Fatal("could not start runner", err)
-			}
-		}
-
-		if config.IsAPI {
-			// acme.init is in startServer because we need the http server to be running for HTTP Challenges
-			// this needs to be at the end of initialization to take every dynamic routes into account
-			_, err = startServer()
-			if err != nil {
-				log.Fatal("could not start api server", err)
-			}
-		}
+		wat.WaitForShutdown()
 
 	default:
 		log.Fatal("you must provide a command")
