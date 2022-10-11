@@ -4,7 +4,7 @@ set -euo pipefail
 BUILDDIR=$1
 CURRDIR=$2
 
-apt-get -y update && apt-get install -y \
+sudo apt-get -y update && sudo apt-get install -y \
     autoconf \
     bison \
     flex \
