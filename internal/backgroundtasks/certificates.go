@@ -3,8 +3,8 @@ package backgroundtasks
 import (
 	"time"
 
-	"github.com/toastate/toastcloud/internal/acme"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/acme"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 func certificatesRoutine() {

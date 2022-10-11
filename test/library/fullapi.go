@@ -20,10 +20,10 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/toastate/toastcloud/internal/api/routes/toaster"
-	"github.com/toastate/toastcloud/internal/api/routes/user"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/api/routes/toaster"
+	"github.com/toastate/toastainer/internal/api/routes/user"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/utils"
 	"golang.org/x/net/publicsuffix"
 )
 
@@ -113,12 +113,12 @@ func (fat *FullAPITest) Run() error {
 
 	signinReq := &user.SigninRequest{
 		Email:    "arthur.weinmann@toastate.com",
-		Password: "**DONOTUSE**_ToastCloud1234@?",
+		Password: "**DONOTUSE**_Toastainer1234@?",
 	}
 	signinResp := &user.SigninResponse{}
 	err = fat.makeRequestWithBody(callclient1, "POST", fat.makeAPIURL("/cookiesignin"), signinReq, signinResp)
 	if err == nil {
-		err = fat.makeRequestWithBody(callclient1, "POST", fat.makeAPIURL("/user/deleteaccount"), &user.DeleteAccountRequest{Password: "**DONOTUSE**_ToastCloud1234@?"}, &user.DeleteAccountResponse{})
+		err = fat.makeRequestWithBody(callclient1, "POST", fat.makeAPIURL("/user/deleteaccount"), &user.DeleteAccountRequest{Password: "**DONOTUSE**_Toastainer1234@?"}, &user.DeleteAccountResponse{})
 		if err != nil {
 			return fmt.Errorf("/user/deleteaccount: %v", err)
 		}
@@ -128,7 +128,7 @@ func (fat *FullAPITest) Run() error {
 
 	signupReq := &user.SignupRequest{
 		Email:    "arthur.weinmann@toastate.com",
-		Password: "**DONOTUSE**_ToastCloud1234@?",
+		Password: "**DONOTUSE**_Toastainer1234@?",
 	}
 	signupResp := &user.SignupResponse{}
 	err = fat.makeRequestWithBody(callclient1, "POST", fat.makeAPIURL("/signup"), signupReq, signupResp)
@@ -138,7 +138,7 @@ func (fat *FullAPITest) Run() error {
 
 	signinReq = &user.SigninRequest{
 		Email:    "arthur.weinmann@toastate.com",
-		Password: "**DONOTUSE**_ToastCloud1234@?",
+		Password: "**DONOTUSE**_Toastainer1234@?",
 	}
 	signinResp = &user.SigninResponse{}
 	err = fat.makeRequestWithBody(callclient1, "POST", fat.makeAPIURL("/cookiesignin"), signinReq, signinResp)
@@ -147,7 +147,7 @@ func (fat *FullAPITest) Run() error {
 	}
 
 	defer func() {
-		err2 := fat.makeRequestWithBody(callclient1, "POST", fat.makeAPIURL("/user/deleteaccount"), &user.DeleteAccountRequest{Password: "**DONOTUSE**_ToastCloud1234@?"}, &user.DeleteAccountResponse{})
+		err2 := fat.makeRequestWithBody(callclient1, "POST", fat.makeAPIURL("/user/deleteaccount"), &user.DeleteAccountRequest{Password: "**DONOTUSE**_Toastainer1234@?"}, &user.DeleteAccountResponse{})
 		if err2 != nil {
 			fmt.Println("could not delete account", err2)
 		}
@@ -499,7 +499,7 @@ func (fat *FullAPITest) echotoaster(client *http.Client, toasterid string) (stri
 		return "", fmt.Errorf("exe %v: toaster error: returned response %s does not match echo request %s", index, string(b), "exampletoaster"+strconv.Itoa(rd))
 	}
 
-	return resp.Header.Get("X-TOASTCLOUD-EXEID"), nil
+	return resp.Header.Get("X-TOASTAINER-EXEID"), nil
 }
 
 func (fat *FullAPITest) dialWebsocket(client *http.Client, toasterid, urlpath string) (*websocket.Conn, error) {

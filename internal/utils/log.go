@@ -5,7 +5,7 @@ import (
 	"os"
 	"runtime/debug"
 
-	"github.com/toastate/toastcloud/internal/config"
+	"github.com/toastate/toastainer/internal/config"
 )
 
 var loglevel int

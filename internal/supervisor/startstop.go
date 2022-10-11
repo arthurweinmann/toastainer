@@ -3,15 +3,15 @@ package supervisor
 import (
 	"fmt"
 
-	"github.com/toastate/toastcloud/internal/backgroundtasks"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/db/objectdb"
-	"github.com/toastate/toastcloud/internal/db/objectstorage"
-	"github.com/toastate/toastcloud/internal/db/redisdb"
-	"github.com/toastate/toastcloud/internal/email"
-	"github.com/toastate/toastcloud/internal/nodes"
-	"github.com/toastate/toastcloud/internal/runner"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/backgroundtasks"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/db/objectdb"
+	"github.com/toastate/toastainer/internal/db/objectstorage"
+	"github.com/toastate/toastainer/internal/db/redisdb"
+	"github.com/toastate/toastainer/internal/email"
+	"github.com/toastate/toastainer/internal/nodes"
+	"github.com/toastate/toastainer/internal/runner"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 func Start() (*Watcher, error) {
@@ -68,7 +68,7 @@ func Start() (*Watcher, error) {
 
 	wat := startWatcher(srv)
 
-	fmt.Println("Toastcloud is running..")
+	fmt.Println("Toastainer is running..")
 
 	return wat, nil
 }
@@ -117,7 +117,7 @@ func StartNoServer() (*Watcher, error) {
 
 	wat := startWatcher(nil)
 
-	utils.Info("msg", "Toastcloud is running..")
+	utils.Info("msg", "Toastainer is running..")
 
 	return wat, nil
 }

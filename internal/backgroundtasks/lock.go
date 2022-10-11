@@ -3,7 +3,7 @@ package backgroundtasks
 import (
 	"time"
 
-	"github.com/toastate/toastcloud/internal/db/redisdb"
+	"github.com/toastate/toastainer/internal/db/redisdb"
 )
 
 // since both certificates and statistics are stored in the local Redis, we may use it for the lock mechanism

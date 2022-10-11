@@ -8,17 +8,17 @@ import (
 
 	"github.com/alexflint/go-arg"
 	"github.com/mitchellh/go-homedir"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/supervisor"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/supervisor"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 var args struct {
-	Start            *StartCmd            `arg:"subcommand:start" help:"start toastcloud server"`
+	Start            *StartCmd            `arg:"subcommand:start" help:"start toastainer server"`
 	GenConfigExample *GenConfigExampleCmd `arg:"subcommand:configexpl" help:"Generate a configuration file example"`
 
 	Quiet bool   `arg:"-q" help:"turn off logging"`
-	Home  string `arg:"-h" help:"Default is ~/.toastcloud"`
+	Home  string `arg:"-h" help:"Default is ~/.toastainer"`
 }
 
 type StartCmd struct {
@@ -56,7 +56,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		args.Home = filepath.Join(d, ".toastcloud")
+		args.Home = filepath.Join(d, ".toastainer")
 		log.Println("Home directory is", args.Home)
 
 		err = os.MkdirAll(args.Home, 0755)

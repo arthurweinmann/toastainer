@@ -8,14 +8,14 @@ import (
 	"path/filepath"
 
 	"github.com/alexflint/go-arg"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/utils"
-	"github.com/toastate/toastcloud/test/library"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/utils"
+	"github.com/toastate/toastainer/test/library"
 )
 
 var args struct {
 	Run  *RunCmd `arg:"subcommand:run" help:"run tests"`
-	Home string  `arg:"-h" help:"Default is ~/.toastcloud"`
+	Home string  `arg:"-h" help:"Default is ~/.toastainer"`
 }
 
 type RunCmd struct {
@@ -25,7 +25,7 @@ func main() {
 	arg.MustParse(&args)
 
 	if args.Home == "" {
-		log.Fatal("you must provide toastcloud binary home folder")
+		log.Fatal("you must provide toastainer binary home folder")
 	}
 
 	var configFile string
@@ -90,13 +90,3 @@ func main() {
 
 	log.Fatal("no valid command provided")
 }
-
-/*
-
-ssh -o "IdentitiesOnly=yes" -i .ssh/techidoc root@95.216.217.59
-scp -o "IdentitiesOnly=yes" -i .ssh/techidoc /home/arthurvanpelt/Projects/toastcloud/build/toastcloud /home/arthurvanpelt/Projects/toastcloud/build/toastest /home/arthurvanpelt/Projects/toastcloud/cmd/toastest/config_test.json  root@95.216.217.59:/root/toastcloud
-
-
-
-
-*/

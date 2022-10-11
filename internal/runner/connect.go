@@ -6,8 +6,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/nodes"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/nodes"
 )
 
 type internalPipe struct {

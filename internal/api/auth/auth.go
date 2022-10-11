@@ -6,17 +6,17 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/toastate/toastcloud/internal/db/redisdb"
-	"github.com/toastate/toastcloud/internal/model"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/db/redisdb"
+	"github.com/toastate/toastainer/internal/model"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 func Auth(w http.ResponseWriter, r *http.Request) (*model.User, string, bool) {
 	// auth user with cookie or header or whatever
-	authToken := r.Header.Get("X-TOASTCLOUD-SESSION")
+	authToken := r.Header.Get("X-TOASTAINER-SESSION")
 
 	if authToken == "" {
-		ck, err := r.Cookie("toastcloud")
+		ck, err := r.Cookie("toastainer")
 		if err == nil {
 			authToken = ck.Value
 		}

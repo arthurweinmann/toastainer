@@ -4,7 +4,7 @@ import (
 	"os/exec"
 	"strconv"
 
-	"github.com/toastate/toastcloud/internal/config"
+	"github.com/toastate/toastainer/internal/config"
 )
 
 // env items must be of the form key=value
@@ -17,7 +17,7 @@ func nsjailCommand(chroot, cwd string, timeoutSec int, env []string, ip, gw, ifa
 		"--rw",
 		"--user", "0:"+config.Runner.NonRootUIDStr+":1",
 		"--group", "0:"+config.Runner.NonRootGIDStr+":1",
-		"--hostname", "toastcloud",
+		"--hostname", "toastainer",
 		"--cwd", cwd,
 		"--rlimit_as", "hard",
 		"--rlimit_nofile", "hard",

@@ -5,9 +5,9 @@ import (
 	"os/signal"
 	"sync/atomic"
 
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/runner"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/runner"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 type Watcher struct {
@@ -46,7 +46,7 @@ func (wat *Watcher) WaitForShutdown() {
 
 func (wat *Watcher) Shutdown() {
 	if atomic.CompareAndSwapUint32(&wat.shuttingdown, 0, 1) {
-		utils.Info("msg", "Toastcloud is shutting down..")
+		utils.Info("msg", "Toastainer is shutting down..")
 
 		close(wat.shuttingdownEvent)
 

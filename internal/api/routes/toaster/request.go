@@ -5,8 +5,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/toastate/toastcloud/internal/api/settings"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/api/settings"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 func readRequest(w http.ResponseWriter, r *http.Request, req interface{}) bool {

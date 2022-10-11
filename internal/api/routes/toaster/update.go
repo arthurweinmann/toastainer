@@ -17,14 +17,14 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 	auther "github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/rs/xid"
-	"github.com/toastate/toastcloud/internal/api/common"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/db/objectdb"
-	"github.com/toastate/toastcloud/internal/db/objectdb/objectdberror"
-	"github.com/toastate/toastcloud/internal/db/objectstorage"
-	"github.com/toastate/toastcloud/internal/db/redisdb"
-	"github.com/toastate/toastcloud/internal/model"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/api/common"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/db/objectdb"
+	"github.com/toastate/toastainer/internal/db/objectdb/objectdberror"
+	"github.com/toastate/toastainer/internal/db/objectstorage"
+	"github.com/toastate/toastainer/internal/db/redisdb"
+	"github.com/toastate/toastainer/internal/model"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 type UpdateRequest struct {

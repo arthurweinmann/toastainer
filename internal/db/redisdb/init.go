@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/nodes"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/nodes"
 )
 
 type Client interface {

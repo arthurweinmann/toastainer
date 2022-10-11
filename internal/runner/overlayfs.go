@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/toastate/toastcloud/internal/config"
+	"github.com/toastate/toastainer/internal/config"
 )
 
 // OverlayDir is a ready to mount overlaydir and tmp dir

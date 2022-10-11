@@ -8,8 +8,8 @@ import (
 	"net/mail"
 
 	"github.com/VictoriaMetrics/fastcache"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/nodes"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/nodes"
 )
 
 var cache *fastcache.Cache

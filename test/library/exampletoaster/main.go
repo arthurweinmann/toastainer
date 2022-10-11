@@ -18,7 +18,7 @@ var upgrader = websocket.Upgrader{}
 var count uint64
 
 func GetExeIDHandler(w http.ResponseWriter, r *http.Request) {
-	exeid := os.Getenv("TOASTCLOUD_EXE_ID")
+	exeid := os.Getenv("TOASTAINER_EXE_ID")
 
 	if websocket.IsWebSocketUpgrade(r) {
 		c, err := upgrader.Upgrade(w, r, nil)

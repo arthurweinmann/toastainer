@@ -6,8 +6,8 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/nodes"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/nodes"
 )
 
 type Client struct {

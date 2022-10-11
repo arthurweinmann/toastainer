@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/toastate/toastcloud/internal/db/objectdb/objectdberror"
+	"github.com/toastate/toastainer/internal/db/objectdb/objectdberror"
 )
 
 func (c *Client) BlockEmail(email, data string) error {

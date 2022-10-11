@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/toastate/toastcloud/internal/db/objectdb/objectdberror"
-	"github.com/toastate/toastcloud/internal/model"
+	"github.com/toastate/toastainer/internal/db/objectdb/objectdberror"
+	"github.com/toastate/toastainer/internal/model"
 )
 
 func (c *Client) CreateUser(usr *model.User) error {

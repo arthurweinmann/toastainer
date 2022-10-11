@@ -2,7 +2,7 @@
 
 package runner
 
-import "github.com/toastate/toastcloud/internal/utils"
+import "github.com/toastate/toastainer/internal/utils"
 
 func runGC(gclevel int) {
 	utils.Warn("msg", "codegc", "can only run on linux systems")

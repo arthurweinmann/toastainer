@@ -1,7 +1,7 @@
 package nodes
 
 import (
-	"github.com/toastate/toastcloud/internal/config"
+	"github.com/toastate/toastainer/internal/config"
 )
 
 func Init() error {

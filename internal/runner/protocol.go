@@ -8,7 +8,7 @@ import (
 	"io"
 
 	"github.com/gorilla/websocket"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 const (

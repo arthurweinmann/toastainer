@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/utils"
 
 	_ "embed"
 )
@@ -18,7 +18,7 @@ import (
 //go:embed migrations/*
 var migratefolder embed.FS
 
-const schema = `CREATE TABLE IF NOT EXISTS toastcloudmeta(
+const schema = `CREATE TABLE IF NOT EXISTS toastainermeta(
 	id VARCHAR(32) NOT NULL,
 	data VARCHAR(1024) NOT NULL default '',
 	PRIMARY KEY(id)
@@ -46,7 +46,7 @@ func (c *Client) initMigrate() error {
 
 	var lastMigrate []string
 	lastMigrateDate := time.Time{}
-	err = c.db.Select(&lastMigrate, "SELECT data FROM toastcloudmeta WHERE id=?", "lastMigrate")
+	err = c.db.Select(&lastMigrate, "SELECT data FROM toastainermeta WHERE id=?", "lastMigrate")
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func (c *Client) initMigrate() error {
 		return nil
 	}
 
-	_, err = c.db.Exec("REPLACE INTO toastcloudmeta(id, data) VALUES (?,?)", "lastMigrate", newTime.Format(MigrateTimeFormat))
+	_, err = c.db.Exec("REPLACE INTO toastainermeta(id, data) VALUES (?,?)", "lastMigrate", newTime.Format(MigrateTimeFormat))
 	return err
 }
 

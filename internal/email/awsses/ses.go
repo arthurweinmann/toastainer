@@ -8,12 +8,12 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
-	"github.com/toastate/toastcloud/internal/api/dynamicroutes"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/db/objectdb"
-	"github.com/toastate/toastcloud/internal/db/objectdb/objectdberror"
-	"github.com/toastate/toastcloud/internal/email/awsses/awssns"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/api/dynamicroutes"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/db/objectdb"
+	"github.com/toastate/toastainer/internal/db/objectdb/objectdberror"
+	"github.com/toastate/toastainer/internal/email/awsses/awssns"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 type seshandler struct {

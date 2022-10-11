@@ -12,7 +12,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/prometheus/procfs/btrfs"
 	"github.com/rs/xid"
-	"github.com/toastate/toastcloud/internal/config"
+	"github.com/toastate/toastainer/internal/config"
 )
 
 const (

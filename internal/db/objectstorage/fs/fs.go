@@ -11,9 +11,9 @@ import (
 	"path/filepath"
 
 	"github.com/schollz/progressbar/v3"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/db/objectstorage/objectstoragerror"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/db/objectstorage/objectstoragerror"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 type fsHandler struct{}

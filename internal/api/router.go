@@ -5,14 +5,14 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/toastate/toastcloud/internal/acme"
-	"github.com/toastate/toastcloud/internal/api/auth"
-	"github.com/toastate/toastcloud/internal/api/dynamicroutes"
-	"github.com/toastate/toastcloud/internal/api/routes/subdomain"
-	"github.com/toastate/toastcloud/internal/api/routes/toaster"
-	userroute "github.com/toastate/toastcloud/internal/api/routes/user"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/acme"
+	"github.com/toastate/toastainer/internal/api/auth"
+	"github.com/toastate/toastainer/internal/api/dynamicroutes"
+	"github.com/toastate/toastainer/internal/api/routes/subdomain"
+	"github.com/toastate/toastainer/internal/api/routes/toaster"
+	userroute "github.com/toastate/toastainer/internal/api/routes/user"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 type Router struct {
@@ -80,7 +80,7 @@ func (s *Router) api(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	switch r.Header.Get("X-TOASTCLOUD-APIVERSION") {
+	switch r.Header.Get("X-TOASTAINER-APIVERSION") {
 	case "", "v1":
 		switch spath[0] {
 		case "signup":
@@ -107,7 +107,7 @@ func (s *Router) api(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	switch r.Header.Get("X-TOASTCLOUD-APIVERSION") {
+	switch r.Header.Get("X-TOASTAINER-APIVERSION") {
 	case "", "v1":
 		switch spath[0] {
 		case "user":
@@ -230,7 +230,7 @@ func (s *Router) proxy2Toaster(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	exeid = r.Header.Get("X-TOASTCLOUD-EXEID")
+	exeid = r.Header.Get("X-TOASTAINER-EXEID")
 
 	if exeid == "" {
 		if strings.HasPrefix(r.URL.Path, "/ex_") {

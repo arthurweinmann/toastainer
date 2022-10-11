@@ -11,9 +11,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/runner/smartdhcp"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/runner/smartdhcp"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 var executions = map[string]*executionInProgress{}

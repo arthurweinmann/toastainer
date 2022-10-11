@@ -6,13 +6,13 @@ import (
 	"net/http"
 
 	"github.com/rs/xid"
-	"github.com/toastate/toastcloud/internal/api/settings"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/db/objectdb"
-	"github.com/toastate/toastcloud/internal/db/objectdb/objectdberror"
-	"github.com/toastate/toastcloud/internal/email"
-	"github.com/toastate/toastcloud/internal/model"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/api/settings"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/db/objectdb"
+	"github.com/toastate/toastainer/internal/db/objectdb/objectdberror"
+	"github.com/toastate/toastainer/internal/email"
+	"github.com/toastate/toastainer/internal/model"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 type SignupRequest struct {
@@ -69,7 +69,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if config.EmailProvider.Name != "" {
-		err = email.Client.Send([]string{usr.Email}, "Toastcloud Signup", "thanks for signin up with Toastcloud", email.SignupTemplate())
+		err = email.Client.Send([]string{usr.Email}, "Toastainer Signup", "thanks for signin up with Toastainer", email.SignupTemplate())
 		if err != nil {
 			utils.Error("msg", "sendSignupEmail", err)
 		}

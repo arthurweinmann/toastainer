@@ -11,8 +11,8 @@ import (
 	"path/filepath"
 
 	"github.com/go-acme/lego/v4/registration"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 type ACMEUser struct {

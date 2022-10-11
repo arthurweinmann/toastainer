@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/toastate/toastcloud/internal/db/redisdb"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/db/redisdb"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 type StatsResponse struct {

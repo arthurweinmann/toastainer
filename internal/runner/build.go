@@ -11,10 +11,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/db/objectstorage"
-	"github.com/toastate/toastcloud/internal/runner/smartdhcp"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/db/objectstorage"
+	"github.com/toastate/toastainer/internal/runner/smartdhcp"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 // Env golang compile: "GOPATH=/home/ubuntu/go", "GOROOT=/usr/local/go", "TERM=xterm-color", "HOME=/home/ubuntu", "PATH=/home/ubuntu/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"

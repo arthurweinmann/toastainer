@@ -3,8 +3,8 @@ package sqldb
 import (
 	"database/sql"
 
-	"github.com/toastate/toastcloud/internal/db/objectdb/objectdberror"
-	"github.com/toastate/toastcloud/internal/model"
+	"github.com/toastate/toastainer/internal/db/objectdb/objectdberror"
+	"github.com/toastate/toastainer/internal/model"
 )
 
 // CreateSubdomain will return ErrAlreadyExists for already attributed subdomains

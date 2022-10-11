@@ -33,14 +33,14 @@ GIT_DIRTY                         = $(shell test -n "`git status --porcelain`" &
 all: build
 
 .PHONY: build
-build: build-nsjail build-toastcloud build-test
+build: build-nsjail build-toastainer build-test
 
-.PHONY: build-toastcloud
-build-toastcloud: $(BUILDDIR)
-	@cd $(CURDIR)/cmd/toastcloud && go build && mv -f toastcloud $(BUILDDIR)
+.PHONY: build-toastainer
+build-toastainer: $(BUILDDIR)
+	@cd $(CURDIR)/cmd/toastainer && go build && mv -f toastainer $(BUILDDIR)
 
 .PHONY: build-test
-build-test: $(BUILDDIR) build-toastcloud
+build-test: $(BUILDDIR) build-toastainer
 	@cd $(CURDIR)/cmd/toastest && go build && mv -f toastest $(BUILDDIR)
 
 .PHONY: build-nsjail
@@ -48,8 +48,8 @@ build-nsjail: $(BUILDDIR)
 	@$(CURDIR)/makescripts/nsjail.sh $(BUILDDIR) $(CURDIR)
 
 .PHONY: gen-config-example
-gen-config-example: $(BUILDDIR) build-toastcloud
-	@$(BUILDDIR)/toastcloud configexpl -p $(BUILDDIR)/config_example.json
+gen-config-example: $(BUILDDIR) build-toastainer
+	@$(BUILDDIR)/toastainer configexpl -p $(BUILDDIR)/config_example.json
 
 $(BUILDDIR):
 	@mkdir -p $(BUILDDIR)

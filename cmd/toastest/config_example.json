@@ -39,11 +39,11 @@
         "network_interface": "tveth1"
     },
     "sqldb": {
-        "db_name": "toastcloud",
+        "db_name": "toastainer",
         "hosts": ["****.****.****.****:3306"],
         "password": "******************",
         "syntax": "mysql",
-        "username": "toastcloud"
+        "username": "toastainer"
     },
     "ssl_certificate_contact_email": "example@example.com"
 }

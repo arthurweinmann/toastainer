@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 // ProxyCommand is to be used for established http and websocket connections

@@ -18,13 +18,13 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/rs/xid"
 	"github.com/schollz/progressbar/v3"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/db/objectstorage/objectstoragerror"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/db/objectstorage/objectstoragerror"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 const (
-	S3KeyPrefix string = "toastcloud/"
+	S3KeyPrefix string = "toastainer/"
 )
 
 type s3Handler struct {
@@ -46,7 +46,7 @@ func NewHandler() (*s3Handler, error) {
 func (h *s3Handler) setup() error {
 	var err error
 
-	h.tmpdir, err = os.MkdirTemp("", "toastcloud_s3handler")
+	h.tmpdir, err = os.MkdirTemp("", "toastainer_s3handler")
 	if err != nil {
 		return err
 	}

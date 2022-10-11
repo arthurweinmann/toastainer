@@ -4,8 +4,8 @@ import (
 	"encoding/binary"
 	"strings"
 
-	"github.com/toastate/toastcloud/internal/model"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/model"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 func DumpToaterExeInfo(toaster *model.Toaster) []byte {

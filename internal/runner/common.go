@@ -3,9 +3,9 @@ package runner
 import (
 	"path/filepath"
 
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/db/objectstorage"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/db/objectstorage"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 func pullImg(image string) (string, error) {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/toastate/toastcloud/internal/db/redisdb"
+	"github.com/toastate/toastainer/internal/db/redisdb"
 )
 
 type HTTPChallenger struct {

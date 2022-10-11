@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/toastate/toastcloud/internal/db/redisdb"
-	"github.com/toastate/toastcloud/internal/model"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/db/redisdb"
+	"github.com/toastate/toastainer/internal/model"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 func CreateSession(user *model.User) (string, error) {

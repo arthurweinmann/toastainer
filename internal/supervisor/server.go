@@ -10,10 +10,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/toastate/toastcloud/internal/acme"
-	"github.com/toastate/toastcloud/internal/api"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/acme"
+	"github.com/toastate/toastainer/internal/api"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 type httpservers struct {

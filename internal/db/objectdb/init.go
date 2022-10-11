@@ -3,9 +3,9 @@ package objectdb
 import (
 	"fmt"
 
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/db/objectdb/sqldb"
-	"github.com/toastate/toastcloud/internal/model"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/db/objectdb/sqldb"
+	"github.com/toastate/toastainer/internal/model"
 )
 
 var Client interface {

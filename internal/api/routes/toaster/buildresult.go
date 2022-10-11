@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/toastate/toastcloud/internal/db/objectstorage"
-	"github.com/toastate/toastcloud/internal/db/redisdb"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/db/objectstorage"
+	"github.com/toastate/toastainer/internal/db/redisdb"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 type GetBuildResultRequest struct {

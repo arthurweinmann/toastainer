@@ -124,7 +124,7 @@ func LoadConfigBytes(b []byte, extension string) error {
 			return err
 		}
 	default:
-		return fmt.Errorf("unsupported config format %s, toastcloud supports json and yml", extension)
+		return fmt.Errorf("unsupported config format %s, toastainer supports json and yml", extension)
 	}
 
 	IsAPI = lc.IsAPI

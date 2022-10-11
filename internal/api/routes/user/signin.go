@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/toastate/toastcloud/internal/api/auth"
-	"github.com/toastate/toastcloud/internal/api/settings"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/db/objectdb"
-	"github.com/toastate/toastcloud/internal/db/objectdb/objectdberror"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/api/auth"
+	"github.com/toastate/toastainer/internal/api/settings"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/db/objectdb"
+	"github.com/toastate/toastainer/internal/db/objectdb/objectdberror"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 type SigninRequest struct {
@@ -38,7 +38,7 @@ func CookieSignin(w http.ResponseWriter, r *http.Request) {
 	sess, continu := signin(w, r)
 	if continu {
 		http.SetCookie(w, &http.Cookie{
-			Name:     "toastcloud",
+			Name:     "toastainer",
 			Value:    sess,
 			Path:     "/",
 			Domain:   config.APIDomain,

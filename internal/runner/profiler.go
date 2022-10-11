@@ -17,7 +17,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 const delayMin = 20

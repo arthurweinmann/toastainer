@@ -7,7 +7,7 @@ import (
 
 	_ "embed"
 
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 //go:embed signup.template

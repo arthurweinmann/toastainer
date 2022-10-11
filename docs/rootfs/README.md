@@ -14,8 +14,8 @@ $ docker export 553a07bcdb4e798f4083211dd3e7a0ec755f8bedcabbbc1e1b78892f3e0d8082
 You may also set it up manually as follow in a chrooted environment:
 
 ```shell
-$ mkdir -p /home/arthur/toastcloud/build/images/base
-$ cd /home/arthur/toastcloud/build/images/base
+$ mkdir -p /home/arthur/toastainer/build/images/base
+$ cd /home/arthur/toastainer/build/images/base
 
 $ sudo tar -xf ubuntu-base-20.04.5-base-amd64.tar.gz
 $ rm ubuntu-base-20.04.5-base-amd64.tar.gz
@@ -77,7 +77,7 @@ root@arthur:/# chown ubuntu:ubuntu -hR bin boot etc home lib lib32 lib64 libx32 
 root@arthur:/# chown ubuntu:ubuntu dev
 
 root@arthur:/# passwd ubuntu
-New password: toastcloud
+New password: toastainer
 
 root@arthur:/# usermod -aG sudo ubuntu
 
@@ -107,7 +107,7 @@ ubuntu@arthur:~$ exit
 root@arthur:/# exit
 
 $ pwd
-/home/arthur/toastcloud/build/images/base
+/home/arthur/toastainer/build/images/base
 
 $ sudo tar czf ubuntu-20.04-nodejs-golang.tar.gz ./
 

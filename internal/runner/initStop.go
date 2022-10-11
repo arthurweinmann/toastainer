@@ -11,10 +11,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/db/objectstorage"
-	"github.com/toastate/toastcloud/internal/nodes"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/db/objectstorage"
+	"github.com/toastate/toastainer/internal/nodes"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 var nsjailPath string
@@ -53,15 +53,15 @@ func Init() error {
 	var err error
 
 	if config.Runner.BTRFSMountPoint == "" {
-		config.Runner.BTRFSMountPoint = "/toastcloud/btrfsmnt"
+		config.Runner.BTRFSMountPoint = "/toastainer/btrfsmnt"
 	}
 
 	if config.Runner.OverlayMountPoint == "" {
-		config.Runner.OverlayMountPoint = "/toastcloud/overlaymnt"
+		config.Runner.OverlayMountPoint = "/toastainer/overlaymnt"
 	}
 
 	if config.Runner.BTRFSFile == "" {
-		config.Runner.BTRFSFile = "/toastcloud/btrfsfile"
+		config.Runner.BTRFSFile = "/toastainer/btrfsfile"
 	}
 
 	if config.Runner.ToasterPort == "" {

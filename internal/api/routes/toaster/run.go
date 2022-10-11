@@ -11,13 +11,13 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/toastate/toastcloud/internal/api/common"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/db/redisdb"
-	"github.com/toastate/toastcloud/internal/model"
-	"github.com/toastate/toastcloud/internal/nodes"
-	"github.com/toastate/toastcloud/internal/runner"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/api/common"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/db/redisdb"
+	"github.com/toastate/toastainer/internal/model"
+	"github.com/toastate/toastainer/internal/nodes"
+	"github.com/toastate/toastainer/internal/runner"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 var upgrader = websocket.Upgrader{
@@ -131,7 +131,7 @@ func startExecution(exeid, userid string, runnerip net.IP, toaster *model.Toaste
 		UserID:     userid,
 		ExeCmd:     toaster.ExeCmd,
 		TimeoutSec: toaster.TimeoutSec + 60, // we offset the timeout so we are sure not to send more request to a shutdown exeid
-		Env:        append(toaster.Env, "TOASTCLOUD_EXE_ID="+exeid),
+		Env:        append(toaster.Env, "TOASTAINER_EXE_ID="+exeid),
 	}
 	b, err := json.Marshal(cmd)
 	if err != nil {
@@ -372,7 +372,7 @@ func proxyToasterRequest(w http.ResponseWriter, r *http.Request, exeid, toasteri
 				w.Header().Add(n, vs[i])
 			}
 		}
-		w.Header().Set("X-TOASTCLOUD-EXEID", exeid)
+		w.Header().Set("X-TOASTAINER-EXEID", exeid)
 
 		w.WriteHeader(rh.StatusCode)
 

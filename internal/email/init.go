@@ -3,8 +3,8 @@ package email
 import (
 	"fmt"
 
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/email/awsses"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/email/awsses"
 )
 
 var Client interface {

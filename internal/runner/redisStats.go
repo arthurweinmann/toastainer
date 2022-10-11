@@ -6,7 +6,7 @@ import (
 	"time"
 
 	red "github.com/go-redis/redis/v8"
-	"github.com/toastate/toastcloud/internal/db/redisdb"
+	"github.com/toastate/toastainer/internal/db/redisdb"
 )
 
 const (

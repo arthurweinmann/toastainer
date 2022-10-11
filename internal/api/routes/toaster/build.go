@@ -15,11 +15,11 @@ import (
 	"time"
 
 	"github.com/rs/xid"
-	"github.com/toastate/toastcloud/internal/db/objectstorage"
-	"github.com/toastate/toastcloud/internal/db/redisdb"
-	"github.com/toastate/toastcloud/internal/model"
-	"github.com/toastate/toastcloud/internal/runner"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/db/objectstorage"
+	"github.com/toastate/toastainer/internal/db/redisdb"
+	"github.com/toastate/toastainer/internal/model"
+	"github.com/toastate/toastainer/internal/runner"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 var ErrUnsuccessfulBuild = errors.New("build failed")

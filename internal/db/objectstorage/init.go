@@ -5,9 +5,9 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/toastate/toastcloud/internal/config"
-	localfs "github.com/toastate/toastcloud/internal/db/objectstorage/fs"
-	"github.com/toastate/toastcloud/internal/db/objectstorage/s3"
+	"github.com/toastate/toastainer/internal/config"
+	localfs "github.com/toastate/toastainer/internal/db/objectstorage/fs"
+	"github.com/toastate/toastainer/internal/db/objectstorage/s3"
 )
 
 var Client interface {

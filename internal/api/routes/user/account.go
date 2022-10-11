@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/toastate/toastcloud/internal/api/auth"
-	"github.com/toastate/toastcloud/internal/api/routes/toaster"
-	"github.com/toastate/toastcloud/internal/api/settings"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/db/objectdb"
-	"github.com/toastate/toastcloud/internal/utils"
+	"github.com/toastate/toastainer/internal/api/auth"
+	"github.com/toastate/toastainer/internal/api/routes/toaster"
+	"github.com/toastate/toastainer/internal/api/settings"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/db/objectdb"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 type ForgottenPasswordSendLinkRequest struct {
@@ -109,7 +109,7 @@ func Signout(w http.ResponseWriter, r *http.Request, userid, sessToken string) {
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     "toastcloud",
+		Name:     "toastainer",
 		Value:    "",
 		Path:     "/",
 		Domain:   config.APIDomain,

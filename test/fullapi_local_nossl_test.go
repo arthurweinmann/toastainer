@@ -13,12 +13,12 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/toastate/toastcloud/internal/acme"
-	"github.com/toastate/toastcloud/internal/api"
-	"github.com/toastate/toastcloud/internal/config"
-	"github.com/toastate/toastcloud/internal/supervisor"
-	"github.com/toastate/toastcloud/internal/utils"
-	"github.com/toastate/toastcloud/test/library"
+	"github.com/toastate/toastainer/internal/acme"
+	"github.com/toastate/toastainer/internal/api"
+	"github.com/toastate/toastainer/internal/config"
+	"github.com/toastate/toastainer/internal/supervisor"
+	"github.com/toastate/toastainer/internal/utils"
+	"github.com/toastate/toastainer/test/library"
 
 	_ "embed"
 )
