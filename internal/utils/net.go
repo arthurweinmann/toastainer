@@ -3,10 +3,7 @@ package utils
 import (
 	"context"
 	"net"
-	"net/http"
 	"time"
-
-	"github.com/gorilla/websocket"
 )
 
 var GoogleResolver = &net.Resolver{
@@ -31,38 +28,3 @@ var R interface {
 	LookupSRV(ctx context.Context, service, proto, name string) (string, []*net.SRV, error)
 	LookupTXT(ctx context.Context, name string) ([]string, error)
 } = GoogleResolver
-
-func ForceIPHTTPClient(ip, port string) *http.Client {
-	dialer := &net.Dialer{
-		Timeout:   30 * time.Second,
-		KeepAlive: 30 * time.Second,
-		// DualStack: true, // this is deprecated as of go 1.16
-	}
-
-	return &http.Client{
-		Transport: &http.Transport{
-			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-				return dialer.DialContext(ctx, network, ip+":"+port)
-			},
-		},
-		Timeout: 60 * time.Second,
-	}
-}
-
-func ForceIPWebsocketDialer(ip, port string) *websocket.Dialer {
-	netdialer := &net.Dialer{
-		Timeout:   30 * time.Second,
-		KeepAlive: 30 * time.Second,
-		// DualStack: true, // this is deprecated as of go 1.16
-	}
-
-	return &websocket.Dialer{
-		NetDial: func(network, addr string) (net.Conn, error) {
-			return netdialer.DialContext(context.Background(), network, ip+":"+port)
-		},
-		NetDialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-			return netdialer.DialContext(ctx, network, ip+":"+port)
-		},
-		HandshakeTimeout: 60 * time.Second,
-	}
-}

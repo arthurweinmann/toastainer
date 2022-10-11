@@ -126,12 +126,12 @@ func startExecution(exeid, userid string, runnerip net.IP, toaster *model.Toaste
 
 	cmd := &runner.ExecutionCommand{
 		CodeID:     toaster.CodeID,
-		Image:      "ubuntu",
+		Image:      toaster.Image,
 		ExeID:      exeid,
 		UserID:     userid,
 		ExeCmd:     toaster.ExeCmd,
 		TimeoutSec: toaster.TimeoutSec + 60, // we offset the timeout so we are sure not to send more request to a shutdown exeid
-		Env:        toaster.Env,
+		Env:        append(toaster.Env, "TOASTCLOUD_EXE_ID="+exeid),
 	}
 	b, err := json.Marshal(cmd)
 	if err != nil {
@@ -323,7 +323,7 @@ func proxyToasterRequest(w http.ResponseWriter, r *http.Request, exeid, toasteri
 		err = <-errs
 		websock.Close()
 
-		if err != nil && err != io.EOF {
+		if err != nil && err != io.EOF && websocket.IsUnexpectedCloseError(err, websocket.CloseNormalClosure, websocket.CloseNoStatusReceived, websocket.CloseAbnormalClosure) {
 			conn.Close()
 			return err
 		}

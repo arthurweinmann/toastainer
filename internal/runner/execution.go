@@ -57,7 +57,10 @@ type ExecutionCommand struct {
 func executeCommand(connR *bufio.Reader, connW *bufio.Writer) (err error) {
 	defer func() {
 		if err != nil {
-			writeError(connW, err)
+			err2 := writeError(connW, err)
+			if err2 != nil {
+				utils.Error("origin", "runner:executeCommand", "error", fmt.Sprintf("could not write error: %v", err2))
+			}
 		}
 	}()
 
@@ -122,13 +125,13 @@ func (exe *executionInProgress) start() (err error) {
 	var pimg string
 	pimg, err = pullImg(exe.cmd.Image)
 	if err != nil {
-		return err
+		return fmt.Errorf("pullImg %s: %v", exe.cmd.Image, err)
 	}
 
 	var pcode string
 	pcode, err = pullCode(exe.cmd.CodeID)
 	if err != nil {
-		return err
+		return fmt.Errorf("pullCode: %v", err)
 	}
 
 	updateChtimes <- filepath.Join(pcode, "metadata.json")
@@ -142,12 +145,12 @@ func (exe *executionInProgress) start() (err error) {
 	exe.ovlr = NewOverlayDir(filepath.Base(exe.pexe))
 	err = exe.ovlr.Mount([]string{pcode, pimg})
 	if err != nil {
-		return err
+		return fmt.Errorf("overlay mount: %v", err)
 	}
 
 	err = os.Chown(exe.ovlr.MountPoint, config.Runner.NonRootUID, config.Runner.NonRootGID)
 	if err != nil {
-		return err
+		return fmt.Errorf("chown: %v", err)
 	}
 
 	exe.ipLastPart = smartdhcp.Get()
@@ -160,14 +163,20 @@ func (exe *executionInProgress) start() (err error) {
 		exe.cmd.Env,
 		exe.ip,
 		"10.166.0.1",
-		"toastveth1",
+		"tveth1",
 		"255.255.0.0",
 		exe.cmd.ExeCmd...,
 	)
 
 	exe.bb = utils.NewLimitedBuffer(512 * 1024)
-	exe.nscmd.Stdout = exe.bb
-	exe.nscmd.Stderr = exe.bb
+	if config.LogLevel == "debug" || config.LogLevel == "all" {
+		t := utils.NewTeeWriter(exe.bb, nsjaillogs)
+		exe.nscmd.Stdout = t
+		exe.nscmd.Stderr = t
+	} else {
+		exe.nscmd.Stdout = exe.bb
+		exe.nscmd.Stderr = exe.bb
+	}
 
 	executionWG.Add(1)
 	err = exe.nscmd.Start()

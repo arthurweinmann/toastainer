@@ -1,26 +1,28 @@
 package sqldb
 
 import (
+	"embed"
 	"fmt"
-	"io/ioutil"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 	"time"
 
-	"github.com/toastate/toastcloud/internal/config"
 	"github.com/toastate/toastcloud/internal/utils"
+
+	_ "embed"
 )
 
-const schema = `CREATE TABLE IF NOT EXISTS tlibmeta(
+//go:embed migrations/*
+var migratefolder embed.FS
+
+const schema = `CREATE TABLE IF NOT EXISTS toastcloudmeta(
 	id VARCHAR(32) NOT NULL,
 	data VARCHAR(1024) NOT NULL default '',
 	PRIMARY KEY(id)
 )`
-
-// MigrateFolder defines the folder whare c.db.migrate scripts are located
-const MigrateFolder = "migrations"
 
 // MigrateTimeFormat defines the timeformat as required in c.db.migrate scripts
 const MigrateTimeFormat = "2006-01-02-15-04"
@@ -44,20 +46,20 @@ func (c *Client) initMigrate() error {
 
 	var lastMigrate []string
 	lastMigrateDate := time.Time{}
-	err = c.db.Select(&lastMigrate, "SELECT data FROM tlibmeta WHERE id=?", "lastMigrate")
+	err = c.db.Select(&lastMigrate, "SELECT data FROM toastcloudmeta WHERE id=?", "lastMigrate")
 	if err != nil {
 		return err
 	}
 
 	if len(lastMigrate) == 0 {
-		utils.Warn("msg", "no last migration date found")
+		utils.Info("msg", "no last migration date found")
 	} else {
 		var err error
 		lastMigrateDate, err = time.Parse(MigrateTimeFormat, lastMigrate[0])
 		if err != nil {
 			return err
 		}
-		utils.Warn("msg", "last migration date", "date", lastMigrateDate.Format(MigrateTimeFormat))
+		utils.Info("msg", "last migration date", "date", lastMigrateDate.Format(MigrateTimeFormat))
 	}
 
 	newTime, err := c.performMigration(lastMigrateDate)
@@ -69,24 +71,25 @@ func (c *Client) initMigrate() error {
 		return nil
 	}
 
-	_, err = c.db.Exec("REPLACE INTO tlibmeta(id, data) VALUES (?,?)", "lastMigrate", newTime.Format(MigrateTimeFormat))
+	_, err = c.db.Exec("REPLACE INTO toastcloudmeta(id, data) VALUES (?,?)", "lastMigrate", newTime.Format(MigrateTimeFormat))
 	return err
 }
 
 func (c *Client) performMigration(from time.Time) (time.Time, error) {
-	err := os.MkdirAll(filepath.Join(config.Home, MigrateFolder), 0700)
-	if err != nil {
-		return time.Time{}, err
-	}
+	direntries, _ := migratefolder.ReadDir("migrations")
 
-	dir, err := ioutil.ReadDir(filepath.Join(config.Home, MigrateFolder))
-	if err != nil {
-		utils.Info("msg", "Info no sql migration found")
-		return time.Time{}, nil
+	var dir []fs.FileInfo
+
+	for i := 0; i < len(direntries); i++ {
+		info, err := direntries[i].Info()
+		if err != nil {
+			return time.Time{}, err
+		}
+		dir = append(dir, info)
 	}
 
 	if len(dir) == 0 {
-		utils.Info("msg", "Info no sql migration found")
+		utils.Info("msg", "no sql migration found")
 		return time.Time{}, nil
 	}
 
@@ -137,11 +140,9 @@ func (c *Client) performMigration(from time.Time) (time.Time, error) {
 		fname := file.Name()
 		var execs []string
 		{
-			fcont, err := ioutil.ReadFile(filepath.Join(MigrateFolder, fname))
+			fcont, err := migratefolder.ReadFile(filepath.Join("migrations", fname))
 			if err != nil {
-				if err != nil {
-					return time.Time{}, err
-				}
+				return time.Time{}, err
 			}
 			execs = strings.Split(string(fcont), "\n\n\n\n")
 		}

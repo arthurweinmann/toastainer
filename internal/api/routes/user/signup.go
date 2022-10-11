@@ -7,6 +7,7 @@ import (
 
 	"github.com/rs/xid"
 	"github.com/toastate/toastcloud/internal/api/settings"
+	"github.com/toastate/toastcloud/internal/config"
 	"github.com/toastate/toastcloud/internal/db/objectdb"
 	"github.com/toastate/toastcloud/internal/db/objectdb/objectdberror"
 	"github.com/toastate/toastcloud/internal/email"
@@ -67,9 +68,11 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = email.Client.Send([]string{usr.Email}, "Toastcloud Signup", "thanks for signin up with Toastcloud", email.SignupTemplate())
-	if err != nil {
-		utils.Error("msg", "sendSignupEmail", err)
+	if config.EmailProvider.Name != "" {
+		err = email.Client.Send([]string{usr.Email}, "Toastcloud Signup", "thanks for signin up with Toastcloud", email.SignupTemplate())
+		if err != nil {
+			utils.Error("msg", "sendSignupEmail", err)
+		}
 	}
 
 	utils.SendSuccess(w, &SignupResponse{

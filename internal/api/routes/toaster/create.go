@@ -35,6 +35,8 @@ type CreateRequest struct {
 	GitPassword    string   `json:"git_password,omitempty"`
 	GitBranch      string   `json:"git_branch,omitempty"`
 
+	Image string `json:"image,omitempty"`
+
 	// Executed in the root directory of the FilePaths
 	BuildCmd []string `json:"build_command,omitempty"`
 	ExeCmd   []string `json:"execution_command,omitempty"`
@@ -52,6 +54,7 @@ type CreateRequest struct {
 type CreateResponse struct {
 	Success   bool           `json:"success,omitempty"`
 	BuildLogs []byte         `json:"build_logs,omitempty"` // base64 encoded string, see https://pkg.go.dev/encoding/json#Marshal
+	BuildID   string         `json:"build_id,omitempty"`
 	Toaster   *model.Toaster `json:"toaster,omitempty"`
 }
 
@@ -59,6 +62,11 @@ func Create(w http.ResponseWriter, r *http.Request, userid string) {
 	req := &CreateRequest{}
 	if !readRequest(w, r, req) {
 		// error is sent to the client in readRequest
+		return
+	}
+
+	if req.Image == "" {
+		utils.SendError(w, "you must provide an OS image name", "invalidBody", 400)
 		return
 	}
 
@@ -105,6 +113,7 @@ func Create(w http.ResponseWriter, r *http.Request, userid string) {
 		BuildCmd:             req.BuildCmd,
 		ExeCmd:               req.ExeCmd,
 		Env:                  req.Env,
+		Image:                req.Image,
 		JoinableForSec:       req.JoinableForSec,
 		MaxConcurrentJoiners: req.MaxConcurrentJoiners,
 		TimeoutSec:           req.TimeoutSec,
@@ -252,7 +261,7 @@ func Create(w http.ResponseWriter, r *http.Request, userid string) {
 
 	tarpath := filepath.Join(tmpFolder, "../code.tar.gz")
 
-	buildLogs, err := buildToasterCode(toaster, tarpath)
+	buildid, buildLogs, err := buildToasterCode(toaster, tarpath)
 	if err != nil {
 		if err == ErrUnsuccessfulBuild {
 			utils.SendError(w, fmt.Sprintf("build failed: %s", string(buildLogs)), "buildFailed", 400)
@@ -285,6 +294,7 @@ func Create(w http.ResponseWriter, r *http.Request, userid string) {
 	utils.SendSuccess(w, &CreateResponse{
 		Success:   true,
 		BuildLogs: buildLogs,
+		BuildID:   buildid,
 		Toaster:   toaster,
 	})
 }

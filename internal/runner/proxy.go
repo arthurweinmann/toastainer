@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
+	"github.com/toastate/toastcloud/internal/config"
 	"github.com/toastate/toastcloud/internal/utils"
 )
 
@@ -32,8 +34,11 @@ type ResponseHead struct {
 
 func proxyCommand(connR *bufio.Reader, connW *bufio.Writer) (err error) {
 	defer func() {
-		if err != nil {
-			writeError(connW, err)
+		if err != nil && !strings.Contains(err.Error(), "use of closed network connection") {
+			err2 := writeError(connW, err)
+			if err2 != nil {
+				utils.Error("origin", "runner:proxyCommand", "error", fmt.Sprintf("could not write error %v: %v", err, err2))
+			}
 		}
 	}()
 
@@ -156,7 +161,7 @@ func proxyHTTP(cmd *ProxyCommand, exe *executionInProgress, connR *bufio.Reader,
 		proxyReq.Header.Set("X-Forwarded-Proto", "http")
 	}
 
-	resp, err := utils.ForceIPHTTPClient(exe.ip, "8080").Do(proxyReq)
+	resp, err := utils.ForceIPHTTPClient(exe.ip, config.Runner.ToasterPort).Do(proxyReq)
 	if err != nil {
 		return err
 	}
@@ -190,7 +195,7 @@ func proxyWebsocket(cmd *ProxyCommand, exe *executionInProgress, connR *bufio.Re
 		h.Set("X-Forwarded-Proto", "http")
 	}
 
-	c, _, err := utils.ForceIPWebsocketDialer(exe.ip, "8080").Dial(cmd.URL, h)
+	c, _, err := utils.ForceIPWebsocketDialer(exe.ip, config.Runner.ToasterPort).Dial(cmd.URL, h)
 	if err != nil {
 		return err
 	}

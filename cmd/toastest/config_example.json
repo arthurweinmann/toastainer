@@ -1,0 +1,49 @@
+{
+    "api_domain": "",
+    "api_root_domain": "",
+    "toaster_domain": "",
+    "toaster_root_domain": "",
+    "dns_provider": {
+        "configuration": {
+            "AWS_ACCESS_KEY_ID": "",
+            "AWS_SECRET_ACCESS_KEY": "",
+            "AWS_ASSUME_ROLE_ARN": "",
+            "AWS_HOSTED_ZONE_ID": "",
+            "AWS_PROFILE": "",
+            "AWS_REGION": "",
+            "AWS_SDK_LOAD_CONFIG": ""
+        },
+        "name": "route53"
+    },
+    "is_api": true,
+    "is_runner": true,
+    "local_filestorage": {
+        "path": ""
+    },
+    "node_discovery": false,
+    "redis": {
+        "db_number": 0,
+        "hosts": ["127.0.0.1:6379"],
+        "password": "",
+        "username": ""
+    },
+    "runner": {
+        "btrfs_filepath": "",
+        "btrfs_filesize": 0,
+        "btrfs_mountpoint": "",
+        "non_root_gid": 1000,
+        "non_root_uid": 1000,
+        "overlayfs_mountpoint": "",
+        "use_unmounted_disks": false,
+        "toaster_port": 8080,
+        "network_interface": "tveth1"
+    },
+    "sqldb": {
+        "db_name": "toastcloud",
+        "hosts": ["****.****.****.****:3306"],
+        "password": "******************",
+        "syntax": "mysql",
+        "username": "toastcloud"
+    },
+    "ssl_certificate_contact_email": "example@example.com"
+}

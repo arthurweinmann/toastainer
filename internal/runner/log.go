@@ -4,6 +4,9 @@ import (
 	"bufio"
 	"encoding/json"
 	"errors"
+	"fmt"
+
+	"github.com/toastate/toastcloud/internal/utils"
 )
 
 var ErrInvalidUserID = errors.New("invalid userid")
@@ -16,7 +19,10 @@ type LogCommand struct {
 func logCommand(connR *bufio.Reader, connW *bufio.Writer) (err error) {
 	defer func() {
 		if err != nil {
-			writeError(connW, err)
+			err2 := writeError(connW, err)
+			if err2 != nil {
+				utils.Error("origin", "runner:logCommand", "error", fmt.Sprintf("could not write error: %v", err2))
+			}
 		}
 	}()
 

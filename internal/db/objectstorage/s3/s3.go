@@ -17,6 +17,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/rs/xid"
+	"github.com/schollz/progressbar/v3"
 	"github.com/toastate/toastcloud/internal/config"
 	"github.com/toastate/toastcloud/internal/db/objectstorage/objectstoragerror"
 	"github.com/toastate/toastcloud/internal/utils"
@@ -30,6 +31,7 @@ type s3Handler struct {
 	s3svc  *s3.S3
 	s3up   *s3manager.Uploader
 	s3down *s3manager.Downloader
+	tmpdir string
 }
 
 func NewHandler() (*s3Handler, error) {
@@ -42,7 +44,9 @@ func NewHandler() (*s3Handler, error) {
 }
 
 func (h *s3Handler) setup() error {
-	err := os.MkdirAll(filepath.Join(config.Home, "tmp"), 0777)
+	var err error
+
+	h.tmpdir, err = os.MkdirTemp("", "toastcloud_s3handler")
 	if err != nil {
 		return err
 	}
@@ -50,19 +54,54 @@ func (h *s3Handler) setup() error {
 	awsCfg := aws.NewConfig().WithRegion(config.ObjectStorage.AWSS3.Region)
 	awsCfg = awsCfg.WithCredentials(credentials.NewStaticCredentials(config.ObjectStorage.AWSS3.PubKey, config.ObjectStorage.AWSS3.PrivKey, ""))
 
-	h.s3svc = s3.New(session.New(), awsCfg)
-	h.s3up = s3manager.NewUploader(session.New(awsCfg))
+	sess1, err := session.NewSession(awsCfg)
+	if err != nil {
+		return err
+	}
+	h.s3svc = s3.New(sess1, awsCfg)
 
-	h.s3down = s3manager.NewDownloader(session.New(awsCfg))
-	h.s3down.Concurrency = 1 // force sequential downloads to stream them into the false io.WriterAt which is the http.ResponseWriter
+	sess2, err := session.NewSession(awsCfg)
+	if err != nil {
+		return err
+	}
+	h.s3up = s3manager.NewUploader(sess2)
+
+	sess3, err := session.NewSession(awsCfg)
+	if err != nil {
+		return err
+	}
+	h.s3down = s3manager.NewDownloader(sess3)
 
 	return nil
+}
+
+func (h *s3Handler) Get(remotePath string) ([]byte, error) {
+	dest := filepath.Join(S3KeyPrefix, remotePath)
+
+	buff := &aws.WriteAtBuffer{}
+
+	_, err := h.s3down.Download(buff, &s3.GetObjectInput{
+		Bucket: &config.ObjectStorage.AWSS3.Bucket,
+		Key:    &dest,
+	})
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case "NotFound", s3.ErrCodeNoSuchBucket, s3.ErrCodeNoSuchKey: // s3.ErrCodeNoSuchKey does not work, aws is missing this error code so we hardwire a string
+				return nil, objectstoragerror.ErrNotFound
+			}
+		}
+
+		return nil, err
+	}
+
+	return buff.Bytes(), nil
 }
 
 func (h *s3Handler) DownloadFileInto(w http.ResponseWriter, remotePath string) error {
 	dest := filepath.Join(S3KeyPrefix, remotePath)
 
-	tmppath := filepath.Join(config.Home, "tmp", xid.New().String())
+	tmppath := filepath.Join(h.tmpdir, xid.New().String())
 	f, err := os.OpenFile(tmppath, os.O_CREATE|os.O_RDWR, 0644)
 	if err != nil {
 		return err
@@ -79,7 +118,7 @@ func (h *s3Handler) DownloadFileInto(w http.ResponseWriter, remotePath string) e
 	if err != nil {
 		if aerr, ok := err.(awserr.Error); ok {
 			switch aerr.Code() {
-			case s3.ErrCodeNoSuchBucket, s3.ErrCodeNoSuchKey:
+			case "NotFound", s3.ErrCodeNoSuchBucket, s3.ErrCodeNoSuchKey: // s3.ErrCodeNoSuchKey does not work, aws is missing this error code so we hardwire a string
 				return objectstoragerror.ErrNotFound
 			}
 		}
@@ -167,17 +206,58 @@ func (h *s3Handler) PushFolderTar(folder, destPath string) error {
 	return nil
 }
 
+func (h *s3Handler) PullFolderTarWithProgressBar(remotePath, destination string) error {
+	return h.pullFolderTar(remotePath, destination, true)
+}
+
 func (h *s3Handler) PullFolderTar(remotePath, destination string) error {
+	return h.pullFolderTar(remotePath, destination, false)
+}
+
+func (h *s3Handler) pullFolderTar(remotePath, destination string, withProgressBar bool) error {
 	dest := filepath.Join(S3KeyPrefix, remotePath)
 	obj, err := h.s3svc.GetObject(&s3.GetObjectInput{
 		Bucket: &config.ObjectStorage.AWSS3.Bucket,
 		Key:    &dest,
 	})
 	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case "NotFound", s3.ErrCodeNoSuchBucket, s3.ErrCodeNoSuchKey: // s3.ErrCodeNoSuchKey does not work, aws is missing this error code so we hardwire a string
+				return objectstoragerror.ErrNotFound
+			}
+		}
+
 		return err
 	}
+	defer obj.Body.Close()
+
 	cmd := exec.Command("tar", "-C", destination, "-xz")
-	cmd.Stdin = obj.Body
+
+	if withProgressBar {
+		progresschan := make(chan int, 1)
+		defer func() {
+			progresschan <- -1
+		}()
+		proxyr := utils.NewProxyReader(obj.Body, progresschan)
+		bar := progressbar.DefaultBytes(*obj.ContentLength, "downloading "+remotePath)
+		go func() {
+			prevp := 0
+			for {
+				p := <-progresschan
+				if p < 0 {
+					return
+				}
+				bar.Add(p - prevp)
+				prevp = p
+			}
+		}()
+
+		cmd.Stdin = proxyr
+	} else {
+		cmd.Stdin = obj.Body
+	}
+
 	buf := bytes.NewBuffer(nil)
 	cmd.Stdout = buf
 	cmd.Stderr = buf
@@ -186,6 +266,26 @@ func (h *s3Handler) PullFolderTar(remotePath, destination string) error {
 		return fmt.Errorf("%v: %v", err, buf.String())
 	}
 	return nil
+}
+
+func (h *s3Handler) Exists(remotePath string) (bool, error) {
+	dest := filepath.Join(S3KeyPrefix, remotePath)
+	_, err := h.s3svc.HeadObject(&s3.HeadObjectInput{
+		Bucket: &config.ObjectStorage.AWSS3.Bucket,
+		Key:    &dest,
+	})
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case "NotFound", s3.ErrCodeNoSuchBucket, s3.ErrCodeNoSuchKey: // s3.ErrCodeNoSuchKey does not work, aws is missing this error code so we hardwire a string
+				return false, nil
+			default:
+				return false, err
+			}
+		}
+		return false, err
+	}
+	return true, nil
 }
 
 func (h *s3Handler) DeleteFolder(remotePath string) error {
@@ -198,6 +298,13 @@ func (h *s3Handler) DeleteFolder(remotePath string) error {
 
 	err := s3manager.NewBatchDeleteWithClient(h.s3svc).Delete(context.Background(), iter)
 	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case "NotFound", s3.ErrCodeNoSuchBucket, s3.ErrCodeNoSuchKey: // s3.ErrCodeNoSuchKey does not work, aws is missing this error code so we hardwire a string
+				return objectstoragerror.ErrNotFound
+			}
+		}
+
 		return err
 	}
 

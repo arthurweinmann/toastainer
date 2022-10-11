@@ -1,1 +1,3 @@
 build/
+cmd/toastest/config_test.json
+test/config_test.json

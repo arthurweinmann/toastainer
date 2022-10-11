@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/toastate/toastcloud/internal/config"
+	"github.com/toastate/toastcloud/internal/utils"
 )
 
 func runGC(gclevel int) {
@@ -28,7 +29,7 @@ func runGC(gclevel int) {
 	// Calc median
 	dir, err := ioutil.ReadDir(filepath.Join(config.Runner.BTRFSMountPoint, "codes"))
 	if err != nil {
-		log.Printf("Unable to list files in /btrmnt/images\n")
+		utils.Warn("origin", "runGC", "warning", fmt.Sprintf("Unable to list files in %s; %v\n", filepath.Join(config.Runner.BTRFSMountPoint, "codes"), err))
 		return
 	}
 

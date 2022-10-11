@@ -27,3 +27,7 @@ func CreateSession(user *model.User) (string, error) {
 
 	return sess, nil
 }
+
+func DeleteSession(token string) error {
+	return redisdb.GetClient().Del(context.Background(), "sess_"+token).Err()
+}

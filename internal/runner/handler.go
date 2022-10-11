@@ -29,21 +29,18 @@ func handler(c net.Conn) {
 
 		switch MessageKind(b) {
 		case BuildKind:
-			err = buildCommand(connR, connW)
+			buildCommand(connR, connW)
 		case ExecuteKind:
-			err = executeCommand(connR, connW)
+			executeCommand(connR, connW)
 		case ProxyKind:
-			err = proxyCommand(connR, connW)
+			proxyCommand(connR, connW)
 		case LogKind:
-			err = logCommand(connR, connW)
+			logCommand(connR, connW)
 		default:
 			c.Close()
 			return
 		}
 
-		if err != nil {
-			c.Close()
-			return
-		}
+		// in case of an error, it is the API responsability to close the connection to a runner
 	}
 }

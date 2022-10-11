@@ -195,6 +195,7 @@ func ToggleCertificate(domains []string) error {
 	return nil
 }
 
+// TODO: store the list of subdomains too in order to recreate the cert if this list has changed
 func storeCertificate(domain string, certificate, privateKey []byte) error {
 	b := make([]byte, 10, len(certificate)+len(privateKey)+10)
 

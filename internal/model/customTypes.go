@@ -40,7 +40,7 @@ func (g *ArrayString) Scan(src interface{}) error {
 		l = int(binary.BigEndian.Uint16(source[i : i+2]))
 		i += 2
 
-		if i+int(l) >= len(source) {
+		if i+int(l) > len(source) {
 			return errors.New("received invalid marshaled ArrayString from database")
 		}
 

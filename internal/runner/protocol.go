@@ -74,8 +74,6 @@ func readCommand(connR *bufio.Reader) ([]byte, error) {
 }
 
 func WriteCommand(connW *bufio.Writer, cmd []byte) error {
-	defer connW.Flush()
-
 	b := utils.BigEndianUint64(uint64(len(cmd)))
 	var nn int
 	for nn < len(b) {
@@ -93,6 +91,11 @@ func WriteCommand(connW *bufio.Writer, cmd []byte) error {
 			return err
 		}
 		nn += n
+	}
+
+	err := connW.Flush()
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -148,7 +151,7 @@ func writeError(connW *bufio.Writer, err error) error {
 		er := []byte(err.Error())
 		_, e = connW.Write(utils.BigEndianUint64(uint64(len(er))))
 		if e == nil {
-			connW.Write(er)
+			_, e = connW.Write(er)
 		}
 	}
 

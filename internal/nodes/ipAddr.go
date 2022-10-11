@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/toastate/toastcloud/internal/config"
 	"github.com/toastate/toastcloud/internal/utils"
 )
 
@@ -15,6 +16,27 @@ var toasterCIDR []uint32
 
 func initAddrs() error {
 	loopback = utils.IPUint(net.ParseIP("127.0.0.1"))
+
+	if config.LocalPrivateIP != "" {
+		tmp := net.ParseIP(config.LocalPrivateIP)
+		if tmp == nil {
+			return fmt.Errorf("invalid local private IPV4 %s in configuration file", config.LocalPrivateIP)
+		}
+
+		tmp = tmp.To4()
+		if tmp == nil {
+			return fmt.Errorf("invalid local private IPV4 %s in configuration file", config.LocalPrivateIP)
+		}
+
+		ipu := utils.IPUint(tmp)
+		if ipu == loopback || !IsIPPrivateRFC1918(ipu) {
+			return fmt.Errorf("invalid local private IPV4 %s in configuration file", config.LocalPrivateIP)
+		}
+
+		localip = ipu
+
+		return nil
+	}
 
 	ifaces, err := net.Interfaces()
 	if err != nil {

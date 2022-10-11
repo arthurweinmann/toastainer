@@ -19,7 +19,10 @@ func pullImg(image string) (string, error) {
 		}
 		err = objectstorage.Client.PullFolderTar(filepath.Join("images", image), pimg)
 		if err != nil {
-			DelSubvolumeAbsolute(pimg)
+			err2 := DelSubvolumeAbsolute(pimg)
+			if err2 != nil {
+				utils.Error("origin", "runner:pullImg:objectstorage.Client.PullFolderTar", "error", err2)
+			}
 			return "", err
 		}
 	}

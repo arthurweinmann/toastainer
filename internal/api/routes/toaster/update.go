@@ -53,6 +53,7 @@ type UpdateRequest struct {
 type UpdateResponse struct {
 	Success   bool           `json:"success,omitempty"`
 	BuildLogs []byte         `json:"build_logs,omitempty"` // base64 encoded string, see https://pkg.go.dev/encoding/json#Marshal
+	BuildID   string         `json:"build_id,omitempty"`
 	Toaster   *model.Toaster `json:"toaster,omitempty"`
 }
 
@@ -121,6 +122,7 @@ func Update(w http.ResponseWriter, r *http.Request, userid, toasterID string) {
 
 	var buildLogs []byte
 	var tmpFolder string
+	var buildid string
 	if codeUpdate {
 		toaster.CodeID = xid.New().String()
 
@@ -261,7 +263,7 @@ func Update(w http.ResponseWriter, r *http.Request, userid, toasterID string) {
 
 		tarpath := filepath.Join(tmpFolder, "../code.tar.gz")
 
-		buildLogs, err = buildToasterCode(toaster, tarpath)
+		buildid, buildLogs, err = buildToasterCode(toaster, tarpath)
 		if err != nil {
 			if err == ErrUnsuccessfulBuild {
 				utils.SendError(w, fmt.Sprintf("build failed: %s", string(buildLogs)), "buildFailed", 400)
@@ -297,6 +299,7 @@ func Update(w http.ResponseWriter, r *http.Request, userid, toasterID string) {
 	utils.SendSuccess(w, &UpdateResponse{
 		Success:   true,
 		BuildLogs: buildLogs,
+		BuildID:   buildid,
 		Toaster:   toaster,
 	})
 }

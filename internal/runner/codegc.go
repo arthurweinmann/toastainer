@@ -16,7 +16,7 @@ const (
 	gcHard    = iota
 )
 
-var updateChtimes = make(chan string, 32) // put metadata.json paths
+var updateChtimes = make(chan string, 32) // put metadata.json paths of toaster code when the toaster code is executed
 
 func initGC() {
 	defer time.AfterFunc(5*time.Second, gc)
@@ -46,12 +46,12 @@ type codeFile struct {
 func gc() {
 	all, free, _, err := utils.DiskUsage(config.Runner.BTRFSMountPoint)
 	if err != nil {
-		utils.Warn("msg", "codegc", "could not get disk usage with error", err)
+		utils.Warn("origin", "codegc", "msg", "could not get disk usage with error", "error", err)
 		return
 	}
 
 	if all == 0 {
-		utils.Warn("msg", "codegc", "could not get disk usage, running GC with Default threshold")
+		utils.Warn("origin", "codegc", "msg", "could not get disk usage, running GC with Default threshold")
 		runGC(gcDefault)
 		return
 	}

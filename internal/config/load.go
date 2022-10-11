@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -42,9 +43,9 @@ type loadedConfig struct {
 }
 
 type loadedConfigAWSS3 struct {
-	Region  string `json:"aws_region" yaml:"aws_region"`
-	PubKey  string `json:"public_key" yaml:"public_key"`
-	PrivKey string `json:"private_key" yaml:"private_key"`
+	Region  string `json:"region" yaml:"region"`
+	PubKey  string `json:"access_key_id" yaml:"access_key_id"`
+	PrivKey string `json:"secret_access_key" yaml:"secret_access_key"`
 	Bucket  string `json:"bucket" yaml:"bucket"`
 }
 
@@ -53,9 +54,9 @@ type loadedConfigLocalFS struct {
 }
 
 type loadedConfigAWSSES struct {
-	Region      string   `json:"aws_region" yaml:"aws_region"`
-	PubKey      string   `json:"public_key" yaml:"public_key"`
-	PrivKey     string   `json:"private_key" yaml:"private_key"`
+	Region      string   `json:"region" yaml:"region"`
+	PubKey      string   `json:"access_key_id" yaml:"access_key_id"`
+	PrivKey     string   `json:"secret_access_key" yaml:"secret_access_key"`
 	SourceEmail string   `json:"source_email" yaml:"source_email"`
 	ReplyTo     []string `json:"reply_to" yaml:"reply_to"`
 }
@@ -88,29 +89,42 @@ type loadedConfigRunner struct {
 	BTRSFileSize      int64  `json:"btrfs_filesize" yaml:"btrfs_filesize"`
 	NonRootUID        int    `json:"non_root_uid" yaml:"non_root_uid"`
 	NonRootGID        int    `json:"non_root_gid" yaml:"non_root_gid"`
+	ToasterPort       int    `json:"toaster_port" yaml:"toaster_port"`
+	NetworkInterface  string `json:"network_interface" yaml:"network_interface"`
 }
 
 func LoadConfig(path string) error {
-	lc := &loadedConfig{}
-
 	b, err := os.ReadFile(path)
 	if err != nil {
 		return err
 	}
 
-	switch filepath.Ext(path) {
-	case ".json":
+	ext := filepath.Ext(path)
+	if len(ext) > 1 {
+		ext = ext[1:]
+	}
+
+	return LoadConfigBytes(b, ext)
+}
+
+// extension is either json or yml
+func LoadConfigBytes(b []byte, extension string) error {
+	lc := &loadedConfig{}
+	var err error
+
+	switch extension {
+	case "json":
 		err = json.Unmarshal(b, lc)
 		if err != nil {
 			return err
 		}
-	case ".yml":
+	case "yml":
 		err = yaml.Unmarshal(b, lc)
 		if err != nil {
 			return err
 		}
 	default:
-		return fmt.Errorf("unsupported config file extension %s, toastcloud supports .json and .yml", filepath.Ext(path))
+		return fmt.Errorf("unsupported config format %s, toastcloud supports json and yml", extension)
 	}
 
 	IsAPI = lc.IsAPI
@@ -156,7 +170,7 @@ func LoadConfig(path string) error {
 		EmailProvider.AWSSES.ReplyTo = lc.AWSSES.ReplyTo
 
 	default:
-		return fmt.Errorf("you must configure one object storage")
+		return fmt.Errorf("you must configure one email provider")
 	}
 
 	Redis.IP = lc.Redis.IP
@@ -178,15 +192,33 @@ func LoadConfig(path string) error {
 	}
 
 	DNSProvider.Name = lc.DNSProvider.Name
-	DNSProvider.ENV = lc.DNSProvider.ENV
+	DNSProvider.ENV = map[string]string{}
+	for k, v := range lc.DNSProvider.ENV {
+		DNSProvider.ENV[strings.ToUpper(k)] = v
+	}
 
 	Runner.BTRFSMountPoint = lc.Runner.BTRFSMountPoint
 	Runner.OverlayMountPoint = lc.Runner.OverlayMountPoint
 	Runner.UseUnmountedDisks = lc.Runner.UseUnmountedDisks
+	Runner.NetworkInterface = lc.Runner.NetworkInterface
 	Runner.BTRFSFile = lc.Runner.BTRFSFile
 	Runner.BTRSFileSize = lc.Runner.BTRSFileSize
+	if lc.Runner.ToasterPort != 0 {
+		Runner.ToasterPort = strconv.Itoa(lc.Runner.ToasterPort)
+	}
+
 	Runner.NonRootUID = lc.Runner.NonRootUID
 	Runner.NonRootGID = lc.Runner.NonRootGID
+	Runner.NonRootUIDStr = strconv.Itoa(lc.Runner.NonRootUID)
+	Runner.NonRootGIDStr = strconv.Itoa(lc.Runner.NonRootGID)
+
+	return checkConfig()
+}
+
+func checkConfig() error {
+	if DNSProvider.Name == "" {
+		return fmt.Errorf("you must provide a DNS provider for Toasters SSL certificates")
+	}
 
 	return nil
 }

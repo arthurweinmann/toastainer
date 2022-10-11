@@ -1,75 +1,70 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 	"runtime/debug"
 
-	"github.com/go-kit/log"
-	"github.com/go-kit/log/level"
 	"github.com/toastate/toastcloud/internal/config"
 )
 
-// Log is the default logger for apps
-var Log log.Logger
-
-var hlog log.Logger
+var loglevel int
 
 func InitLogging() {
-	Log = log.NewLogfmtLogger(os.Stdout)
-	hlog = log.With(Log, "ts", log.DefaultTimestampUTC, "caller", log.Caller(6))
-	Log = log.With(Log, "ts", log.DefaultTimestampUTC, "caller", log.Caller(5))
-
 	switch config.LogLevel {
-	case "debug":
-		Log = level.NewFilter(Log, level.AllowDebug())
-		hlog = level.NewFilter(hlog, level.AllowDebug())
-	case "warn":
-		Log = level.NewFilter(Log, level.AllowWarn())
-		hlog = level.NewFilter(hlog, level.AllowWarn())
-	case "error":
-		Log = level.NewFilter(Log, level.AllowError())
-		hlog = level.NewFilter(hlog, level.AllowError())
 	case "all":
-		Log = level.NewFilter(Log, level.AllowAll())
-		hlog = level.NewFilter(hlog, level.AllowAll())
+		loglevel = -1
+	case "debug":
+		loglevel = 0
+	case "info":
+		loglevel = 1
+	case "warn":
+		loglevel = 2
+	case "error":
+		loglevel = 3
+	case "fatal":
+		loglevel = 4
+	case "none":
+		loglevel = 5
 	default:
-		Log = level.NewFilter(Log, level.AllowInfo())
-		hlog = level.NewFilter(hlog, level.AllowInfo())
+		loglevel = 2
 	}
 }
 
-// Debug add a log entry w/ Debug level
 func Debug(keyvals ...interface{}) {
-	level.Debug(hlog).Log(keyvals...)
-}
-
-// Info add a log entry w/ Info level
-func Info(keyvals ...interface{}) {
-	level.Info(hlog).Log(keyvals...)
-}
-
-// Warn add a log entry w/ Warn level
-func Warn(keyvals ...interface{}) {
-	level.Warn(hlog).Log(keyvals...)
-}
-
-// Error add a log entry w/ Error level
-func Error(keyvals ...interface{}) {
-	level.Error(hlog).Log(keyvals...)
-}
-
-// Fatal add a log entry w/ Error level and exits
-func Fatal(keyvals ...interface{}) {
-	debug.PrintStack()
-	level.Error(hlog).Log(keyvals...)
-	os.Exit(1)
-}
-
-// FatalIf prints a fatal Error level and exits if err != nil
-func FatalIf(err error) {
-	if err == nil {
-		return
+	if loglevel <= 0 {
+		fmt.Printf("DEBUG >\n    ")
+		fmt.Println(keyvals...)
 	}
-	level.Error(hlog).Log("err", err)
+}
+
+func Info(keyvals ...interface{}) {
+	if loglevel <= 1 {
+		fmt.Printf("INFO >\n    ")
+		fmt.Println(keyvals...)
+	}
+}
+
+func Warn(keyvals ...interface{}) {
+	if loglevel <= 2 {
+		fmt.Printf("WARNING >\n    ")
+		fmt.Println(keyvals...)
+	}
+}
+
+func Error(keyvals ...interface{}) {
+	if loglevel <= 3 {
+		fmt.Printf("ERROR >\n    ")
+		fmt.Println(keyvals...)
+	}
+}
+
+func Fatal(keyvals ...interface{}) {
+	if loglevel <= 4 {
+		fmt.Printf("FATAL >\n    ")
+		fmt.Println(keyvals...)
+		debug.PrintStack()
+	}
+
 	os.Exit(1)
 }

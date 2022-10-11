@@ -13,7 +13,9 @@ var Client interface {
 	UpdateUser(usr *model.User) error
 	GetUserByEmail(email string) (*model.User, error)
 	GetUserByID(userid string) (*model.User, error)
+	RangeUsers(limit int, cursor string) (string, bool, []model.User, error)
 	UserExistsByEmail(email string) (bool, error)
+	DelUser(userid string) error
 
 	CreateToaster(toaster *model.Toaster) error
 	UpdateToaster(toaster *model.Toaster) error
@@ -29,7 +31,8 @@ var Client interface {
 	ListUserSubdomains(userid string) ([]*model.SubDomain, error)
 	CheckSubdomainOwnership(subname, userid string) (bool, error)
 	GetSubDomain(userid, subdomainid string) (*model.SubDomain, error)
-	DeleteToasterAllSubdomains(userid, toasterid string) error
+	UnlinkAllSubdomainsFromToaster(userid, toasterid string) error
+	DeleteAllSubDomainFromUser(userid string) error
 
 	UpsertCertificate(cert *model.Certificate) error
 	GetCertificate(domain string) (*model.Certificate, error)
@@ -37,6 +40,10 @@ var Client interface {
 
 	BlockEmail(email, data string) error
 	IsEmailBlocked(email string) (bool, error)
+
+	UpsertUserStatistics(stat *model.UserStatistics) error
+	GetUserStatistics(userid, monthyear string) (*model.UserStatistics, error)
+	GetAllUserStatistics(userid string) ([]*model.UserStatistics, error)
 }
 
 func Init() error {

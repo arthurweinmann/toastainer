@@ -57,25 +57,36 @@ func Init() error {
 		return err
 	}
 
-	if config.APIRootDomain == config.ToasterRootDomain {
-		d := append([]string{config.APIDomain, "*." + config.ToasterDomain}, nodes.GetToasterLocalRegionAppSubdomain(config.ToasterDomain, config.Region))
-		err := ToggleCertificate(d)
-		if err != nil {
-			return err
-		}
-	} else {
-		d := append([]string{"*." + config.ToasterDomain}, nodes.GetToasterLocalRegionAppSubdomain(config.ToasterDomain, config.Region))
-
-		err := ToggleCertificate(d)
-		if err != nil {
-			return err
-		}
-
-		err = ToggleCertificate([]string{config.APIDomain})
+	builtins := BuiltinCerts()
+	for i := 0; i < len(builtins); i++ {
+		err := ToggleCertificate(builtins[i])
 		if err != nil {
 			return err
 		}
 	}
 
 	return nil
+}
+
+func BuiltinCerts() [][]string {
+	var ret [][]string
+
+	if config.APIRootDomain == config.ToasterRootDomain {
+		tmp := []string{config.APIDomain, "*." + config.ToasterDomain}
+		if config.Region != "" {
+			tmp = append(tmp, nodes.GetToasterLocalRegionAppSubdomain(config.ToasterDomain, config.Region))
+		}
+
+		ret = append(ret, tmp)
+	} else {
+		tmp := []string{"*." + config.ToasterDomain}
+		if config.Region != "" {
+			tmp = append(tmp, nodes.GetToasterLocalRegionAppSubdomain(config.ToasterDomain, config.Region))
+		}
+
+		ret = append(ret, tmp)
+		ret = append(ret, []string{config.APIDomain})
+	}
+
+	return ret
 }

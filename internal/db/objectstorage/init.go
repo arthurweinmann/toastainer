@@ -15,10 +15,16 @@ var Client interface {
 
 	PushReader(f io.Reader, destPath string) error
 
+	Get(remotePath string) ([]byte, error)
+
 	PushFolderTar(folder, destPath string) error
+
 	PullFolderTar(remotePath, destination string) error
+	PullFolderTarWithProgressBar(remotePath, destination string) error
 
 	UploadFolder(folder, dest string) error
+
+	Exists(remotePath string) (bool, error)
 
 	DeleteFolder(folder string) error
 }

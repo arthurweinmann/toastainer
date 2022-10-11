@@ -39,6 +39,7 @@ func DirExists(dirname string) bool {
 	return info.IsDir()
 }
 
+// DirEmpty returns true for non existant directories
 func DirEmpty(dirname string) (b bool) {
 	if !DirExists(dirname) {
 		return

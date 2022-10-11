@@ -3,14 +3,18 @@ package utils
 import (
 	"bufio"
 	"bytes"
+	"context"
+	"encoding/base32"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/fs"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -36,22 +40,34 @@ func Redirect2HTTPS(w http.ResponseWriter, req *http.Request) {
 		http.StatusTemporaryRedirect)
 }
 
-//IsMultipart returns true if the given request is multipart forrm
+// IsMultipart returns true if the given request is multipart forrm
 func IsMultipart(r *http.Request) bool {
 	return strings.Index(r.Header.Get("Content-Type"), "multipart/form-data") > -1
 }
 
-type jsonErr struct {
+type JSONErr struct {
 	Success bool   `json:"success"`
 	Message string `json:"message,omitempty"`
 	Code    string `json:"code,omitempty"`
 }
 
+func UnmarshalJSONErr(b []byte) *JSONErr {
+	jserr := &JSONErr{}
+
+	err := json.Unmarshal(b, jserr)
+	if err != nil {
+		jserr.Code = "invalidError"
+		jserr.Message = fmt.Sprintf("Error decoding JSON Err: %v: %v", err, strconv.Quote(string(b)))
+	}
+
+	return jserr
+}
+
 func SendInternalError(w http.ResponseWriter, origin string, err error) {
-	Error("msg", origin, err)
+	Error("origin", origin, "error", err)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(501)
-	b, _ := json.Marshal(&jsonErr{
+	b, _ := json.Marshal(&JSONErr{
 		Success: false,
 		Message: "it looks like we have an issue on our side, please retry later",
 		Code:    "internal",
@@ -62,7 +78,7 @@ func SendInternalError(w http.ResponseWriter, origin string, err error) {
 func SendError(w http.ResponseWriter, message, code string, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
-	b, _ := json.Marshal(&jsonErr{
+	b, _ := json.Marshal(&JSONErr{
 		Success: false,
 		Message: message,
 		Code:    code,
@@ -74,7 +90,7 @@ func SendErrorAndLog(w http.ResponseWriter, message, code string, statusCode int
 	Error("msg", origin, message, code, err)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
-	b, _ := json.Marshal(&jsonErr{
+	b, _ := json.Marshal(&JSONErr{
 		Success: false,
 		Message: message,
 		Code:    code,
@@ -109,7 +125,7 @@ func JSONMarshal(t interface{}) ([]byte, error) {
 	return buffer.Bytes(), err
 }
 
-func UploadFileMultipart(url string, path string) (*http.Response, error) {
+func UploadFileMultipart(client *http.Client, url string, path string) (*http.Response, error) {
 	f, err := os.OpenFile(path, os.O_RDONLY, 0644)
 	if err != nil {
 		return nil, err
@@ -169,9 +185,7 @@ func UploadFileMultipart(url string, path string) (*http.Response, error) {
 	// This operation will block until both the formWriter
 	// and bodyWriter have been closed by the goroutine,
 	// or in the event of a HTTP error.
-	resp, err := (&http.Client{
-		Timeout: 3600 * time.Hour,
-	}).Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Println("3", err)
 		return nil, err
@@ -184,7 +198,7 @@ func UploadFileMultipart(url string, path string) (*http.Response, error) {
 	return resp, err
 }
 
-func UploadFolderMultipart(url, method string, folder string, fields ...string) (*http.Response, error) {
+func UploadFolderMultipart(client *http.Client, url, method string, folder string, fields ...string) (*http.Response, error) {
 
 	// Create a pipe for writing from the file and reading to
 	// the request concurrently.
@@ -272,11 +286,8 @@ func UploadFolderMultipart(url, method string, folder string, fields ...string) 
 	// This operation will block until both the formWriter
 	// and bodyWriter have been closed by the goroutine,
 	// or in the event of a HTTP error.
-	resp, err := (&http.Client{
-		Timeout: 3600 * time.Hour,
-	}).Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("3", err)
 		return nil, err
 	}
 
@@ -285,4 +296,118 @@ func UploadFolderMultipart(url, method string, folder string, fields ...string) 
 	}
 
 	return resp, err
+}
+
+func UploadEmbedFolderMultipart(client *http.Client, url, method string, relfilepaths []string, files []fs.File, fields ...string) (*http.Response, error) {
+
+	// Create a pipe for writing from the file and reading to
+	// the request concurrently.
+	bodyReader, bodyWriter := io.Pipe()
+	formWriter := multipart.NewWriter(bodyWriter)
+
+	// Store the first write error in writeErr.
+	var (
+		writeErr error
+		errOnce  sync.Once
+	)
+	setErr := func(err error) {
+		if err != nil {
+			errOnce.Do(func() { writeErr = err })
+		}
+	}
+	go func() {
+		for i := 0; i < len(relfilepaths); i++ {
+			rel := relfilepaths[i]
+			f := files[i]
+
+			partWriter, err := formWriter.CreateFormFile("file", base32.StdEncoding.EncodeToString([]byte(rel)))
+			if err != nil {
+				setErr(err)
+				return
+			}
+
+			// Reduce number of syscalls when reading from disk.
+			bufferedFileReader := bufio.NewReader(f)
+
+			for {
+				n, err := io.CopyN(partWriter, bufferedFileReader, 1024*1024*5)
+				if err != nil {
+					if err != io.EOF {
+						setErr(err)
+						return
+					}
+					break
+				}
+				if n == 0 {
+					break
+				}
+			}
+		}
+
+		for i := 0; i < len(fields); i += 2 {
+			err := formWriter.WriteField(fields[i], fields[i+1])
+			if err != nil {
+				setErr(err)
+				break
+			}
+		}
+
+		setErr(formWriter.Close())
+		setErr(bodyWriter.Close())
+	}()
+
+	req, err := http.NewRequest(method, url, bodyReader)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Content-Type", formWriter.FormDataContentType())
+
+	// This operation will block until both the formWriter
+	// and bodyWriter have been closed by the goroutine,
+	// or in the event of a HTTP error.
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if writeErr != nil {
+		return nil, writeErr
+	}
+
+	return resp, err
+}
+
+func ForceIPHTTPClient(ip, port string) *http.Client {
+	dialer := &net.Dialer{
+		Timeout:   30 * time.Second,
+		KeepAlive: 30 * time.Second,
+		// DualStack: true, // this is deprecated as of go 1.16
+	}
+
+	return &http.Client{
+		Transport: &http.Transport{
+			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+				return dialer.DialContext(ctx, network, ip+":"+port)
+			},
+		},
+		Timeout: 60 * time.Second,
+	}
+}
+
+func ForceIPWebsocketDialer(ip, port string) *websocket.Dialer {
+	netdialer := &net.Dialer{
+		Timeout:   30 * time.Second,
+		KeepAlive: 30 * time.Second,
+		// DualStack: true, // this is deprecated as of go 1.16
+	}
+
+	return &websocket.Dialer{
+		NetDial: func(network, addr string) (net.Conn, error) {
+			return netdialer.DialContext(context.Background(), network, ip+":"+port)
+		},
+		NetDialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+			return netdialer.DialContext(ctx, network, ip+":"+port)
+		},
+		HandshakeTimeout: 60 * time.Second,
+	}
 }

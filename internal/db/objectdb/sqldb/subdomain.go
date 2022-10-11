@@ -116,8 +116,20 @@ func (c *Client) DeleteSubDomain(userid, subdomainid string) error {
 	return nil
 }
 
-func (c *Client) DeleteToasterAllSubdomains(userid, toasterid string) error {
-	_, err := c.db.Exec("DELETE FROM subdomains WHERE toaster_id = ? AND user_id = ?", toasterid, userid)
+func (c *Client) DeleteAllSubDomainFromUser(userid string) error {
+	_, err := c.db.Exec("DELETE FROM subdomains WHERE user_id = ?", userid)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return objectdberror.ErrNotFound
+		}
+		return err
+	}
+
+	return nil
+}
+
+func (c *Client) UnlinkAllSubdomainsFromToaster(userid, toasterid string) error {
+	_, err := c.db.Exec("UPDATE subdomains SET toaster_id = '' WHERE toaster_id = ? AND user_id = ?", toasterid, userid)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return objectdberror.ErrNotFound

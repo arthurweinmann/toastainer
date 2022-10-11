@@ -1,0 +1,55 @@
+{
+    "api_domain": "",
+    "api_root_domain": "",
+    "aws_s3": {
+        "aws_region": "",
+        "bucket": "",
+        "secret_access_key": "",
+        "access_key_id": ""
+    },
+    "aws_ses": {
+        "aws_region": "",
+        "secret_access_key": "",
+        "access_key_id": "",
+        "reply_to": null,
+        "source_email": ""
+    },
+    "dns_provider": {
+        "configuration": null,
+        "name": ""
+    },
+    "is_api": true,
+    "is_runner": true,
+    "local_filestorage": {
+        "path": ""
+    },
+    "log_level": "",
+    "node_discovery": false,
+    "node_local_private_network_ip": "",
+    "redis": {
+        "db_number": 0,
+        "hosts": null,
+        "password": "",
+        "username": ""
+    },
+    "region": "",
+    "runner": {
+        "btrfs_filepath": "",
+        "btrfs_filesize": 0,
+        "btrfs_mountpoint": "",
+        "non_root_gid": 0,
+        "non_root_uid": 0,
+        "overlayfs_mountpoint": "",
+        "use_unmounted_disks": false
+    },
+    "sqldb": {
+        "db_name": "",
+        "hosts": null,
+        "password": "",
+        "syntax": "",
+        "username": ""
+    },
+    "ssl_certificate_contact_email": "",
+    "toaster_domain": "",
+    "toaster_root_domain": ""
+}

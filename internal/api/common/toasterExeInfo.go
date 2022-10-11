@@ -17,6 +17,9 @@ func DumpToaterExeInfo(toaster *model.Toaster) []byte {
 	b = append(b, utils.BigEndianUint64(uint64(len(toaster.OwnerID)))...)
 	b = append(b, toaster.OwnerID...)
 
+	b = append(b, utils.BigEndianUint64(uint64(len(toaster.Image)))...)
+	b = append(b, toaster.Image...)
+
 	b = append(b, utils.BigEndianUint64(uint64(len(toaster.ExeCmd)))...)
 	for i := 0; i < len(toaster.ExeCmd); i++ {
 		b = append(b, utils.BigEndianUint64(uint64(len(toaster.ExeCmd[i])))...)
@@ -49,6 +52,12 @@ func ParseToasterExeInfo(dump []byte) *model.Toaster {
 	offset += 8
 
 	toaster.OwnerID = string(dump[offset : offset+l])
+	offset += l
+
+	l = int(binary.BigEndian.Uint64(dump[offset : offset+8]))
+	offset += 8
+
+	toaster.Image = string(dump[offset : offset+l])
 	offset += l
 
 	l = int(binary.BigEndian.Uint64(dump[offset : offset+8]))

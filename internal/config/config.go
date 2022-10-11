@@ -105,6 +105,13 @@ var Runner struct {
 
 	NonRootUID int
 	NonRootGID int
+
+	NonRootUIDStr string
+	NonRootGIDStr string
+
+	ToasterPort string
+
+	NetworkInterface string
 }
 
 var CertificateContactEmail string

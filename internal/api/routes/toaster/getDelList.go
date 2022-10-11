@@ -54,50 +54,59 @@ func Delete(w http.ResponseWriter, r *http.Request, userid, toasterid string) {
 		return
 	}
 
-	err = objectdb.Client.DelToaster(userid, toasterid)
+	// if an error occurs, DeleteToasterHelper sends it himself to the user
+	if DeleteToasterHelper(w, userid, toaster) {
+		utils.SendSuccess(w, &GetResponse{
+			Success: true,
+			Toaster: toaster,
+		})
+	}
+}
+
+func DeleteToasterHelper(w http.ResponseWriter, userid string, toaster *model.Toaster) bool {
+	err := objectdb.Client.DelToaster(userid, toaster.ID)
 	if err != nil && err != objectdberror.ErrNotFound {
 		utils.SendInternalError(w, "Toaster.Del:objectdb.Client.GetUserToaster", err)
-		return
+		return false
 	}
 
 	err = objectstorage.Client.DeleteFolder(filepath.Join("clearcode", toaster.ID))
 	if err != nil && err != objectstoragerror.ErrNotFound {
 		utils.SendInternalError(w, "Toaster.Del:objectstorage.Client.DeleteFolder", err)
-		return
+		return false
 	}
 
 	err = redisdb.GetClient().Del(context.Background(), "exeinfo_"+toaster.ID).Err()
 	if err != nil && err != redisdb.ErrNil {
 		utils.SendInternalError(w, "Toaster.Del:redis.Del", err)
-		return
+		return false
 	}
 
 	linkedSubs, err := objectdb.Client.GetLinkedSubDomains(toaster.ID)
 	if err != nil && err != objectdberror.ErrNotFound {
 		utils.SendInternalError(w, "Toaster.Del:objectdb.Client.GetLinkedSubDomains", err)
-		return
+		return false
 	}
 
-	var delInRedis []string
-	for i := 0; i < len(linkedSubs); i++ {
-		delInRedis = append(delInRedis, "exeinfo_"+linkedSubs[i].Name)
-	}
-	err = redisdb.GetClient().Del(context.Background(), delInRedis...).Err()
-	if err != nil {
-		utils.SendInternalError(w, "Toaster.Del:redis.Del", err)
-		return
+	if len(linkedSubs) > 0 {
+		var delInRedis []string
+		for i := 0; i < len(linkedSubs); i++ {
+			delInRedis = append(delInRedis, "exeinfo_"+linkedSubs[i].Name)
+		}
+		err = redisdb.GetClient().Del(context.Background(), delInRedis...).Err()
+		if err != nil {
+			utils.SendInternalError(w, "Toaster.Del:redis.Del", err)
+			return false
+		}
 	}
 
-	err = objectdb.Client.DeleteToasterAllSubdomains(userid, toaster.ID)
+	err = objectdb.Client.UnlinkAllSubdomainsFromToaster(userid, toaster.ID)
 	if err != nil {
 		utils.SendInternalError(w, "Toaster.Del:objectdb.Client.BatchDelSubDomains", err)
-		return
+		return false
 	}
 
-	utils.SendSuccess(w, &GetResponse{
-		Success: true,
-		Toaster: toaster,
-	})
+	return true
 }
 
 type ListResponse struct {

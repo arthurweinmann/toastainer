@@ -31,7 +31,10 @@ type BuildCommand struct {
 func buildCommand(connR *bufio.Reader, connW *bufio.Writer) (err error) {
 	defer func() {
 		if err != nil {
-			writeError(connW, err)
+			err2 := writeError(connW, err)
+			if err2 != nil {
+				utils.Error("origin", "runner:buildCommand", "error", fmt.Sprintf("could not write error: %v", err2))
+			}
 		}
 	}()
 
@@ -61,7 +64,7 @@ func buildCommandInternal(cmd *BuildCommand, connR *bufio.Reader) (logs []byte, 
 	var pimg string
 	pimg, err = pullImg(cmd.Image)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("pullImg %s: %v", cmd.Image, err)
 	}
 
 	var pcompil string
@@ -123,7 +126,7 @@ func buildCommandInternal(cmd *BuildCommand, connR *bufio.Reader) (logs []byte, 
 		cmd.Env,
 		"10.166."+ipStr(ip),
 		"10.166.0.1",
-		"toastveth1",
+		"tveth1",
 		"255.255.0.0",
 		cmd.BuildCmd...,
 	)
@@ -185,7 +188,7 @@ func buildCommandInternal(cmd *BuildCommand, connR *bufio.Reader) (logs []byte, 
 
 	err = objectstorage.Client.PushFolderTar(codeidpath, filepath.Join("codes", cmd.CodeID))
 	if err != nil {
-		return nil, fmt.Errorf("objectstorage.PushFolderS3: %v", err)
+		return nil, fmt.Errorf("objectstorage.PushFolderTar: %v", err)
 	}
 
 	logs = bb.Bytes()

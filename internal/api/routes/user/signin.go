@@ -10,6 +10,7 @@ import (
 	"github.com/toastate/toastcloud/internal/api/settings"
 	"github.com/toastate/toastcloud/internal/config"
 	"github.com/toastate/toastcloud/internal/db/objectdb"
+	"github.com/toastate/toastcloud/internal/db/objectdb/objectdberror"
 	"github.com/toastate/toastcloud/internal/utils"
 )
 
@@ -69,7 +70,12 @@ func signin(w http.ResponseWriter, r *http.Request) (string, bool) {
 
 	usr, err := objectdb.Client.GetUserByEmail(req.Email)
 	if err != nil {
-		utils.SendError(w, "email address not found", "notFound", 404)
+		if err == objectdberror.ErrNotFound {
+			utils.SendError(w, "email address not found", "notFound", 404)
+			return "", false
+		}
+
+		utils.SendInternalError(w, "Signin.GetUserByEmail", err)
 		return "", false
 	}
 

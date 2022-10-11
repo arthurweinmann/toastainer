@@ -85,20 +85,24 @@ func (s *Router) api(w http.ResponseWriter, r *http.Request) {
 		switch spath[0] {
 		case "signup":
 			userroute.Signup(w, r)
+			return
 		case "signin":
 			userroute.Signin(w, r)
+			return
 		case "cookiesignin":
 			userroute.CookieSignin(w, r)
+			return
 		default:
 			dynRoute := dynamicroutes.GetDynamicRoute(spath)
 			if dynRoute != nil {
 				dynRoute(w, r)
+				return
 			}
 		}
 	}
 
 	// Authentication checkpoint
-	user, continu := auth.Auth(w, r)
+	user, sessToken, continu := auth.Auth(w, r)
 	if !continu {
 		return
 	}
@@ -111,8 +115,16 @@ func (s *Router) api(w http.ResponseWriter, r *http.Request) {
 				switch spath[1] {
 				case "statistics":
 					userroute.Stats(w, r, user.ID)
+					return
 				case "changepassword":
 					userroute.UpdatePassword(w, r, user.ID)
+					return
+				case "signout":
+					userroute.Signout(w, r, user.ID, sessToken)
+					return
+				case "deleteaccount":
+					userroute.DeleteAccount(w, r, user.ID, sessToken)
+					return
 				}
 			}
 		case "toaster":
@@ -120,53 +132,66 @@ func (s *Router) api(w http.ResponseWriter, r *http.Request) {
 			case "POST":
 				if len(spath) > 1 {
 					switch spath[1] {
-					case "list":
-						toaster.List(w, r, user.ID)
-					case "livelogs":
-						if len(spath) > 2 {
-							toaster.GetRunningLogs(w, r, user.ID, spath[2])
-						}
-					case "file":
-						if len(spath) > 3 {
-							toaster.GetCodeFile(w, r, user.ID, spath[2], strings.Join(spath[3:], "/"))
-						}
-					case "runningcount":
-						if len(spath) > 2 {
-							toaster.RunningCount(w, r, user.ID, spath[2])
-						}
-					case "statistics":
-						if len(spath) > 2 {
-							toaster.Stats(w, r, user.ID, spath[2])
-						}
 					}
 				} else {
 					toaster.Create(w, r, user.ID)
+					return
 				}
 			case "PUT":
 				if len(spath) > 1 {
 					toaster.Update(w, r, user.ID, spath[1])
+					return
 				}
 			case "GET":
-				if len(spath) > 1 {
-					toaster.Get(w, r, user.ID, spath[1])
+				if len(spath) == 2 {
+					switch spath[1] {
+					case "list":
+						toaster.List(w, r, user.ID)
+						return
+					default:
+						toaster.Get(w, r, user.ID, spath[1])
+						return
+					}
+				} else if len(spath) > 2 {
+					switch spath[1] {
+					case "build":
+						toaster.GetBuildResult(w, r, user.ID, spath[2])
+						return
+					case "livelogs":
+						toaster.GetRunningLogs(w, r, user.ID, spath[2])
+						return
+					case "file":
+						toaster.GetCodeFile(w, r, user.ID, spath[2], strings.Join(spath[3:], "/"))
+						return
+					case "runningcount":
+						toaster.RunningCount(w, r, user.ID, spath[2])
+						return
+					case "statistics":
+						toaster.Stats(w, r, user.ID, spath[2])
+						return
+					}
 				}
 			case "DELETE":
 				if len(spath) > 1 {
 					toaster.Delete(w, r, user.ID, spath[1])
+					return
 				}
 			}
 		case "subdomain":
 			switch r.Method {
 			case "POST":
 				subdomain.Create(w, r, user.ID)
+				return
 			case "PUT":
 				if len(spath) > 1 {
 					subdomain.Update(w, r, user.ID, spath[1])
+					return
 				}
 			case "GET":
 			case "DELETE":
 				if len(spath) > 1 {
 					subdomain.Delete(w, r, user.ID, spath[1])
+					return
 				}
 			}
 		}

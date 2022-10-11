@@ -3,19 +3,21 @@ package runner
 import (
 	"os/exec"
 	"strconv"
+
+	"github.com/toastate/toastcloud/internal/config"
 )
 
 // env items must be of the form key=value
 func nsjailCommand(chroot, cwd string, timeoutSec int, env []string, ip, gw, iface, nm string, usercmd ...string) *exec.Cmd {
 	// TODO: fok nsjail to control logs and only log execve errors in a way that doesn t transpire that we use nsjail
 
-	cmd := exec.Command(nsjailPAth,
+	cmd := exec.Command(nsjailPath,
 		"-Mo",
 		"--chroot", chroot,
 		"--rw",
-		"--user", "0:1000:1",
-		"--group", "0:1000:1",
-		"--hostname", "toastate",
+		"--user", "0:"+config.Runner.NonRootUIDStr+":1",
+		"--group", "0:"+config.Runner.NonRootGIDStr+":1",
+		"--hostname", "toastcloud",
 		"--cwd", cwd,
 		"--rlimit_as", "hard",
 		"--rlimit_nofile", "hard",
@@ -39,7 +41,7 @@ func nsjailCommand(chroot, cwd string, timeoutSec int, env []string, ip, gw, ifa
 		cmd.Args = append(cmd.Args, "--time_limit", strconv.Itoa(timeoutSec))
 	}
 
-	if DebugMode {
+	if config.LogLevel == "debug" || config.LogLevel == "all" {
 		cmd.Args = append(cmd.Args, "-v")
 	} else {
 		cmd.Args = append(cmd.Args, "-Q") // , "--log_fd", "0"

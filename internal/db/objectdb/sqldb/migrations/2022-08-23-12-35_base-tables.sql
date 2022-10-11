@@ -1,9 +1,9 @@
 --     Put 3 empty lines breaks between each SQL request
 --     DO NOT MODIFY / DELETE THIS FILE ONCE COMITTED EXCEPT FOR SQL SYNTAX UPDATES
 
--- Description: Noop for DB testing purposes, if this one fails it does no damage to the db structure
+-- Description: Create base tables for subdomains, certificates, users, toasters and blocked emails
 
-CREATE TABLE `subdomains` ( 
+CREATE TABLE IF NOT EXISTS `subdomains` ( 
     `id` VARCHAR(32) NOT NULL ,
     `name` VARCHAR(255) NOT NULL UNIQUE ,
     `user_id` VARCHAR(32) NOT NULL ,
@@ -12,23 +12,25 @@ CREATE TABLE `subdomains` (
 
 
 
-CREATE TABLE `certificates` ( 
+CREATE TABLE IF NOT EXISTS `certificates` ( 
     `domain` VARCHAR(255) NOT NULL ,
-    `cert` BLOB(12000) NOT NULL
+    `cert` BLOB(12000) NOT NULL ,
     PRIMARY KEY (`domain`)) ENGINE = InnoDB;
 
 
 
-CREATE TABLE `users` (
+CREATE TABLE IF NOT EXISTS `users` (
+    `cursor` INT NOT NULL AUTO_INCREMENT ,
     `id` VARCHAR(32) NOT NULL ,
     `email` VARCHAR(320) NOT NULL UNIQUE ,
     `password` VARCHAR(128) NOT NULL ,
-    PRIMARY KEY (`id`)
-) ENGINE = InnoDB;
+    PRIMARY KEY (`id`) ,
+    KEY (`cursor`)) ENGINE = InnoDB;
 
 
 
-CREATE TABLE `toasters` (
+CREATE TABLE IF NOT EXISTS `toasters` (
+    `cursor` INT NOT NULL AUTO_INCREMENT ,
     `id` VARCHAR(128) NOT NULL ,
     `code_id` VARCHAR(128) NOT NULL ,
     `owner_id` VARCHAR(128) NOT NULL ,
@@ -49,15 +51,27 @@ CREATE TABLE `toasters` (
     `files` MEDIUMBLOB ,
     `readme` MEDIUMTEXT ,
     `keywords` TINYBLOB ,
-    PRIMARY KEY (`id`)
-) ENGINE = InnoDB;
+    PRIMARY KEY (`id`) ,
+    KEY (`cursor`)) ENGINE = InnoDB;
 
 
 
-CREATE TABLE `email_blocklist` ( 
+CREATE TABLE IF NOT EXISTS `email_blocklist` ( 
     `id` INT NOT NULL AUTO_INCREMENT ,
     `date` INT NOT NULL ,
     `email` VARCHAR(320) NOT NULL UNIQUE ,
     `data` VARCHAR(320) ,
-    PRIMARY KEY (`id`)
-) ENGINE = InnoDB;
+    PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+
+
+CREATE TABLE IF NOT EXISTS `user_statistics` ( 
+    `user_id` VARCHAR(32) NOT NULL ,
+    `month_year` VARCHAR(16) NOT NULL ,
+    `duration_ms` INT ,
+    `cpus` INT ,
+    `executions` INT ,
+    `ram_gbs` DOUBLE UNSIGNED ,
+    `net_ingress` DOUBLE UNSIGNED ,
+    `net_egress` DOUBLE UNSIGNED ,
+    PRIMARY KEY (`user_id`, `month_year`)) ENGINE = InnoDB;

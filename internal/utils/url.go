@@ -1,6 +1,9 @@
 package utils
 
-import "strings"
+import (
+	"net/url"
+	"strings"
+)
 
 func SplitSlash(url string) []string {
 	if url == "" || url == "/" {
@@ -20,14 +23,7 @@ func SplitSlash(url string) []string {
 	return splitedURL
 }
 
-func StripIPPort(ip string) string {
-	colon := strings.IndexByte(ip, ':')
-	if colon == -1 {
-		return ip
-	}
-	return ip[:colon]
-}
-
+// StripPort also removes IPV6 addresses square brackets
 func StripPort(hostport string) string {
 	colon := strings.IndexByte(hostport, ':')
 	if colon == -1 {
@@ -37,4 +33,31 @@ func StripPort(hostport string) string {
 		return strings.TrimPrefix(hostport[:i], "[")
 	}
 	return hostport[:colon]
+}
+
+func SplitHostPort(hostport string) (string, string) {
+	spl := strings.Split(hostport, ":")
+	if len(spl) == 1 {
+		return spl[0], ""
+	}
+
+	return spl[0], spl[1]
+}
+
+func BreakBaseURL(rawurl string) (scheme, ipaddr, port string, err error) {
+	var u *url.URL
+	u, err = url.ParseRequestURI(rawurl)
+	if err != nil || u.Host == "" {
+		u, repErr := url.ParseRequestURI("https://" + rawurl)
+		if repErr != nil {
+			return
+		}
+		ipaddr, port = SplitHostPort(u.Host)
+		err = nil
+		return
+	}
+
+	ipaddr, port = SplitHostPort(u.Host)
+	scheme = u.Scheme
+	return
 }

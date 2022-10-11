@@ -2,6 +2,8 @@ package model
 
 type Toaster struct {
 	ID     string `json:"id,omitempty" db:"id"`
+	Cursor int    `json:"cursor,omitempty" db:"cursor"`
+
 	CodeID string `json:"code_id,omitempty" db:"code_id"`
 
 	OwnerID string `json:"owner_id,omitempty" db:"owner_id"`
@@ -9,6 +11,7 @@ type Toaster struct {
 	BuildCmd ArrayString `json:"build_command,omitempty" db:"build_command"`
 	ExeCmd   ArrayString `json:"execution_command,omitempty" db:"execution_command"`
 	Env      ArrayString `json:"environment_variables,omitempty" db:"environment_variables"`
+	Image    string      `json:"image,omitempty" db:"image"`
 
 	JoinableForSec       int `json:"joinable_for_seconds,omitempty" db:"joinable_for_seconds"`
 	MaxConcurrentJoiners int `json:"max_concurrent_joiners,omitempty" db:"max_concurrent_joiners"`
