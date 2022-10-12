@@ -1,7 +1,6 @@
 package toaster
 
 import (
-	"context"
 	"encoding/base32"
 	"fmt"
 	"io"
@@ -17,11 +16,9 @@ import (
 	"github.com/go-git/go-git/v5/plumbing"
 	auther "github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/rs/xid"
-	"github.com/toastate/toastainer/internal/api/common"
 	"github.com/toastate/toastainer/internal/config"
 	"github.com/toastate/toastainer/internal/db/objectdb"
 	"github.com/toastate/toastainer/internal/db/objectstorage"
-	"github.com/toastate/toastainer/internal/db/redisdb"
 	"github.com/toastate/toastainer/internal/model"
 	"github.com/toastate/toastainer/internal/utils"
 )
@@ -280,14 +277,6 @@ func Create(w http.ResponseWriter, r *http.Request, userid string) {
 	err = objectstorage.Client.UploadFolder(tmpFolder, filepath.Join("clearcode", toaster.ID, toaster.CodeID))
 	if err != nil {
 		utils.SendInternalError(w, "CreateToaster:objectstorage.Client.UploadFolder", err)
-		return
-	}
-
-	// the exe information dump contains the toaster's codeID and not its ID
-	// this allows code updates which do not require runner cache invalidations
-	err = redisdb.GetClient().Set(context.Background(), "exeinfo_"+toaster.ID, common.DumpToaterExeInfo(toaster), 0).Err()
-	if err != nil {
-		utils.SendInternalError(w, "CreateToaster:redis.Set", err)
 		return
 	}
 
