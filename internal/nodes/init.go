@@ -9,11 +9,6 @@ func Init() error {
 		return nil
 	}
 
-	err := initAddrs()
-	if err != nil {
-		return err
-	}
-
 	startDNSNodeLookupRoutine()
 
 	return nil

@@ -32,6 +32,7 @@ var ToasterRootDomain string
 var ToasterDomainSplitted []string
 
 var LocalPrivateIP string
+var LocalPublicIP string
 
 var LogLevel string // debug, warn, error, all - default is info
 

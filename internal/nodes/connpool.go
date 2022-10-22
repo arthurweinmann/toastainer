@@ -41,7 +41,7 @@ func newPool() *pool {
 // GetConn add.pool must not be nil
 func GetConn(ip net.IP) (net.Conn, error) {
 	ipuint := utils.IPUint(ip)
-	if !IsIPPrivateRFC1918(ipuint) {
+	if !utils.IsIPPrivateRFC1918(ipuint) {
 		return nil, fmt.Errorf("IP is not a private one")
 	}
 

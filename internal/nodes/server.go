@@ -36,8 +36,8 @@ func StartNodeServer(listenToIP net.IP, handler func(net.Conn)) (*NodeServer, er
 			}
 
 			remoteipuint := utils.IPUint(net.ParseIP(strings.Split(conn.RemoteAddr().String(), ":")[0]))
-			if !IsIPPrivateRFC1918(remoteipuint) ||
-				!IsIPPrivateRFC1918(utils.IPUint(net.ParseIP(strings.Split(conn.LocalAddr().String(), ":")[0]))) ||
+			if !utils.IsIPPrivateRFC1918(remoteipuint) ||
+				!utils.IsIPPrivateRFC1918(utils.IPUint(net.ParseIP(strings.Split(conn.LocalAddr().String(), ":")[0]))) ||
 				(remoteipuint >= toasterIPSpace[0] && remoteipuint <= toasterIPSpace[1]) {
 				fmt.Println("Node server: received connection request from non private remote or to non private local address:", conn.RemoteAddr().String(), conn.LocalAddr().String())
 				conn.Close()
