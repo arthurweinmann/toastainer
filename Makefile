@@ -43,6 +43,16 @@ build-toastainer: $(BUILDDIR)
 build-test: $(BUILDDIR) build-toastainer
 	@cd $(CURDIR)/cmd/toastest && go build && mv -f toastest $(BUILDDIR)
 
+# A static build may be necessary if you compile with a GLIB_C version higher than the one on the target system
+.PHONY: build-toastainer-static
+build-toastainer-static: $(BUILDDIR)
+	@cd $(CURDIR)/cmd/toastainer && go build -ldflags '-extldflags "-fno-PIC -static"' -buildmode pie -tags 'osusergo netgo static_build' && mv -f toastainer $(BUILDDIR)
+
+# A static build may be necessary if you compile with a GLIB_C version higher than the one on the target system
+.PHONY: build-test-static
+build-test-static: $(BUILDDIR) build-toastainer-static
+	@cd $(CURDIR)/cmd/toastest && go build -ldflags '-extldflags "-fno-PIC -static"' -buildmode pie -tags 'osusergo netgo static_build' && mv -f toastest $(BUILDDIR)
+
 .PHONY: build-nsjail
 build-nsjail: $(BUILDDIR)
 	@$(CURDIR)/makescripts/nsjail.sh $(BUILDDIR) $(CURDIR)
