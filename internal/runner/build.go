@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -63,6 +62,7 @@ func buildCommand(connR *bufio.Reader, connW *bufio.Writer) (err error) {
 func buildCommandInternal(cmd *BuildCommand, connR *bufio.Reader) (logs []byte, err error) {
 	var pimg string
 	pimg, err = pullImg(cmd.Image)
+
 	if err != nil {
 		return nil, fmt.Errorf("pullImg %s: %v", cmd.Image, err)
 	}
@@ -128,12 +128,20 @@ func buildCommandInternal(cmd *BuildCommand, connR *bufio.Reader) (logs []byte, 
 		"10.166.0.1",
 		"tveth1",
 		"255.255.0.0",
+		"hard",
 		cmd.BuildCmd...,
 	)
 
 	bb := utils.NewLimitedBuffer(512 * 1024)
-	nscmd.Stdout = bb
-	nscmd.Stderr = bb
+
+	if config.LogLevel == "debug" || config.LogLevel == "all" {
+		t := utils.NewTeeWriter(bb, nsjaillogs)
+		nscmd.Stdout = t
+		nscmd.Stderr = t
+	} else {
+		nscmd.Stdout = bb
+		nscmd.Stderr = bb
+	}
 
 	err = nscmd.Start()
 	if err != nil {
@@ -143,6 +151,7 @@ func buildCommandInternal(cmd *BuildCommand, connR *bufio.Reader) (logs []byte, 
 	}
 
 	err = nscmd.Wait()
+
 	smartdhcp.Put(ip)
 	ovlr.Umount()
 	if err != nil {
@@ -181,11 +190,12 @@ func buildCommandInternal(cmd *BuildCommand, connR *bufio.Reader) (logs []byte, 
 			return nil, err
 		}
 	}
-	err = ioutil.WriteFile(filepath.Join(codeidpath, "metadata.json"), meta, 0700)
+	err = os.WriteFile(filepath.Join(codeidpath, "metadata.json"), meta, 0700)
 	if err != nil {
 		return nil, err
 	}
 
+	// we have to use the command line tar command instead of using golang tar and gzip packages because of os images special files like symlinks or devices
 	err = objectstorage.Client.PushFolderTar(codeidpath, filepath.Join("codes", cmd.CodeID))
 	if err != nil {
 		return nil, fmt.Errorf("objectstorage.PushFolderTar: %v", err)

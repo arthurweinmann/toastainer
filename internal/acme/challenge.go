@@ -2,17 +2,17 @@ package acme
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/toastate/toastainer/internal/db/redisdb"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 type HTTPChallenger struct {
 }
 
 func (c *HTTPChallenger) Present(domain, token, keyAuth string) error {
-	fmt.Println("HTTP Challenger present", domain, token, keyAuth)
+	utils.Debug("msg", "HTTP Challenger present", "domain", domain, "token", token, "keyauth", keyAuth)
 
 	return redisdb.GetClient().Set(context.Background(), "certChal_"+domain+"_"+token, keyAuth, 30*time.Minute).Err()
 }

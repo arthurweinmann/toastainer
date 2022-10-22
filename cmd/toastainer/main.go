@@ -106,7 +106,7 @@ func main() {
 	if args.Quiet {
 		config.LogLevel = "quiet"
 	}
-	utils.InitLogging()
+	utils.InitLogging(config.LogLevel)
 
 	switch {
 	case args.Start != nil:

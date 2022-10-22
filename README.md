@@ -25,9 +25,23 @@ With APT package manager: autoconf bison flex gcc g++ git libprotobuf-dev libnl-
 
 To maintain security, IP addresses of nodes must be in a private CIDR (10.0.0.0/8 or 172.16.0.0/12 or 192.168.0.0/16). This means they must be in the same private network or VPN. Toatscloud will throw an error if it is not the case.
 
-## Runner network setup
+## Installation from source
+
+### Runner network setup
 
 ```bash
+
+# if you do not have a non root user
+groupadd -g 1000 toastainer --system
+adduser --system --uid 1000 --gid 1000 --disabled-password --disabled-login toastainer
+sudo -su toastainer
+cd ~
+mkdir toastainer
+
+sudo -s
+
+apt update && apt install git libprotobuf-dev libnl-route-3-dev libtool btrfs-progs protobuf-compiler uidmap
+
 # The name tveth1 that will be used by the runner can be set in the configuration file
 # It will be cloned and put inside Toaster's net linux namespace
 ip link add dev tveth0 type veth peer name tveth1
@@ -60,10 +74,9 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 
 # we need an explicit name server ip address in resolv.conf for toasters to have access to internet
 echo "nameserver 8.8.8.8" >> /etc/resolv.conf
-
-mkdir /run/user/0
-chown 1000:1000 /run/user/0
 ```
+
+Also the home folder and all its ancestors should be owned by toastainer user, for example ubuntu or uid/gid 1000
 
 # Usage
 

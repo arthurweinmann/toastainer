@@ -184,25 +184,35 @@ func (h *s3Handler) PushReader(f io.Reader, destPath string) error {
 }
 
 func (h *s3Handler) PushFolderTar(folder, destPath string) error {
+	pr, pw := io.Pipe()
+
 	cmd := exec.Command("tar", "cz", "./")
 	cmd.Dir = folder
-	dest := filepath.Join(S3KeyPrefix, destPath)
-	buf := bytes.NewBuffer(nil)
 	bufferr := bytes.NewBuffer(nil)
-	cmd.Stdout = buf
+	cmd.Stdout = pw
 	cmd.Stderr = bufferr
-	err := cmd.Run()
-	if err != nil {
-		return fmt.Errorf("%v: %v", err, bufferr.String())
-	}
-	_, err = h.s3up.Upload(&s3manager.UploadInput{
+
+	cherr := make(chan error, 1)
+	go func() {
+		defer pw.Close()
+		cherr <- cmd.Run()
+	}()
+
+	dest := filepath.Join(S3KeyPrefix, destPath)
+	_, err := h.s3up.Upload(&s3manager.UploadInput{
 		Bucket: &config.ObjectStorage.AWSS3.Bucket,
 		Key:    &dest,
-		Body:   buf,
+		Body:   pr,
 	})
 	if err != nil {
 		return fmt.Errorf("%v: %v", err, bufferr.String())
 	}
+
+	err = <-cherr
+	if err != nil {
+		return fmt.Errorf("%v: %v", err, bufferr.String())
+	}
+
 	return nil
 }
 

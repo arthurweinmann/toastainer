@@ -7,10 +7,12 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync/atomic"
 	"time"
 
+	"github.com/shirou/gopsutil/v3/mem"
 	"github.com/toastate/toastainer/internal/config"
 	"github.com/toastate/toastainer/internal/db/objectstorage"
 	"github.com/toastate/toastainer/internal/nodes"
@@ -21,6 +23,7 @@ var nsjailPath string
 var nsjaillogs *os.File
 var runnerIsShuttingDown uint32
 var nodeserver *nodes.NodeServer
+var maxMemoryPerToasterMega string
 
 func Stop() {
 	if atomic.CompareAndSwapUint32(&runnerIsShuttingDown, 0, 1) {
@@ -102,6 +105,13 @@ func Init() error {
 		}
 	}
 
+	vm, err := mem.VirtualMemory()
+	if err != nil {
+		return fmt.Errorf("could not evalutate available virtual memory")
+	}
+
+	maxMemoryPerToasterMega = strconv.Itoa(int(utils.Min((vm.Available / 25 * 1024 * 1024), 256)))
+
 	nsjaillogs, err = os.OpenFile(filepath.Join(config.Home, "nsjail.log"), os.O_CREATE|os.O_RDWR, 0644)
 	if err != nil {
 		return err
@@ -120,9 +130,6 @@ func Init() error {
 	btrfsPoolFillRoutine()
 
 	if config.NodeDiscovery {
-		// Use Connect2Any and Connect2 functions to connect to a runner because they will handle wether the runner is local and in
-		// the same process or on a remote server
-
 		nodeserver, err = nodes.StartNodeServer(net.ParseIP(config.LocalPrivateIP).To4(), handler)
 		if err != nil {
 			utils.Error("origin", "nodes.StartNodeServer", "error", err)

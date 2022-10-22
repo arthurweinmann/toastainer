@@ -20,13 +20,15 @@ type tcpConn struct {
 	closed   uint32
 }
 
+// Use Connect2Any and Connect2 functions to connect to a runner because they will handle wether the runner is local and in
+// the same process or on a remote server
 func Connect2Any() (net.Conn, error) {
 	if config.NodeDiscovery {
 		var err error
 		var conn net.Conn
 		for i := 0; i < 3; i++ {
 			runnerip := nodes.PickTVS()
-			if nodes.IsLocalIP(runnerip) {
+			if config.IsLocalIP(runnerip) {
 				return &internalPipe{sameProcessHandler()}, nil
 			} else {
 				conn, err = nodes.GetConn(runnerip)
@@ -47,9 +49,11 @@ func Connect2Any() (net.Conn, error) {
 	return &internalPipe{sameProcessHandler()}, nil
 }
 
+// Use Connect2Any and Connect2 functions to connect to a runner because they will handle wether the runner is local and in
+// the same process or on a remote server
 func Connect2(runnerip net.IP) (net.Conn, error) {
 	if config.NodeDiscovery {
-		if nodes.IsLocalIP(runnerip) {
+		if config.IsLocalIP(runnerip) {
 			return &internalPipe{sameProcessHandler()}, nil
 		} else {
 			conn, err := nodes.GetConn(runnerip)
@@ -72,7 +76,7 @@ func PutConnection(c net.Conn) {
 	case *internalPipe:
 		t.Conn.Close()
 	case *tcpConn:
-		if atomic.LoadUint32(&t.closed) == 0 {
+		if atomic.CompareAndSwapUint32(&t.closed, 0, 1) {
 			nodes.PutConn(t.runnerip, t.Conn)
 		}
 	default:
@@ -81,8 +85,11 @@ func PutConnection(c net.Conn) {
 }
 
 func (conn *tcpConn) Close() error {
-	atomic.StoreUint32(&conn.closed, 1)
-	return conn.Conn.Close()
+	if atomic.CompareAndSwapUint32(&conn.closed, 0, 1) {
+		return conn.Conn.Close()
+	}
+
+	return nil
 }
 
 func (conn *tcpConn) Read(b []byte) (n int, err error) {

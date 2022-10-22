@@ -67,7 +67,7 @@ func main() {
 	}
 
 	config.LogLevel = "all"
-	utils.InitLogging()
+	utils.InitLogging(config.LogLevel)
 
 	switch {
 	case args.Run != nil:
@@ -86,7 +86,6 @@ func main() {
 		log.Println("All tests passed successfully")
 
 	default:
+		log.Fatal("no valid command provided")
 	}
-
-	log.Fatal("no valid command provided")
 }

@@ -96,16 +96,13 @@ func IsBTRFSMounted(folder string) bool {
 	if err != nil {
 		return false
 	}
-	if strings.Index(string(ret), "done") < 0 {
+	if !strings.Contains(string(ret), "done") {
 		return false
 	}
 
 	_, err = exec.Command("/bin/bash", "-c", `btrfs filesystem show `+folder).CombinedOutput()
-	if err != nil {
-		return false
-	}
 
-	return true
+	return err == nil
 }
 
 // NewSubvolume creates new btrfs subvolume with given quota

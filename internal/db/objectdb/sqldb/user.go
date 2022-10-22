@@ -3,6 +3,7 @@ package sqldb
 import (
 	"database/sql"
 	"fmt"
+	"sort"
 	"strconv"
 
 	"github.com/toastate/toastainer/internal/db/objectdb/objectdberror"
@@ -84,13 +85,19 @@ func (c *Client) RangeUsers(limit int, cursor string) (string, bool, []model.Use
 		}
 	}
 
-	err = c.db.Select(&usrs, "SELECT * FROM (SELECT * FROM users WHERE cursor > ? LIMIT ?) subq ORDER BY cursor", nc, limit+1)
+	// The %d makes sure there can be no SQL injection, be careful when modifying this line
+	req := fmt.Sprintf("SELECT * FROM (SELECT * FROM users WHERE cursor>%d) subq ORDER BY cursor ASC LIMIT %d", nc, limit+1)
+	err = c.db.Select(&usrs, req)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return "", false, usrs, nil
 		}
 		return "", false, nil, err
 	}
+
+	sort.Slice(usrs, func(i, j int) bool {
+		return usrs[i].Cursor < usrs[j].Cursor
+	})
 
 	cursor = strconv.Itoa(usrs[len(usrs)-1].Cursor)
 

@@ -37,6 +37,9 @@ func Init() error {
 		Client, err = s3.NewHandler()
 
 	case "localfs":
+		if config.NodeDiscovery {
+			return fmt.Errorf("you cannot use local filesystem for objectstorage when in a multi-node architecture")
+		}
 		Client, err = localfs.NewHandler()
 
 	default:

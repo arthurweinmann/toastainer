@@ -106,6 +106,8 @@ func DeleteToasterHelper(w http.ResponseWriter, userid string, toaster *model.To
 		return false
 	}
 
+	// toasterstats and userstats in redis will eventually be deleted by the statistics background routine and saved into the disk database where they will remain
+
 	return true
 }
 

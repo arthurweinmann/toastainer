@@ -32,11 +32,11 @@ func buildToasterCode(toaster *model.Toaster, tarpath string) (string, []byte, e
 	if err != nil {
 		return "", nil, err
 	}
-	defer f.Close()
 
 	var conn net.Conn
 	conn, err = runner.Connect2Any()
 	if err != nil {
+		f.Close()
 		return "", nil, err
 	}
 
@@ -44,6 +44,7 @@ func buildToasterCode(toaster *model.Toaster, tarpath string) (string, []byte, e
 	connR := bufio.NewReader(conn)
 	_, err = conn.Write([]byte{byte(runner.BuildKind)})
 	if err != nil {
+		f.Close()
 		return "", nil, err
 	}
 
@@ -57,6 +58,7 @@ func buildToasterCode(toaster *model.Toaster, tarpath string) (string, []byte, e
 	var b []byte
 	b, err = json.Marshal(cmd)
 	if err != nil {
+		f.Close()
 		conn.Close()
 		return "", nil, err
 	}
@@ -76,9 +78,8 @@ func buildToasterCode(toaster *model.Toaster, tarpath string) (string, []byte, e
 			buildid := <-buildidChan
 			if buildid != "" {
 				b := make([]byte, 8, 8+len(payloadR))
-				binary.BigEndian.PutUint64(b, uint64(len(payloadR)))
+				binary.BigEndian.PutUint64(b[0:8], uint64(len(payloadR)))
 				b = append(b, payloadR...)
-				b = append(b, 0, 0, 0, 0, 0, 0, 0, 0)
 				if errR != nil {
 					b = append(b, 1)
 					b = append(b, errR.Error()...)
@@ -95,12 +96,14 @@ func buildToasterCode(toaster *model.Toaster, tarpath string) (string, []byte, e
 				if err2 != nil {
 					utils.Error("msg", "buildToasterCode:goroutibe:redis.Set", "Error", err2)
 				}
-				runner.PutConnection(conn)
 			}
+
+			runner.PutConnection(conn)
 		}()
 
 		var success bool
 		success, payloadR, errR = runner.ReadResponse(connR)
+
 		if errR != nil {
 			conn.Close()
 			errR = fmt.Errorf("could not read build server response: %v", errR)
@@ -122,9 +125,12 @@ func buildToasterCode(toaster *model.Toaster, tarpath string) (string, []byte, e
 	}()
 
 	go func() {
+		defer f.Close()
+
 		errW := runner.WriteCommand(connW, b)
 		if errW == nil {
 			errW = runner.StreamReader(connW, f)
+
 			if errW != nil {
 				conn.Close()
 			}
@@ -136,7 +142,6 @@ func buildToasterCode(toaster *model.Toaster, tarpath string) (string, []byte, e
 	select {
 	case <-wgR:
 		close(buildidChan)
-		runner.PutConnection(conn)
 		return "", payloadR, errR
 
 	case <-time.After(15 * time.Second):

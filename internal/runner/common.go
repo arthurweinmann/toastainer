@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"fmt"
 	"path/filepath"
 
 	"github.com/toastate/toastainer/internal/config"
@@ -42,7 +43,7 @@ func pullCode(codeid string) (string, error) {
 		err = objectstorage.Client.PullFolderTar(filepath.Join("codes", codeid), pcode)
 		if err != nil {
 			DelSubvolumeAbsolute(pcode)
-			return "", err
+			return "", fmt.Errorf("%v -> %v: %v", filepath.Join("codes", codeid), pcode, err)
 		}
 	}
 

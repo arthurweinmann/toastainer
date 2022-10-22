@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"os"
 	"runtime/debug"
-
-	"github.com/toastate/toastainer/internal/config"
 )
 
 var loglevel int
 
-func InitLogging() {
-	switch config.LogLevel {
+func InitLogging(level string) {
+	switch level {
 	case "all":
 		loglevel = -1
 	case "debug":

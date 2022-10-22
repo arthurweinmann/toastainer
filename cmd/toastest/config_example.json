@@ -17,6 +17,7 @@
     },
     "is_api": true,
     "is_runner": true,
+    "log_level": "info",
     "local_filestorage": {
         "path": ""
     },

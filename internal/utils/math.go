@@ -1,19 +1,19 @@
 package utils
 
-func Max(a, b int) int {
-	if a < b {
-		return b
-	}
+import "golang.org/x/exp/constraints"
 
-	return a
+func Min[T constraints.Ordered](x, y T) T {
+	if x < y {
+		return x
+	}
+	return y
 }
 
-func Min(a, b int) int {
-	if a < b {
-		return a
+func Max[T constraints.Ordered](x, y T) T {
+	if x > y {
+		return x
 	}
-
-	return b
+	return y
 }
 
 func IsPowerOf2(x int) bool {

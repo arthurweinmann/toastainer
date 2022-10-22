@@ -8,7 +8,7 @@ import (
 )
 
 // env items must be of the form key=value
-func nsjailCommand(chroot, cwd string, timeoutSec int, env []string, ip, gw, iface, nm string, usercmd ...string) *exec.Cmd {
+func nsjailCommand(chroot, cwd string, timeoutSec int, env []string, ip, gw, iface, nm, rlimitas string, usercmd ...string) *exec.Cmd {
 	// TODO: fok nsjail to control logs and only log execve errors in a way that doesn t transpire that we use nsjail
 
 	cmd := exec.Command(nsjailPath,
@@ -19,7 +19,7 @@ func nsjailCommand(chroot, cwd string, timeoutSec int, env []string, ip, gw, ifa
 		"--group", "0:"+config.Runner.NonRootGIDStr+":1",
 		"--hostname", "toastainer",
 		"--cwd", cwd,
-		"--rlimit_as", "hard",
+		"--rlimit_as", rlimitas,
 		"--rlimit_nofile", "hard",
 		"--rlimit_nproc", "hard",
 		"--rlimit_fsize", "hard",

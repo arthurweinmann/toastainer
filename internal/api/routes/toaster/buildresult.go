@@ -3,7 +3,6 @@ package toaster
 import (
 	"context"
 	"encoding/binary"
-	"fmt"
 	"net/http"
 	"path/filepath"
 
@@ -50,18 +49,9 @@ func GetBuildResult(w http.ResponseWriter, r *http.Request, userid, buildid stri
 		return
 	}
 
-	fmt.Println("got build result---", string(b))
-
 	l := binary.BigEndian.Uint64(b)
 	payload := b[8 : 8+l]
-	var errbuild string
 	if b[8+l] > 0 {
-		errbuild = string(b[9+l:])
-	}
-
-	fmt.Println("errbuild", errbuild)
-
-	if errbuild != "" {
 		utils.SendSuccess(w, &GetBuildResultResponse{
 			Success:    true,
 			BuildError: payload,

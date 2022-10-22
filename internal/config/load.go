@@ -25,7 +25,8 @@ type loadedConfig struct {
 	LogLevel string `json:"log_level" yaml:"log_level"`
 
 	NodeDiscovery  bool   `json:"node_discovery" yaml:"node_discovery"`
-	LocalPrivateIP string `json:"node_local_private_network_ip" yaml:"node_local_private_network_ip"`
+	LocalPrivateIP string `json:"local_private_ip" yaml:"local_private_ip"`
+	LocalPublicIP  string `json:"local_public_ip" yaml:"local_public_ip"`
 	Region         string `json:"region" yaml:"region"`
 
 	AWSS3   loadedConfigAWSS3   `json:"aws_s3" yaml:"aws_s3"`
@@ -137,6 +138,8 @@ func LoadConfigBytes(b []byte, extension string) error {
 	ToasterDomainSplitted = strings.Split(ToasterDomain, ".")
 
 	LocalPrivateIP = lc.LocalPrivateIP
+	LocalPublicIP = lc.LocalPublicIP
+
 	NodeDiscovery = lc.NodeDiscovery
 	Region = lc.Region
 
@@ -212,7 +215,17 @@ func LoadConfigBytes(b []byte, extension string) error {
 	Runner.NonRootUIDStr = strconv.Itoa(lc.Runner.NonRootUID)
 	Runner.NonRootGIDStr = strconv.Itoa(lc.Runner.NonRootGID)
 
-	return checkConfig()
+	err = checkConfig()
+	if err != nil {
+		return err
+	}
+
+	err = initIPconf()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func checkConfig() error {
