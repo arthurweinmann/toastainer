@@ -66,7 +66,7 @@ func fullAPILocalNoSSL() error {
 	}
 
 	config.LogLevel = "all"
-	utils.InitLogging()
+	utils.InitLogging(config.LogLevel)
 
 	if utils.FileExists(filepath.Join(config.Home, "nsjail.log")) {
 		err := os.Remove(filepath.Join(config.Home, "nsjail.log"))

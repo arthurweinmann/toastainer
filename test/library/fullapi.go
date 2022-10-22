@@ -41,6 +41,8 @@ type FullAPITest struct {
 	toasterdomain string
 	apidomain     string
 
+	callclient1 *http.Client
+
 	opts *FullAPITestOpts
 }
 
@@ -49,6 +51,8 @@ type FullAPITestOpts struct {
 }
 
 func NewFullAPITest(httpclientGenerator func() *http.Client, baseAPIURLWithoutLeadingSlash, apidomain, toasterdomain string, opts ...*FullAPITestOpts) (*FullAPITest, error) {
+	rand.Seed(time.Now().UnixNano())
+
 	fat := &FullAPITest{
 		httpclientGenerator:           httpclientGenerator,
 		baseAPIURLWithoutLeadingSlash: baseAPIURLWithoutLeadingSlash,
@@ -69,6 +73,38 @@ func NewFullAPITest(httpclientGenerator func() *http.Client, baseAPIURLWithoutLe
 		fat.hostscheme = "http"
 	}
 
+	jar1, err := cookiejar.New(&cookiejar.Options{PublicSuffixList: publicsuffix.List})
+	if err != nil {
+		return nil, err
+	}
+
+	dialer := &net.Dialer{
+		Timeout:   60 * time.Second,
+		KeepAlive: 60 * time.Second,
+	}
+
+	fat.callclient1 = fat.httpclientGenerator()
+	fat.callclient1.Jar = jar1
+	fat.callclient1.Timeout = 60 * time.Second
+	if fat.hostport != "" {
+		if fat.callclient1.Transport == nil {
+			fat.callclient1.Transport = &http.Transport{
+				DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
+					return dialer.DialContext(ctx, network, fat.host())
+				},
+			}
+		} else {
+			switch t := fat.callclient1.Transport.(type) {
+			case *http.Transport:
+				t.DialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
+					return dialer.DialContext(ctx, network, fat.host())
+				}
+			default:
+				return nil, fmt.Errorf("invalid preexisting http client transport type %T, we currently support: *http.Transport", t)
+			}
+		}
+	}
+
 	return fat, nil
 }
 
@@ -81,44 +117,51 @@ func (fat *FullAPITest) host() string {
 }
 
 func (fat *FullAPITest) Run() error {
-	jar, err := cookiejar.New(&cookiejar.Options{PublicSuffixList: publicsuffix.List})
+	err := fat.signupSigninClient1()
 	if err != nil {
 		return err
 	}
 
-	dialer := &net.Dialer{
-		Timeout:   60 * time.Second,
-		KeepAlive: 60 * time.Second,
-	}
-
-	callclient1 := fat.httpclientGenerator()
-	callclient1.Jar = jar
-	callclient1.Timeout = 60 * time.Second
-	if callclient1.Transport == nil {
-		callclient1.Transport = &http.Transport{
-			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-				return dialer.DialContext(ctx, network, fat.host())
-			},
-		}
-	} else {
-		switch t := callclient1.Transport.(type) {
-		case *http.Transport:
-			t.DialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
-				return dialer.DialContext(ctx, network, fat.host())
+	defer func() {
+		err2 := fat.makeRequestWithBody(fat.callclient1, "POST", fat.makeAPIURL("/user/deleteaccount"), &user.DeleteAccountRequest{Password: "**DONOTUSE**_Toastainer1234@?"}, &user.DeleteAccountResponse{})
+		if err2 != nil {
+			if err == nil {
+				err = err2
+			} else {
+				fmt.Println("could not delete account", err2)
 			}
-		default:
-			return fmt.Errorf("invalid preexisting http client transport type %T, we currently support: *http.Transport", t)
 		}
+	}()
+
+	toaster1ID, err := fat.toaster1Create()
+	if err != nil {
+		return err
 	}
 
+	err = fat.simpleSerieEchoHTTPWebsocket(toaster1ID)
+	if err != nil {
+		return err
+	}
+
+	time.Sleep(16 * time.Second)
+
+	err = fat.simpleConcurrentHTTPWebsocket(toaster1ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (fat *FullAPITest) signupSigninClient1() error {
 	signinReq := &user.SigninRequest{
 		Email:    "arthur.weinmann@toastate.com",
 		Password: "**DONOTUSE**_Toastainer1234@?",
 	}
 	signinResp := &user.SigninResponse{}
-	err = fat.makeRequestWithBody(callclient1, "POST", fat.makeAPIURL("/cookiesignin"), signinReq, signinResp)
+	err := fat.makeRequestWithBody(fat.callclient1, "POST", fat.makeAPIURL("/cookiesignin"), signinReq, signinResp)
 	if err == nil {
-		err = fat.makeRequestWithBody(callclient1, "POST", fat.makeAPIURL("/user/deleteaccount"), &user.DeleteAccountRequest{Password: "**DONOTUSE**_Toastainer1234@?"}, &user.DeleteAccountResponse{})
+		err = fat.makeRequestWithBody(fat.callclient1, "POST", fat.makeAPIURL("/user/deleteaccount"), &user.DeleteAccountRequest{Password: "**DONOTUSE**_Toastainer1234@?"}, &user.DeleteAccountResponse{})
 		if err != nil {
 			return fmt.Errorf("/user/deleteaccount: %v", err)
 		}
@@ -131,7 +174,7 @@ func (fat *FullAPITest) Run() error {
 		Password: "**DONOTUSE**_Toastainer1234@?",
 	}
 	signupResp := &user.SignupResponse{}
-	err = fat.makeRequestWithBody(callclient1, "POST", fat.makeAPIURL("/signup"), signupReq, signupResp)
+	err = fat.makeRequestWithBody(fat.callclient1, "POST", fat.makeAPIURL("/signup"), signupReq, signupResp)
 	if err != nil {
 		return fmt.Errorf("/signup: %v", err)
 	}
@@ -141,18 +184,15 @@ func (fat *FullAPITest) Run() error {
 		Password: "**DONOTUSE**_Toastainer1234@?",
 	}
 	signinResp = &user.SigninResponse{}
-	err = fat.makeRequestWithBody(callclient1, "POST", fat.makeAPIURL("/cookiesignin"), signinReq, signinResp)
+	err = fat.makeRequestWithBody(fat.callclient1, "POST", fat.makeAPIURL("/cookiesignin"), signinReq, signinResp)
 	if err != nil {
 		return fmt.Errorf("/cookiesignin: %v", err)
 	}
 
-	defer func() {
-		err2 := fat.makeRequestWithBody(callclient1, "POST", fat.makeAPIURL("/user/deleteaccount"), &user.DeleteAccountRequest{Password: "**DONOTUSE**_Toastainer1234@?"}, &user.DeleteAccountResponse{})
-		if err2 != nil {
-			fmt.Println("could not delete account", err2)
-		}
-	}()
+	return nil
+}
 
+func (fat *FullAPITest) toaster1Create() (string, error) {
 	toasterCreateReq := &toaster.CreateRequest{
 		Name:                 "example1",
 		Image:                "ubuntu-20.04-nodejs-golang",
@@ -167,7 +207,7 @@ func (fat *FullAPITest) Run() error {
 
 	b, err := json.Marshal(toasterCreateReq)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	direntries, _ := exampletoaster.ReadDir("exampletoaster")
@@ -178,32 +218,31 @@ func (fat *FullAPITest) Run() error {
 	for i := 0; i < len(direntries); i++ {
 		f, err := exampletoaster.Open(filepath.Join("exampletoaster", direntries[i].Name()))
 		if err != nil {
-			return err
+			return "", err
 		}
 		files = append(files, f)
 		filepaths = append(filepaths, direntries[i].Name())
 	}
 
-	resp, err := utils.UploadEmbedFolderMultipart(callclient1, fat.makeAPIURL("/toaster"), "POST", filepaths, files, "request", string(b))
+	resp, err := utils.UploadEmbedFolderMultipart(fat.callclient1, fat.makeAPIURL("/toaster"), "POST", filepaths, files, "request", string(b))
 	if err != nil {
-		return err
+		return "", err
 	}
 	err = fat.parseAPIResp(resp, toasterCreateResp)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	if toasterCreateResp.BuildID != "" {
 		for i := 0; i < 10; i++ {
 			r := &toaster.GetBuildResultResponse{}
-			err = fat.makeRequestWithoutBody(callclient1, "GET", fat.makeAPIURL("/toaster/build/"+toasterCreateResp.BuildID), r)
+			err = fat.makeRequestWithoutBody(fat.callclient1, "GET", fat.makeAPIURL("/toaster/build/"+toasterCreateResp.BuildID), r)
 			if err != nil {
-				return err
+				return "", err
 			}
-			fmt.Println("################# build id check", r.InProgress, len(r.BuildLogs), len(r.BuildError), err)
 			if !r.InProgress {
 				if len(r.BuildError) > 0 {
-					return fmt.Errorf("compilation error: %v", string(r.BuildError))
+					return "", fmt.Errorf("compilation error: %v", string(r.BuildError))
 				}
 
 				toasterCreateResp.BuildLogs = r.BuildLogs
@@ -212,7 +251,7 @@ func (fat *FullAPITest) Run() error {
 			if i < 9 {
 				time.Sleep(time.Duration(i+1) * 30 * time.Second)
 			} else {
-				return fmt.Errorf("example toaster compilation result retrieval timed out")
+				return "", fmt.Errorf("example toaster compilation result retrieval timed out")
 			}
 		}
 	}
@@ -220,16 +259,20 @@ func (fat *FullAPITest) Run() error {
 	if fat.opts != nil && fat.opts.SetHostRedirection != nil {
 		err = fat.opts.SetHostRedirection("127.0.0.1", toasterCreateResp.Toaster.ID+"."+fat.toasterdomain)
 		if err != nil {
-			return err
+			return "", err
 		}
 	}
 
-	toaster1_EXEID1, err := fat.echotoaster(callclient1, toasterCreateResp.Toaster.ID)
+	return toasterCreateResp.Toaster.ID, nil
+}
+
+func (fat *FullAPITest) simpleSerieEchoHTTPWebsocket(toasterid string) error {
+	toaster1_EXEID1, err := fat.echotoaster(fat.callclient1, toasterid)
 	if err != nil {
 		return err
 	}
 
-	toaster1_EXEID2, err := fat.echotoaster(callclient1, toasterCreateResp.Toaster.ID)
+	toaster1_EXEID2, err := fat.echotoaster(fat.callclient1, toasterid)
 	if err != nil {
 		return err
 	}
@@ -238,7 +281,7 @@ func (fat *FullAPITest) Run() error {
 		return fmt.Errorf("second http request joined another toaster: %v != %v", toaster1_EXEID1, toaster1_EXEID2)
 	}
 
-	sock1, err := fat.dialWebsocket(callclient1, toasterCreateResp.Toaster.ID, "/echo")
+	sock1, err := fat.dialWebsocket(fat.callclient1, toasterid, "/echo")
 	if err != nil {
 		return fmt.Errorf("could not dial test toaster through a websocket: %v", err)
 	}
@@ -273,7 +316,7 @@ func (fat *FullAPITest) Run() error {
 	// serial join test
 	var firstexeid string
 	for i := 0; i < 10; i++ {
-		exeid, err := fat.echotoaster(callclient1, toasterCreateResp.Toaster.ID)
+		exeid, err := fat.echotoaster(fat.callclient1, toasterid)
 		if err != nil {
 			return err
 		}
@@ -287,7 +330,7 @@ func (fat *FullAPITest) Run() error {
 		}
 	}
 
-	exeid, err := fat.echotoaster(callclient1, toasterCreateResp.Toaster.ID)
+	exeid, err := fat.echotoaster(fat.callclient1, toasterid)
 	if err != nil {
 		return err
 	}
@@ -297,52 +340,39 @@ func (fat *FullAPITest) Run() error {
 
 	firstexeid = exeid
 	for i := 0; i < 9; i++ {
-		sock2, err := fat.dialWebsocket(callclient1, toasterCreateResp.Toaster.ID, "/exeid")
+		exid, err := fat.toasterGetExeidSingleConnectThenCloseWebsocket(fat.callclient1, toasterid)
 		if err != nil {
-			return fmt.Errorf("could not dial test toaster through a websocket: %v", err)
+			return err
 		}
-
-		err = sock2.WriteMessage(websocket.TextMessage, []byte("give me your exeid"))
-		if err != nil {
-			sock2.Close()
-			return fmt.Errorf("could not write websocket message to toaster: %v", err)
-		}
-
-		_, mess, err := sock2.ReadMessage()
-		if err != nil {
-			sock2.Close()
-			return fmt.Errorf("could not read websocket message from toaster: %v", err)
-		}
-
-		if string(mess) != firstexeid {
-			sock2.Close()
-			return fmt.Errorf("invalid toaster join: %v != %v", string(mess), firstexeid)
-		}
-
-		err = sock2.WriteControl(websocket.CloseMessage, []byte{}, time.Now().Add(10*time.Second))
-		if err != nil {
-			return fmt.Errorf("could not write close to websocket connection to toaster: %v", err)
-		}
-
-		err = sock2.Close()
-		if err != nil {
-			return fmt.Errorf("could not close websocket connection to toaster: %v", err)
+		if exid != firstexeid {
+			return fmt.Errorf("invalid toaster join: %v != %v", exid, firstexeid)
 		}
 	}
 
-	time.Sleep(16 * time.Second)
+	return nil
+}
+
+func (fat *FullAPITest) simpleConcurrentHTTPWebsocket(toasterid string) error {
+	var err error
 
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 	errs := make(chan error, 10)
-	firstexeid = ""
+	firstexeid := ""
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
 
 		go func() {
 			defer wg.Done()
 
-			exeid, err := fat.echotoaster(callclient1, toasterCreateResp.Toaster.ID)
+			var err error
+			var exeid string
+			if rand.Intn(2) == 1 {
+				exeid, err = fat.toasterGetExeidSingleConnectThenCloseWebsocket(fat.callclient1, toasterid)
+			} else {
+				exeid, err = fat.echotoaster(fat.callclient1, toasterid)
+			}
+
 			if err != nil {
 				errs <- err
 			} else {
@@ -375,6 +405,62 @@ Fouter:
 			errstr += err.Error()
 		default:
 			break Fouter
+		}
+	}
+	if errstr != "" {
+		return fmt.Errorf(errstr)
+	}
+
+	errs = make(chan error, 10)
+	secondexeid := ""
+	for i := 0; i < 10; i++ {
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+
+			var err error
+			var exeid string
+			if rand.Intn(2) == 1 {
+				exeid, err = fat.toasterGetExeidSingleConnectThenCloseWebsocket(fat.callclient1, toasterid)
+			} else {
+				exeid, err = fat.echotoaster(fat.callclient1, toasterid)
+			}
+
+			if err != nil {
+				errs <- err
+			} else {
+				var ok bool
+				mu.Lock()
+				if secondexeid == "" {
+					secondexeid = exeid
+					ok = true
+				} else {
+					ok = exeid == secondexeid
+				}
+				mu.Unlock()
+				if !ok {
+					errs <- fmt.Errorf("one of the request did not join the same toaster: %v != %v", exeid, firstexeid)
+				} else if exeid == firstexeid {
+					errs <- fmt.Errorf("one of the request joined a previous toaster that should have reached its maximum joiners limit: %v == %v and not %v", exeid, firstexeid, secondexeid)
+				}
+			}
+		}()
+	}
+
+	wg.Wait()
+
+	errstr = ""
+Fouter2:
+	for i := 0; i < 10; i++ {
+		select {
+		case err = <-errs:
+			if errstr != "" {
+				errstr += ", "
+			}
+			errstr += err.Error()
+		default:
+			break Fouter2
 		}
 	}
 	if errstr != "" {
@@ -502,11 +588,49 @@ func (fat *FullAPITest) echotoaster(client *http.Client, toasterid string) (stri
 	return resp.Header.Get("X-TOASTAINER-EXEID"), nil
 }
 
+func (fat *FullAPITest) toasterGetExeidSingleConnectThenCloseWebsocket(client *http.Client, toasterid string) (string, error) {
+	sock2, err := fat.dialWebsocket(fat.callclient1, toasterid, "/exeid")
+	if err != nil {
+		return "", fmt.Errorf("could not dial test toaster through a websocket: %v", err)
+	}
+
+	err = sock2.WriteMessage(websocket.TextMessage, []byte("give me your exeid"))
+	if err != nil {
+		sock2.Close()
+		return "", fmt.Errorf("could not write websocket message to toaster: %v", err)
+	}
+
+	_, mess, err := sock2.ReadMessage()
+	if err != nil {
+		sock2.Close()
+		return "", fmt.Errorf("could not read websocket message from toaster: %v", err)
+	}
+
+	err = sock2.WriteControl(websocket.CloseMessage, []byte{}, time.Now().Add(10*time.Second))
+	if err != nil {
+		sock2.Close()
+		return "", fmt.Errorf("could not write close to websocket connection to toaster: %v", err)
+	}
+
+	err = sock2.Close()
+	if err != nil {
+		return "", fmt.Errorf("could not close websocket connection to toaster: %v", err)
+	}
+
+	return string(mess), nil
+}
+
 func (fat *FullAPITest) dialWebsocket(client *http.Client, toasterid, urlpath string) (*websocket.Conn, error) {
 	d := &websocket.Dialer{
 		HandshakeTimeout: 45 * time.Second,
-		TLSClientConfig:  client.Transport.(*http.Transport).TLSClientConfig,
 		Jar:              client.Jar,
+	}
+	switch t := client.Transport.(type) {
+	case *http.Transport:
+		d.TLSClientConfig = t.TLSClientConfig
+	case nil:
+	default:
+		return nil, fmt.Errorf("unrecognized client transport type %T in dialWebsocket", t)
 	}
 	urlpath = fat.makeToasterWebsocketURL(toasterid, urlpath)
 	fmt.Println("- Requesting websocket at", urlpath, "..")
