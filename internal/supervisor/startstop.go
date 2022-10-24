@@ -1,14 +1,13 @@
 package supervisor
 
 import (
-	"fmt"
-
 	"github.com/toastate/toastainer/internal/backgroundtasks"
 	"github.com/toastate/toastainer/internal/config"
 	"github.com/toastate/toastainer/internal/db/objectdb"
 	"github.com/toastate/toastainer/internal/db/objectstorage"
 	"github.com/toastate/toastainer/internal/db/redisdb"
 	"github.com/toastate/toastainer/internal/email"
+	"github.com/toastate/toastainer/internal/monitoring"
 	"github.com/toastate/toastainer/internal/nodes"
 	"github.com/toastate/toastainer/internal/runner"
 	"github.com/toastate/toastainer/internal/utils"
@@ -66,9 +65,14 @@ func Start() (*Watcher, error) {
 		}
 	}
 
+	err = monitoring.Init()
+	if err != nil {
+		return nil, err
+	}
+
 	wat := startWatcher(srv)
 
-	fmt.Println("Toastainer is running..")
+	utils.Info("msg", "Toastainer is running..")
 
 	return wat, nil
 }
@@ -111,6 +115,11 @@ func StartNoServer() (*Watcher, error) {
 	}
 
 	err = backgroundtasks.Init()
+	if err != nil {
+		return nil, err
+	}
+
+	err = monitoring.Init()
 	if err != nil {
 		return nil, err
 	}

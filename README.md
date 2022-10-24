@@ -60,10 +60,10 @@ iptables -t nat -A POSTROUTING -s 10.166.0.0/16 ! -d 172.16.0.0/12 -j MASQUERADE
 
 # Here is another way to forbid some address spaces using a blackhole redirection
 # See https://superuser.com/questions/1436913/what-is-ip-address-0-0-0-1-for-and-how-to-use-it/1436941 for address 0.0.0.1
-# 169.254.169.254 is a special AWS IP used to retrieve metadata about the current EC2 instance
+# 169.254.169.254 is a special AWS IP used to retrieve metadata about the current EC2 instance - we forbid all 169.254. link local addresses for this reason>
 iptables -t nat -N BLACKHOLE
-iptables -t nat -A PREROUTING -s 10.166.0.0/16 -d 169.254.169.254/32,172.16.0.0/12,10.0.0.0/8,192.168.0.0/16,$LOCAL_SERVER_IP/32 -j BLACKHOLE -j BLACKHOLE
-iptables -t nat -A BLACKHOLE -j DNAT --to-destination 0.0.0.1
+iptables -t nat -A PREROUTING -s 10.166.0.0/16 -d 169.254.0.0/16,172.16.0.0/12,10.0.0.0/8,192.168.0.0/16,$LOCAL_SERVER_IP/32 -j BLACKHOLE -j BLACKHOLE
+iptables -t nat -A BLACKHOLE -j DNAT --to-destination 0.0.0.1 # -j does not work anymore here with newer versions of iptables
 iptables -t nat -A POSTROUTING -s 10.166.0.0/16 -j MASQUERADE
 
 echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf

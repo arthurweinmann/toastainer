@@ -110,7 +110,7 @@ func Init() error {
 		return fmt.Errorf("could not evalutate available virtual memory")
 	}
 
-	maxMemoryPerToasterMega = strconv.Itoa(int(utils.Min((vm.Available / 25 * 1024 * 1024), 256)))
+	maxMemoryPerToasterMega = strconv.Itoa(int(utils.Max((vm.Available / 25 * 1024 * 1024), 256)))
 
 	nsjaillogs, err = os.OpenFile(filepath.Join(config.Home, "nsjail.log"), os.O_CREATE|os.O_RDWR, 0644)
 	if err != nil {

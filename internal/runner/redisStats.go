@@ -2,11 +2,11 @@ package runner
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	red "github.com/go-redis/redis/v8"
 	"github.com/toastate/toastainer/internal/db/redisdb"
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 const (
@@ -60,7 +60,7 @@ func startRedisQueueRoutine() {
 					}
 					_, err = p.Exec(context.Background())
 					if err != nil {
-						fmt.Println("ERROR startRedisQueueRoutine incr", err)
+						utils.Error("origin", "redis stats incr routine", "error", err)
 					}
 				}
 
@@ -89,7 +89,7 @@ func startRedisQueueRoutine() {
 					}
 					_, err = p.Exec(context.Background())
 					if err != nil {
-						fmt.Println("ERROR startRedisQueueRoutine decr", err)
+						utils.Error("origin", "redis stats incr routine", "error", err)
 					}
 				}
 

@@ -150,6 +150,8 @@ func (fat *FullAPITest) Run() error {
 		return err
 	}
 
+	time.Sleep(3 * time.Minute)
+
 	return nil
 }
 

@@ -61,5 +61,9 @@ build-nsjail: $(BUILDDIR)
 gen-config-example: $(BUILDDIR) build-toastainer
 	@$(BUILDDIR)/toastainer configexpl -p $(BUILDDIR)/config_example.json
 
+.PHONY: setup-network
+setup-network:
+	@sudo $(CURDIR)/makescripts/setupnet.sh
+
 $(BUILDDIR):
 	@mkdir -p $(BUILDDIR)

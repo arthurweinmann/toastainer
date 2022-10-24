@@ -42,6 +42,7 @@ var Client interface {
 	IsEmailBlocked(email string) (bool, error)
 
 	UpsertUserStatistics(stat *model.UserStatistics) error
+	IncrUserStatistics(stat *model.UserStatistics) error
 	GetUserStatistics(userid, monthyear string) (*model.UserStatistics, error)
 	GetAllUserStatistics(userid string) ([]*model.UserStatistics, error)
 }

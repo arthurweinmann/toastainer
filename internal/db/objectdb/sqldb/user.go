@@ -86,7 +86,7 @@ func (c *Client) RangeUsers(limit int, cursor string) (string, bool, []model.Use
 	}
 
 	// The %d makes sure there can be no SQL injection, be careful when modifying this line
-	req := fmt.Sprintf("SELECT * FROM (SELECT * FROM users WHERE cursor>%d) subq ORDER BY cursor ASC LIMIT %d", nc, limit+1)
+	req := fmt.Sprintf("SELECT * FROM users WHERE `cursor` > %d ORDER BY `cursor` ASC LIMIT %d", nc, limit+1)
 	err = c.db.Select(&usrs, req)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -99,13 +99,15 @@ func (c *Client) RangeUsers(limit int, cursor string) (string, bool, []model.Use
 		return usrs[i].Cursor < usrs[j].Cursor
 	})
 
-	cursor = strconv.Itoa(usrs[len(usrs)-1].Cursor)
-
-	if len(usrs) > limit {
-		return cursor, false, usrs[:limit], nil
+	if len(usrs) == 0 {
+		return "", false, usrs, nil
 	}
 
-	return cursor, false, usrs, nil
+	if len(usrs) > limit {
+		return strconv.Itoa(usrs[len(usrs)-1].Cursor), true, usrs[:limit], nil
+	}
+
+	return "", false, usrs, nil
 }
 
 func (c *Client) UserExistsByEmail(email string) (bool, error) {
