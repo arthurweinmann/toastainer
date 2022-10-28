@@ -81,3 +81,18 @@ Also the home folder and all its ancestors should be owned by toastainer user, f
 # Usage
 
 # Full Configuration example
+
+# Roadmap
+
+
+- [ ] Packaging and automated installation for major OS
+
+- [ ] Live update support
+
+- [ ] Distributed Multi-Cloud Providers and Multi-Regions network of toastainer nodes
+
+- [ ] Multi-Cloud Providers Autoscaling
+
+- [ ] Databases as a service for toasters
+
+- [ ] Full featured with fast boot times virtual machines instead of containers in order to be able to install and run any program
