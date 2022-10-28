@@ -17,6 +17,7 @@ import (
 
 type SignupRequest struct {
 	Email    string `json:"email,omitempty"`
+	Username string `json:"username,omitempty"`
 	Password string `json:"password,omitempty"`
 }
 
@@ -39,6 +40,17 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = utils.IsValidEmail(req.Email)
+	if err != nil {
+		utils.SendError(w, "invalid email: "+err.Error(), "invalidBody", 400)
+		return
+	}
+
+	if !utils.IsAlphaNumHyphen(req.Username) {
+		utils.SendError(w, "invalid username: it can only contain numbers, letters and dashes", "invalidBody", 400)
+		return
+	}
+
 	err = utils.IsValidPassword(req.Password)
 	if err != nil {
 		utils.SendError(w, "invalid password: "+err.Error(), "invalidBody", 400)
@@ -54,6 +66,7 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 	usr := &model.User{
 		ID:       xid.New().String(),
 		Email:    req.Email,
+		Username: req.Username,
 		Password: p,
 	}
 

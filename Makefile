@@ -6,6 +6,17 @@ ifeq ($(DEPTEST),)
 $(error "Install bash to make it work")
 endif
 
+CONFIG_FILE                       ?= Makefile.config
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# +++ Config
+
+ifeq ($(wildcard $(CONFIG_FILE)),)
+$(error config file $(CONFIG_FILE) not found.)
+endif
+
+include $(CONFIG_FILE)
+
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -17,6 +28,7 @@ BUILDDIR                 := $(CURDIR)/build
 SHELL                             = /usr/bin/env bash
 
 GOPATH                            = $(shell go env GOPATH)
+GOBIN                             = $(shell which go)
 ARCH                              = $(shell uname -p)
 
 GIT_COMMIT                        = $(shell git rev-parse HEAD)
@@ -33,7 +45,7 @@ GIT_DIRTY                         = $(shell test -n "`git status --porcelain`" &
 all: build
 
 .PHONY: build
-build: build-nsjail build-toastainer build-test
+build: $(BUILDDIR)/nsjail $(BUILDDIR)/toastfront build-toastainer build-test
 
 .PHONY: build-toastainer
 build-toastainer: $(BUILDDIR)
@@ -57,6 +69,18 @@ build-test-static: $(BUILDDIR) build-toastainer-static
 build-nsjail: $(BUILDDIR)
 	@$(CURDIR)/makescripts/nsjail.sh $(BUILDDIR) $(CURDIR)
 
+.PHONY: build-toastfront
+build-toastfront:
+	@$(CURDIR)/makescripts/setuptoastfront.sh $(BUILDDIR)
+
+.PHONY: serve-web
+serve-web: $(BUILDDIR)/toastfront
+	@cd $(CURDIR)/test/servedashboard && sudo $(GOBIN) test -v -timeout 99999s
+
+.PHONY: build-web
+build-web: $(BUILDDIR)/toastfront
+	@cd $(CURDIR)/web && TOASTAINER_API_HOST=$(TOASTAINER_API_HOST) ../build/toastfront build && rm -rf $(BUILDDIR)/web && mv build $(BUILDDIR)/web
+
 .PHONY: gen-config-example
 gen-config-example: $(BUILDDIR) build-toastainer
 	@$(BUILDDIR)/toastainer configexpl -p $(BUILDDIR)/config_example.json
@@ -67,3 +91,9 @@ setup-network:
 
 $(BUILDDIR):
 	@mkdir -p $(BUILDDIR)
+
+$(BUILDDIR)/toastfront:
+	@$(CURDIR)/makescripts/setuptoastfront.sh $(BUILDDIR)
+
+$(BUILDDIR)/nsjail:
+	@$(CURDIR)/makescripts/nsjail.sh $(BUILDDIR) $(CURDIR)

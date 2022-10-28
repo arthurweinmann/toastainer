@@ -45,7 +45,7 @@ func Create(w http.ResponseWriter, r *http.Request, userid string) {
 		return
 	}
 
-	if !utils.IsAlnumOrHyphen(req.Name) {
+	if !utils.IsAlphaNumHyphen(req.Name) {
 		utils.SendError(w, "invalid domain name, it can only contain alphanumeric characters and hyphens", "invalidBody", 400)
 		return
 	}

@@ -15,10 +15,12 @@ type loadedConfig struct {
 	IsAPI    bool `json:"is_api" yaml:"is_api"`
 	IsRunner bool `json:"is_runner" yaml:"is_runner"`
 
-	APIDomain         string `json:"api_domain" yaml:"api_domain"`
-	APIRootDomain     string `json:"api_root_domain" yaml:"api_root_domain"`
-	ToasterDomain     string `json:"toaster_domain" yaml:"toaster_domain"`
-	ToasterRootDomain string `json:"toaster_root_domain" yaml:"toaster_root_domain"`
+	APIDomain           string `json:"api_domain" yaml:"api_domain"`
+	APIRootDomain       string `json:"api_root_domain" yaml:"api_root_domain"`
+	DashboardDomain     string `json:"dashboard_domain" yaml:"api_domain"`
+	DashboardRootDomain string `json:"dashboard_root_domain" yaml:"api_root_domain"`
+	ToasterDomain       string `json:"toaster_domain" yaml:"toaster_domain"`
+	ToasterRootDomain   string `json:"toaster_root_domain" yaml:"toaster_root_domain"`
 
 	CertificateContactEmail string `json:"ssl_certificate_contact_email" yaml:"ssl_certificate_contact_email"`
 
@@ -133,6 +135,8 @@ func LoadConfigBytes(b []byte, extension string) error {
 
 	APIRootDomain = lc.APIRootDomain
 	APIDomain = lc.APIDomain
+	DashboardDomain = lc.DashboardDomain
+	DashboardRootDomain = lc.DashboardRootDomain
 	ToasterDomain = lc.ToasterDomain
 	ToasterRootDomain = lc.ToasterRootDomain
 	ToasterDomainSplitted = strings.Split(ToasterDomain, ".")

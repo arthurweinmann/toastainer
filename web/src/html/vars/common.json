@@ -1,0 +1,9 @@
+{
+    "domain": "www.toastainer.com",
+    "og_image": "https://toastainer.com/assets/svg/logo-toastainer-black.svg",
+
+    "route_root": "/",
+
+    "alt__logo_toastainer": "Logo Toastainer",
+    "alt__logo_toastainer_text": "Logo Toastainer Text"
+}

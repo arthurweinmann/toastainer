@@ -73,7 +73,7 @@ func main() {
 	case args.Run != nil:
 		fat, err := library.NewFullAPITest(func() *http.Client {
 			return &http.Client{}
-		}, "https://"+config.APIDomain, config.APIDomain, config.ToasterDomain)
+		}, "https://"+config.APIDomain, config.APIDomain, config.ToasterDomain, config.DashboardDomain)
 		if err != nil {
 			log.Fatal("could not setup full api test", err)
 		}

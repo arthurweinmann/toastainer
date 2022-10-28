@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang=en>
+
+<head>
+     <!--#import /includes/head.html-->
+</head>
+
+<body>
+    <template data-access='["all"]'>
+
+        <main class="main">
+             <!--#import /includes/sidemenu.html-->
+
+            <div class="wrapper-content">
+                 <!--#import /includes/header.html-->
+
+                <div class="content">
+                    <div class="content__wrapper-title">
+                        <div class="content__title">
+                            <h2 class="h2-rootdomain"></h2>
+                            <h1>Edit domain</h1>
+                        </div>
+                    </div>
+                    <div class="content__body">
+                        <div class="back__cont">
+                            <span class="icon-chevron-left"></span>
+                            <span class="back__label">back</span>
+                        </div>
+
+                        <form id="form-edit-domain">
+                            <div class="cont-inp">
+                                <label>Domain name
+                                    <input class="inp-domain-name" name="domainName" spellcheck="false" />
+                                </label>
+                            </div>
+                            <div>
+                                <label>Sub domains</label>
+                                <div class="subdmain__cont-table">
+                                    <div class="subdomain__empty">
+                                        <p>You have no sub domains yet.</p>
+                                    </div>
+                                    <table class="table" style="display: none;">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="subdomain__table-body">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="subdomain__cont">
+                                <input class="subdomain__inp" placeholder="Sub domain" spellcheck="false" />
+                                <button id="btn-subdomain" class="btn with-outline with-icon"><span
+                                        class="icon-plus"></span>Add</button>
+                            </div>
+                            <div class="cont-btn">
+                                <button class="btn">Edit domain</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div id="wrapper-modal"></div>
+
+        <script src="/js/edit-domain.js"></script>
+
+         <!--#import /includes/footer.html-->
+</body>
+
+</html>

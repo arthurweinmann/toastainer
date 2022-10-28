@@ -150,10 +150,26 @@ func getCertificate(domain string) (*tls.Certificate, error) {
 			if config.ToasterRootDomain == config.APIRootDomain {
 				domains = append(domains, config.APIDomain)
 			}
+			if config.ToasterRootDomain == config.DashboardRootDomain {
+				domains = append(domains, config.DashboardDomain)
+			}
 
 		case config.APIRootDomain:
 			domains = []string{config.APIDomain}
 			if config.ToasterRootDomain == config.APIRootDomain {
+				domains = append(domains, "*."+config.ToasterDomain)
+				domains = append(domains, nodes.GetToasterLocalRegionAppSubdomain(config.ToasterDomain, config.Region))
+			}
+			if config.APIRootDomain == config.DashboardRootDomain {
+				domains = append(domains, config.DashboardDomain)
+			}
+
+		case config.DashboardDomain:
+			domains = []string{config.DashboardDomain}
+			if config.DashboardRootDomain == config.APIRootDomain {
+				domains = append(domains, config.APIDomain)
+			}
+			if config.ToasterRootDomain == config.DashboardRootDomain {
 				domains = append(domains, "*."+config.ToasterDomain)
 				domains = append(domains, nodes.GetToasterLocalRegionAppSubdomain(config.ToasterDomain, config.Region))
 			}

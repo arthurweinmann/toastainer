@@ -1,4 +1,3 @@
 build/
 dev/
-cmd/toastest/config_test.json
-test/config_test.json
+config_test.json

@@ -12,9 +12,11 @@ var Client interface {
 	CreateUser(usr *model.User) error
 	UpdateUser(usr *model.User) error
 	GetUserByEmail(email string) (*model.User, error)
+	GetUserByUsername(username string) (*model.User, error)
 	GetUserByID(userid string) (*model.User, error)
 	RangeUsers(limit int, cursor string) (string, bool, []model.User, error)
 	UserExistsByEmail(email string) (bool, error)
+	UserExistsByUsername(username string) (bool, error)
 	DelUser(userid string) error
 
 	CreateToaster(toaster *model.Toaster) error

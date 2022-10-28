@@ -1,0 +1,373 @@
+/* sidemenu */
+
+.sidemenu {
+    padding: 30px 20px;
+    width: 323px;
+    min-width: 323px;
+    overflow: hidden;
+    white-space: nowrap;
+    background-color: #1E1F20;
+    transition: 0.3s ease;
+}
+
+.sidemenu.collapsed {
+    padding: 30px 10px;
+    width: 63px;
+    min-width: 63px;
+}
+
+.sidemenu__label {
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 14px;
+    text-transform: uppercase;
+    color: #9FA6B1;
+}
+
+.sidemenu__item span {
+    margin-left: 0;
+    width: initial;
+    overflow: hidden;
+    opacity: 1;
+    transition: 0.8s ease;
+}
+
+.sidemenu__item span.hidden {
+    margin-left: -30px;
+    width: 0;
+    opacity: 0;
+}
+
+.sidemenu__item a {
+    display: flex;
+    align-items: center;
+    padding: 14px 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.sidemenu__item a:hover .sidemenu__icon {
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
+}
+
+.sidemenu__cont-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    margin-left: -10px;
+    width: 45px;
+    transition: 0.3s ease;
+}
+
+.sidemenu__cont-icon.collapsed {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+.sidemenu__icon {
+    height: 20px;
+    fill: #fff;
+}
+
+/* header sidemenu */
+
+.sidemenu__header {
+    display: flex;
+    padding: 50px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.sidemenu__header a {
+    margin-right: 10px;
+}
+
+.sidemenu.collapsed .sidemenu__header a {
+    margin-right: unset;
+}
+
+.sidemenu__header .btn .icon-plus {
+    font-weight: 600;
+}
+
+.icon-expand-collapse {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 43px;
+    height: 43px;
+    border-radius: 8px;
+    background-color: #034aff;
+}
+
+.icon-expand-collapse:hover {
+    background-color: #2860ee;
+}
+
+.sidemenu__header button.btn {
+    overflow: hidden;
+    padding: 12.5px 20px;
+    width: initial;
+    font-size: 13px;
+    transition: 0.3s ease;
+    opacity: 1;
+}
+
+.sidemenu__header button.btn.hidden {
+    margin-right: 0;
+    padding: 12.5px 0px;
+    width: 0;
+    border-left: 0;
+    border-right: 0;
+    opacity: 0;
+}
+
+/* header logo */
+
+.header__logo {
+    margin-bottom: 50px;
+    flex: 1;
+}
+
+.header__logo-img {
+    z-index: 20;
+    margin-left: 7px;
+}
+
+.header__logo-img-text {
+    margin-left: 8px;
+    opacity: 1;
+    transition: 0.2s ease;
+}
+
+.header__logo-img-text.hidden {
+    margin-left: -20px;
+    width: 0;
+    opacity: 0;
+}
+
+/* mobile */
+.sidemenu__header-mobile {
+    display: none;
+    z-index: 997;
+    justify-content: flex-end;
+    flex: 1;
+}
+
+.sidemenu__header-mobile .icon-grid {
+    cursor: pointer;
+    font-size: 22px;
+}
+
+.sidemenu__content-mobile {
+    display: none;
+    z-index: 995;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    padding: 100px 50px;
+    background: #000 !important;
+    transition: 0.3s ease;
+    opacity: 0;
+}
+
+.sidemenu__content-mobile.show {
+    opacity: 1;
+}
+
+.sidemenu__content-mobile .cont-btn-link {
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+    margin: 0 auto 50px auto;
+}
+
+.sidemenu__content-mobile .btn-link {
+    margin-bottom: 14px;
+}
+
+.sidemenu__content-mobile .btn-link .btn {
+    width: 100%;
+}
+
+@supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+    .sidemenu__content-mobile {
+        background: rgba(0, 0, 0, 0.4);
+        -webkit-backdrop-filter: blur(100px);
+        backdrop-filter: blur(100px);
+    }
+}
+
+@media screen and (max-width: "{{.viewport_14}}") {
+    .sidemenu {
+        min-width: 260px;
+        width: 260px;
+    }
+
+    .sidemenu__header {
+        flex-wrap: wrap;
+    }
+
+    .sidemenu__header a {
+        margin-right: unset;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+
+    .icon-expand-collapse {
+        width: 100%;
+    }
+
+    .sidemenu__header button.btn {
+        width: 100%;
+    }
+
+    .sidemenu__cont-icon {
+        width: 35px;
+    }
+
+    .sidemenu__icon {
+        height: 18px;
+    }
+
+    .sidemenu__item a {
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: "{{.viewport_12}}") {
+    .header__logo {
+        flex: initial;
+        margin-bottom: unset;
+    }
+
+    .sidemenu__header {
+        flex: 1;
+        justify-content: center;
+        flex-wrap: nowrap;
+        border-top: none;
+        padding: unset;
+    }
+
+    .sidemenu__header a:first-child {
+        margin-right: 8px;
+    }
+
+    .sidemenu__header a {
+        margin-bottom: unset;
+        width: initial;
+    }
+
+    .icon-expand-collapse {
+        display: none;
+    }
+
+    .sidemenu {
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        width: 100%;
+    }
+
+    .sidemenu__label {
+        display: none;
+    }
+
+    .sidemenu__list {
+        display: flex;
+    }
+
+    .sidemenu__item {
+        margin-right: 14px;
+    }
+
+    .sidemenu__item a {
+        flex-direction: column;
+    }
+
+    .sidemenu__item span {
+        display: none;
+    }
+
+    .sidemenu__cont-icon {
+        margin-left: unset;
+        margin-right: unset;
+    }
+
+    .sidemenu.collapsed {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: "{{.viewport_9}}") {
+    .sidemenu__header button.btn {
+        padding: 10px 16px;
+    }
+
+    .sidemenu__item {
+        margin-right: 10px;
+    }
+}
+
+@media screen and (max-width: "{{.viewport_7}}") {
+    .sidemenu__header-mobile {
+        display: flex;
+    }
+
+    .sidemenu__header, .sidemenu__content {
+        display: none;
+    }
+
+    .sidemenu__item a {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 120px;
+        height: 120px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .sidemenu__item span {
+        display: block;
+        margin-top: 12px;
+        text-transform: uppercase;
+        font-size: 9px;
+    }
+
+    .sidemenu__list {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .sidemenu__item {
+        margin-right: 30px;
+        margin-bottom: 30px;
+    }
+}
+
+@media screen and (max-width: "{{.viewport_4}}") {
+    .sidemenu__content-mobile {
+        padding: 70px 16px 50px 16px;
+    }
+
+    .sidemenu__content-mobile .cont-btn-link {
+        margin-bottom: 20px;
+    }
+
+    .sidemenu__item {
+        margin-right: 8px;
+        margin-bottom: 8px;
+    }
+
+    .sidemenu__item a {
+        width: 100px;
+        height: 100px;
+    }
+}

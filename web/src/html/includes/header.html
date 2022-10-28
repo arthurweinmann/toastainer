@@ -1,0 +1,59 @@
+<header class="header">
+    <div class="cont-search">
+        <input id="inp-search-toaster" placeholder="Search Toasters" />
+        <div class="cont-icon-search">
+            <span class="icon-search"></span>
+        </div>
+    </div>
+
+    <div class="wrapper-header-account">
+        <div class="header-account">
+            <div class="header-account__profile">
+                <img class="header-account__profile-img" src="" alt="Profile" />
+                <div>
+                    <p class="header-account__user"></p>
+                    <p class="header-account__plan">Basic plan</p>
+                </div>
+            </div>
+
+            <div class="header-account__wrapper-menu">
+                <ul class="header-account__menu">
+                    <li class="header-account__menu-item menu-item__link" data-action="pricing">
+                        <a href="/pricing">
+                            <span class="icon-credit-card"></span>
+                            <span>Pricing</span>
+                        </a>
+                    </li>
+                    <li class="header-account__menu-item menu-item__link" data-action="account">
+                        <a href="/account">
+                            <span class="icon-user"></span>
+                            <span>Account</span>
+                        </a>
+                    </li>
+                    <li class="header-account__menu-item" data-action="signout">
+                        <span class="icon-log-out"></span>
+                        <span>Signout</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-screen">
+        <span class="close-search-screen icon-x"></span>
+
+        <section class="section-search-toasters">
+            <div class="cont-h3 from-search">
+                <h3>Result(s)</h3>
+                <span class="tile tile__count"></span>
+            </div>
+            <div>
+                <ul class="toastTile__list from-search">
+                </ul>
+                <div class="toastTile__empty-from-search">
+                    <p class="search-screen-empty">We could not find any Toaster(s) matching your search.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</header>

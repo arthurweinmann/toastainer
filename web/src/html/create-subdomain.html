@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang=en>
+
+<head>
+     <!--#import /includes/head.html-->
+</head>
+
+<body>
+    <template data-access='["all"]'>
+
+        <main class="main">
+             <!--#import /includes/sidemenu.html-->
+
+            <div class="wrapper-content">
+                 <!--#import /includes/header.html-->
+
+                <div class="content">
+                    <div class="content__wrapper-title">
+                        <div class="content__title">
+                            <h2 class="h2-rootdomain"></h2>
+                            <h1>Create a subdomain</h1>
+                        </div>
+                    </div>
+                    <div class="content__body">
+                        <div class="back__cont">
+                            <span class="icon-chevron-left"></span>
+                            <span class="back__label">back</span>
+                        </div>
+                        
+                        <form id="form-create-subdomain">
+                            <div class="cont-inp">
+                                <label>Subdomain name
+                                    <input name="subdomainName" spellcheck="false"/>
+                                </label>
+                            </div>
+                            <div class="cont-btn">
+                                <button class="btn">Create subdomain</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div id="wrapper-modal"></div>
+
+        <script src="/js/create-subdomain.js"></script>
+
+     <!--#import /includes/footer.html-->
+</body>
+
+</html>

@@ -1,0 +1,141 @@
+.text__infos {
+    margin-bottom: 50px;
+    font-size: 14px;
+    line-height: 15px;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+}
+
+.plan__list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.plan__item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    min-height: 350px;
+    min-width: 300px;
+    border-radius: 14px;
+    background-color: #1E1F20;
+}
+
+.plan__item.disabled {
+    filter: grayscale(1);
+}
+
+.plan__item.plan__main {
+    margin: 0 14px;
+    min-height: 400px;
+    min-width: 300px;
+    background-color: #282A2C;
+}
+
+.plan__popular {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    background: #FF7000;
+    box-shadow: 0px 8px 30px 8px rgba(255, 112, 0, 0.2);
+}
+
+.plan__row {
+    display: flex;
+    margin-bottom: 30px;
+}
+
+.plan__type {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 22px;
+    text-transform: uppercase;
+    color: #FF7000;
+}
+
+.plan__label {
+    font-weight: bold;
+    font-size: 26px;
+    line-height: 30px;
+    color: #FFFFFF;
+}
+
+.plan__line-list {
+    flex: 1;
+}
+
+.plan__line-infos {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    line-height: 23px;
+}
+
+.plan__line-infos .icon-check {
+    margin-right: 10px;
+    font-size: 18px;
+    color: #0368FF;
+}
+
+.plan__line-infos p {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.plan__text-bold {
+    font-weight: 500;
+    color: #fff;
+}
+
+.plan__cont-btn {
+    margin-top: 20px;
+}
+
+.plan__cont-btn button {
+    text-align: center;
+    width: 100%;
+}
+
+.btn.btn-choose-plan.is-active {
+    cursor: initial;
+    border: 1px solid #09C372;
+    background-color: #09C372;
+    opacity: 1;
+}
+
+.btn.btn-choose-plan.is-active:hover {
+    border: 1px solid #09C372;
+    background-color: #09C372;
+}
+
+@media screen and (max-width: "{{.viewport_9}}") {
+    .plan__list {
+        flex-direction: column;
+    }
+
+    .plan__item.disabled {
+        display: none;
+    }
+}
+
+@media screen and (max-width: "{{.viewport_4}}") {
+    .plan__list {
+        flex-direction: column;
+    }
+
+    .plan__item.disabled {
+        display: none;
+    }
+
+    .plan__item.plan__main {
+        min-width: 85%;
+    }
+}

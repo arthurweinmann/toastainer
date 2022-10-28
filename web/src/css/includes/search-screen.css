@@ -1,0 +1,128 @@
+.search-screen {
+    display: none;
+    z-index: 985;
+    position: fixed;
+    overflow-y: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 200px;
+    background: #000;
+    transition: 0.3s ease;
+    opacity: 0;
+}
+
+@supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+    .search-screen {
+        background: rgba(0, 0, 0, 0.4);
+        -webkit-backdrop-filter: blur(100px);
+        backdrop-filter: blur(100px);
+    }
+}
+
+.search-screen.show {
+    opacity: 1;
+}
+
+.close-search-screen {
+    cursor: pointer;
+    position: absolute;
+    right: 50px;
+    top: 50px;
+    font-size: 32px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.close-search-screen:hover {
+    color: #fff;
+}
+
+/* toastTile */
+.cont-h3.from-search h3 {
+    margin-right: 10px;
+}
+
+.cont-h3.from-search {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.toastTile__list.from-search {
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.toastTile__item.from-search {
+    margin-bottom: 8px;
+}
+
+@media screen and (max-width: "{{.viewport_14}}") {
+    .search-screen {
+        padding: 200px 100px;
+    }
+}
+
+@media screen and (max-width: "{{.viewport_12}}") {
+    .search-screen {
+        overflow: hidden;
+        padding: 250px 50px 100px 50px;
+        background: #000;
+    }
+
+    .toastTile__list  {
+        margin-top: 90px;
+        overflow: auto !important;
+        max-height: calc(100vh - 180px);
+    }
+}
+
+@media screen and (max-width: "{{.viewport_7}}") {
+    .search-screen {
+        overflow: hidden;
+        padding: 40px 16px;
+
+        background: #000;
+    }
+
+    .toastTile__list  {
+        margin-top: 90px;
+        overflow: auto !important;
+        max-height: calc(100vh - 180px);
+    }
+
+    .toastTile__item.from-search {
+        margin-right: unset;
+        margin-bottom: 8px !important;
+    }
+
+    .toastTile__empty-from-search {
+        margin-top: 90px;
+    }
+}
+
+@media screen and (max-width: "{{.viewport_4}}") {
+    .close-search-screen {
+        right: 20px;
+        top: 20px;
+        font-size: 26px;
+    }
+
+    .search-screen {
+        overflow: hidden;
+        padding: 40px 16px;
+        background: #000;
+    }
+
+    .toastTile__list  {
+        margin-top: 90px;
+        overflow: auto !important;
+        max-height: calc(100vh - 180px);
+    }
+
+    .search-screen-empty {
+        font-size: 14px;
+        line-height: 18px;
+    }
+}

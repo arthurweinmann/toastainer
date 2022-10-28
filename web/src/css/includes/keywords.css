@@ -1,0 +1,62 @@
+.keywords__list {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.keyword__item {
+    position: relative;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    padding: 5px 16px;
+    padding-right: 40px;
+    border-radius: 3px;
+    font-size: 13px;
+    line-height: 20px;
+    color: #FFFFFF;
+    background-color: #FF7000;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-iteration-count: infinite;
+}
+
+.keyword__item:last-child {
+    margin-right: unset;
+}
+
+.keyword__item.flash {
+    animation-name: flash;
+}
+
+@keyframes flash {
+    0%, 50%, 100% {
+        opacity: 1;
+    }
+
+    25%, 75% {
+        opacity: 0;
+    }
+}
+
+.keyword__item .icon-x, .keyword__item .icon-plus {
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.keyword__item .icon-x:hover, .keyword__item .icon-plus:hover {
+    color: #fff;
+}
+
+.inp-add-keywords {
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background-color: transparent;
+}
+
+.inp-add-keywords input {
+    border: none;
+    background-color: transparent;
+    color: #fff;
+}

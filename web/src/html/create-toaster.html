@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang=en>
+
+<head>
+    <!--#import /includes/head.html-->
+</head>
+
+<body>
+    <template data-access='["all"]'>
+
+        <main class="main">
+            <!--#import /includes/sidemenu.html-->
+
+            <div class="wrapper-content">
+                <!--#import /includes/header.html-->
+
+                <div class="content">
+                    <div class="content__wrapper-title">
+                        <div class="content__title">
+                            <h2>Toaster creation</h2>
+                            <h1>New Toaster</h1>
+                        </div>
+                    </div>
+                    <div class="content__body">
+                        <div class="tab">
+                            <div id="tablink-code" class="tab__link active" value="code">
+                                <div class="tab__circle">
+                                    <span class="icon-code"></span>
+                                </div>
+                                <span class="tab__label">Code</span>
+                            </div>
+                            <div id="tablink-information" class="tab__link" value="information">
+                                <div class="tab__circle">
+                                    <span class="icon-info"></span>
+                                </div>
+                                <span class="tab__label">Information</span>
+                            </div>
+                        </div>
+                        <form id="form-create-toaster">
+                            <div id="tabcontent-code" class="tab__content show">
+                                <div class="import__cont">
+                                    <div class="import__item active" data-for="import-from-local">
+                                        <p>Import from computer</p>
+                                    </div>
+                                    <div class="import__item" data-for="import-from-git">
+                                        <p>Import from GIT</p>
+                                    </div>
+                                </div>
+
+                                <div id="import-from-local" class="import__cont-body active">
+                                    <section>
+                                        <div id="drop-zone" class="browse-file">
+                                            <svg width="72" height="72" viewBox="0 0 72 72" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <g opacity="0.2">
+                                                    <path
+                                                        d="M42 6H18C16.4087 6 14.8826 6.63214 13.7574 7.75736C12.6321 8.88258 12 10.4087 12 12V60C12 61.5913 12.6321 63.1174 13.7574 64.2426C14.8826 65.3679 16.4087 66 18 66H54C55.5913 66 57.1174 65.3679 58.2426 64.2426C59.3679 63.1174 60 61.5913 60 60V24L42 6Z"
+                                                        stroke="white" stroke-width="2" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                    <path d="M42 6V24H60" stroke="white" stroke-width="2"
+                                                        stroke-linecap="round" stroke-linejoin="round" />
+                                                    <path d="M36 54V36" stroke="white" stroke-width="2"
+                                                        stroke-linecap="round" stroke-linejoin="round" />
+                                                    <path d="M27 45H45" stroke="white" stroke-width="2"
+                                                        stroke-linecap="round" stroke-linejoin="round" />
+                                                </g>
+                                            </svg>
+
+                                            <div class="file__content show">
+                                                <p class="file__text">Drag and drop or <span class="upload-files">browse
+                                                        your
+                                                        files</span><br /><span class="upload-folder">Or select a
+                                                        folder</span>
+                                                </p>
+
+                                                <ul class="file__list">
+                                                </ul>
+                                            </div>
+
+                                            <div class="is-dragging__cont">
+                                                <p class="is-dragging__label">Drop your files</p>
+                                                <p class="is-dragging__text">Load your files or folders by dropping them
+                                                    in
+                                                    this
+                                                    window.</p>
+                                            </div>
+                                        </div>
+                                        <input id="fileInput" type="file" style="display:none;" multiple />
+                                        <input id="folderInput" type="file" style="display:none;" directory
+                                            webkitdirectory />
+                                    </section>
+                                </div>
+
+                                <div id="import-from-git" class="import__cont-body">
+
+                                    <section>
+                                        <h4>Import from a GIT repository </h4>
+
+                                        <div class="config__first-line">
+                                            <div class="cont-inp">
+                                                <label>Username
+                                                    <input name="gitusername" autocomplete="new-password" />
+                                                </label>
+                                            </div>
+                                            <div class="cont-inp">
+                                                <label>Password
+                                                    <input name="gitpassword" type="password"
+                                                        autocomplete="new-password" />
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <hr class="separator" />
+                                        <div class="config__second-line">
+                                            <div class="cont-inp">
+                                                <label>URL
+                                                    <input name="url" />
+                                                </label>
+                                            </div>
+                                            <div class="cont-inp">
+                                                <label>Branch / ref
+                                                    <input name="branch-ref" />
+                                                </label>
+                                            </div>
+                                            <div class="cont-inp">
+                                                <label>Auth Token
+                                                    <input name="auth-token" />
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+
+                                <div class="cont-btn-next-step">
+                                    <button class="btn btn-next-step">Next step</button>
+                                </div>
+                            </div>
+
+                            <div id="tabcontent-information" class="tab__content">
+                                <section class="toaster__header custom-section">
+                                    <div class="cont-toaster__image">
+                                        <span class="icon-x" style="display: none;"></span>
+                                        <div class="toaster__no-image">
+                                            <svg width="90" height="90" viewBox="0 0 80 80" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <g opacity="0.1">
+                                                    <path
+                                                        d="M63.3333 10H16.6667C12.9848 10 10 12.9848 10 16.6667V63.3333C10 67.0152 12.9848 70 16.6667 70H63.3333C67.0152 70 70 67.0152 70 63.3333V16.6667C70 12.9848 67.0152 10 63.3333 10Z"
+                                                        stroke="white" stroke-width="2" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                    <path
+                                                        d="M28.3335 33.3335C31.0949 33.3335 33.3335 31.0949 33.3335 28.3335C33.3335 25.5721 31.0949 23.3335 28.3335 23.3335C25.5721 23.3335 23.3335 25.5721 23.3335 28.3335C23.3335 31.0949 25.5721 33.3335 28.3335 33.3335Z"
+                                                        stroke="white" stroke-width="2" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                    <path d="M69.9998 50.0002L53.3332 33.3335L16.6665 70.0002"
+                                                        stroke="white" stroke-width="2" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                </g>
+                                            </svg>
+                                            <span>Upload image</span>
+                                        </div>
+                                    </div>
+                                    <input id="imgFileInput" type="file" style="display:none;" />
+                                    <div class="toaster__header-left">
+                                        <div class="toaster__content-right">
+                                            <div class="cont-inp">
+                                                <label>Name
+                                                    <input name="name" />
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <section class="custom-section">
+                                    <h4>Environment Variables</h4>
+                                    <!-- 
+                                    <ul>
+                                        <li>
+                                            <img src="/assets/images/langs/golang.png">
+                                        </li>
+                                        <li>
+                                            <img src="/assets/images/langs/golang.png">
+                                        </li>
+                                    </ul> -->
+
+                                    <ul class="list-envs">
+                                    </ul>
+
+                                    <button id="btn-add-env" class="btn with-icon"><span class="icon-plus"></span>
+                                        Add</button>
+                                </section>
+
+                                <section class="custom-section">
+                                    <h4 class="inlineblock">Commands</h4>
+
+                                    <div class="langselect-container">
+                                        <label>Commands Templates For</label>
+                                        <select>
+                                            <option>Golang</option>
+                                            <option>Nodejs</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="config__first-line">
+                                        <div class="config__cmd-left">
+                                            <h5>Build Command</h5>
+
+                                            <ul class="list-build-cmds">
+                                            </ul>
+
+                                            <button id="btn-add-build-cmd" class="btn with-icon"><span
+                                                    class="icon-plus"></span>
+                                                Add</button>
+                                        </div>
+
+                                        <div class="config__cmd-right">
+                                            <h5>Run Command</h5>
+                                            <ul class="list-exe-cmds">
+                                            </ul>
+
+                                            <button id="btn-add-exe-cmd" class="btn with-icon"><span
+                                                    class="icon-plus"></span>
+                                                Add</button>
+                                        </div>
+                                    </div>
+                                    <!-- <hr class="separator" /> -->
+                                </section>
+
+                                <section class="custom-section">
+                                    <h4>Configuration</h4>
+                                    <div class="config__second-line">
+                                        <div class="cont-inp">
+                                            <label>Joinable for seconds
+                                                <input name="joinable-for-seconds" type="number" step="1"
+                                                    onkeydown="if(event.key==='.'){event.preventDefault();}"
+                                                    oninput="event.target.value = event.target.value.replace(/[^0-9]*/g,'');"
+                                                    / value="240">
+                                            </label>
+                                        </div>
+                                        <div class="cont-inp">
+                                            <label>Max concurrent joiners
+                                                <input name="max-concurrent-joiners" type="number" step="1"
+                                                    onkeydown="if(event.key==='.'){event.preventDefault();}"
+                                                    oninput="event.target.value = event.target.value.replace(/[^0-9]*/g,'');"
+                                                    value="240" />
+                                            </label>
+                                        </div>
+                                        <div class="cont-inp">
+                                            <label>Timeout seconds
+                                                <input name="timeout-seconds" type="number" step="1"
+                                                    onkeydown="if(event.key==='.'){event.preventDefault();}"
+                                                    oninput="event.target.value = event.target.value.replace(/[^0-9]*/g,'');"
+                                                    value="300" />
+                                            </label>
+                                        </div>
+                                    </div>
+                                </section>
+
+                                <section class="custom-section">
+                                    <h4>Keywords</h4>
+                                    <ul id="keywords-list" class="keywords__list">
+                                        <li class="keyword__item inp-add-keywords">
+                                            <input name="keyword" placeholder="Add keyword" /><span
+                                                class="icon-plus"></span>
+                                        </li>
+                                    </ul>
+                                </section>
+
+                                <section class="section-readme custom-section">
+                                    <div class="cont-readme">
+                                        <h3 data-tab="block-raw" class="active">Raw</h3>
+                                        <h3 data-tab="block-preview">Preview</h3>
+                                    </div>
+                                    <div id="block-raw">
+                                        <div class="cont-inp">
+                                            <label>Type your ReadMe in markdown
+                                                <textarea id="markup" name="read-me" rows="30"
+                                                    spellcheck="false"></textarea>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div id="block-preview" style="display: none">
+                                        <div id="markdown-content" class="markdown-body"></div>
+                                    </div>
+                                </section>
+
+                                <div class="cont-btn-create-toaster">
+                                    <button id="btn-create-toaster" class="btn">Create Toaster</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </main>
+
+        <div id="wrapper-modal"></div>
+
+        <script>
+            /*
+            * [hi-base32]{@link https://github.com/emn178/hi-base32}
+            *
+            * @version 0.5.1
+            * @author Chen, Yi-Cyuan [emn178@gmail.com]
+            * @copyright Chen, Yi-Cyuan 2015-2021
+            * @license MIT
+            */
+            !function () { "use strict"; var r = "object" == typeof window ? window : {}; !r.HI_BASE32_NO_NODE_JS && "object" == typeof process && process.versions && process.versions.node && (r = global); var t = !r.HI_BASE32_NO_COMMON_JS && "object" == typeof module && module.exports, a = "function" == typeof define && define.amd, e = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".split(""), o = { A: 0, B: 1, C: 2, D: 3, E: 4, F: 5, G: 6, H: 7, I: 8, J: 9, K: 10, L: 11, M: 12, N: 13, O: 14, P: 15, Q: 16, R: 17, S: 18, T: 19, U: 20, V: 21, W: 22, X: 23, Y: 24, Z: 25, 2: 26, 3: 27, 4: 28, 5: 29, 6: 30, 7: 31 }, h = [0, 0, 0, 0, 0, 0, 0, 0], c = function (r, t) { t.length > 10 && (t = "..." + t.substr(-10)); var a = new Error("Decoded data is not valid UTF-8. Maybe try base32.decode.asBytes()? Partial data after reading " + r + " bytes: " + t + " <-"); throw a.position = r, a }, n = function (r) { if ("" === r) return []; if (!/^[A-Z2-7=]+$/.test(r)) throw new Error("Invalid base32 characters"); for (var t, a, e, h, c, n, A, d, i = [], C = 0, f = (r = r.replace(/=/g, "")).length, s = 0, g = f >> 3 << 3; s < g;)t = o[r.charAt(s++)], a = o[r.charAt(s++)], e = o[r.charAt(s++)], h = o[r.charAt(s++)], c = o[r.charAt(s++)], n = o[r.charAt(s++)], A = o[r.charAt(s++)], d = o[r.charAt(s++)], i[C++] = 255 & (t << 3 | a >>> 2), i[C++] = 255 & (a << 6 | e << 1 | h >>> 4), i[C++] = 255 & (h << 4 | c >>> 1), i[C++] = 255 & (c << 7 | n << 2 | A >>> 3), i[C++] = 255 & (A << 5 | d); var u = f - g; return 2 === u ? (t = o[r.charAt(s++)], a = o[r.charAt(s++)], i[C++] = 255 & (t << 3 | a >>> 2)) : 4 === u ? (t = o[r.charAt(s++)], a = o[r.charAt(s++)], e = o[r.charAt(s++)], h = o[r.charAt(s++)], i[C++] = 255 & (t << 3 | a >>> 2), i[C++] = 255 & (a << 6 | e << 1 | h >>> 4)) : 5 === u ? (t = o[r.charAt(s++)], a = o[r.charAt(s++)], e = o[r.charAt(s++)], h = o[r.charAt(s++)], c = o[r.charAt(s++)], i[C++] = 255 & (t << 3 | a >>> 2), i[C++] = 255 & (a << 6 | e << 1 | h >>> 4), i[C++] = 255 & (h << 4 | c >>> 1)) : 7 === u && (t = o[r.charAt(s++)], a = o[r.charAt(s++)], e = o[r.charAt(s++)], h = o[r.charAt(s++)], c = o[r.charAt(s++)], n = o[r.charAt(s++)], A = o[r.charAt(s++)], i[C++] = 255 & (t << 3 | a >>> 2), i[C++] = 255 & (a << 6 | e << 1 | h >>> 4), i[C++] = 255 & (h << 4 | c >>> 1), i[C++] = 255 & (c << 7 | n << 2 | A >>> 3)), i }, A = function (r, t) { if (!t) return function (r) { for (var t, a, e = "", o = r.length, h = 0, n = 0; h < o;)if ((t = r[h++]) <= 127) e += String.fromCharCode(t); else { t > 191 && t <= 223 ? (a = 31 & t, n = 1) : t <= 239 ? (a = 15 & t, n = 2) : t <= 247 ? (a = 7 & t, n = 3) : c(h, e); for (var A = 0; A < n; ++A)((t = r[h++]) < 128 || t > 191) && c(h, e), a <<= 6, a += 63 & t; a >= 55296 && a <= 57343 && c(h, e), a > 1114111 && c(h, e), a <= 65535 ? e += String.fromCharCode(a) : (a -= 65536, e += String.fromCharCode(55296 + (a >> 10)), e += String.fromCharCode(56320 + (1023 & a))) } return e }(n(r)); if ("" === r) return ""; if (!/^[A-Z2-7=]+$/.test(r)) throw new Error("Invalid base32 characters"); var a, e, h, A, d, i, C, f, s = "", g = r.indexOf("="); -1 === g && (g = r.length); for (var u = 0, S = g >> 3 << 3; u < S;)a = o[r.charAt(u++)], e = o[r.charAt(u++)], h = o[r.charAt(u++)], A = o[r.charAt(u++)], d = o[r.charAt(u++)], i = o[r.charAt(u++)], C = o[r.charAt(u++)], f = o[r.charAt(u++)], s += String.fromCharCode(255 & (a << 3 | e >>> 2)) + String.fromCharCode(255 & (e << 6 | h << 1 | A >>> 4)) + String.fromCharCode(255 & (A << 4 | d >>> 1)) + String.fromCharCode(255 & (d << 7 | i << 2 | C >>> 3)) + String.fromCharCode(255 & (C << 5 | f)); var m = g - S; return 2 === m ? (a = o[r.charAt(u++)], e = o[r.charAt(u++)], s += String.fromCharCode(255 & (a << 3 | e >>> 2))) : 4 === m ? (a = o[r.charAt(u++)], e = o[r.charAt(u++)], h = o[r.charAt(u++)], A = o[r.charAt(u++)], s += String.fromCharCode(255 & (a << 3 | e >>> 2)) + String.fromCharCode(255 & (e << 6 | h << 1 | A >>> 4))) : 5 === m ? (a = o[r.charAt(u++)], e = o[r.charAt(u++)], h = o[r.charAt(u++)], A = o[r.charAt(u++)], d = o[r.charAt(u++)], s += String.fromCharCode(255 & (a << 3 | e >>> 2)) + String.fromCharCode(255 & (e << 6 | h << 1 | A >>> 4)) + String.fromCharCode(255 & (A << 4 | d >>> 1))) : 7 === m && (a = o[r.charAt(u++)], e = o[r.charAt(u++)], h = o[r.charAt(u++)], A = o[r.charAt(u++)], d = o[r.charAt(u++)], i = o[r.charAt(u++)], C = o[r.charAt(u++)], s += String.fromCharCode(255 & (a << 3 | e >>> 2)) + String.fromCharCode(255 & (e << 6 | h << 1 | A >>> 4)) + String.fromCharCode(255 & (A << 4 | d >>> 1)) + String.fromCharCode(255 & (d << 7 | i << 2 | C >>> 3))), s }, d = { encode: function (r, t) { var a = "string" != typeof r; return a && r.constructor === ArrayBuffer && (r = new Uint8Array(r)), a ? function (r) { for (var t, a, o, h, c, n = "", A = r.length, d = 0, i = 5 * parseInt(A / 5); d < i;)t = r[d++], a = r[d++], o = r[d++], h = r[d++], c = r[d++], n += e[t >>> 3] + e[31 & (t << 2 | a >>> 6)] + e[a >>> 1 & 31] + e[31 & (a << 4 | o >>> 4)] + e[31 & (o << 1 | h >>> 7)] + e[h >>> 2 & 31] + e[31 & (h << 3 | c >>> 5)] + e[31 & c]; var C = A - i; return 1 === C ? (t = r[d], n += e[t >>> 3] + e[t << 2 & 31] + "======") : 2 === C ? (t = r[d++], a = r[d], n += e[t >>> 3] + e[31 & (t << 2 | a >>> 6)] + e[a >>> 1 & 31] + e[a << 4 & 31] + "====") : 3 === C ? (t = r[d++], a = r[d++], o = r[d], n += e[t >>> 3] + e[31 & (t << 2 | a >>> 6)] + e[a >>> 1 & 31] + e[31 & (a << 4 | o >>> 4)] + e[o << 1 & 31] + "===") : 4 === C && (t = r[d++], a = r[d++], o = r[d++], h = r[d], n += e[t >>> 3] + e[31 & (t << 2 | a >>> 6)] + e[a >>> 1 & 31] + e[31 & (a << 4 | o >>> 4)] + e[31 & (o << 1 | h >>> 7)] + e[h >>> 2 & 31] + e[h << 3 & 31] + "="), n }(r) : t ? function (r) { for (var t, a, o, h, c, n = "", A = r.length, d = 0, i = 5 * parseInt(A / 5); d < i;)t = r.charCodeAt(d++), a = r.charCodeAt(d++), o = r.charCodeAt(d++), h = r.charCodeAt(d++), c = r.charCodeAt(d++), n += e[t >>> 3] + e[31 & (t << 2 | a >>> 6)] + e[a >>> 1 & 31] + e[31 & (a << 4 | o >>> 4)] + e[31 & (o << 1 | h >>> 7)] + e[h >>> 2 & 31] + e[31 & (h << 3 | c >>> 5)] + e[31 & c]; var C = A - i; return 1 === C ? (t = r.charCodeAt(d), n += e[t >>> 3] + e[t << 2 & 31] + "======") : 2 === C ? (t = r.charCodeAt(d++), a = r.charCodeAt(d), n += e[t >>> 3] + e[31 & (t << 2 | a >>> 6)] + e[a >>> 1 & 31] + e[a << 4 & 31] + "====") : 3 === C ? (t = r.charCodeAt(d++), a = r.charCodeAt(d++), o = r.charCodeAt(d), n += e[t >>> 3] + e[31 & (t << 2 | a >>> 6)] + e[a >>> 1 & 31] + e[31 & (a << 4 | o >>> 4)] + e[o << 1 & 31] + "===") : 4 === C && (t = r.charCodeAt(d++), a = r.charCodeAt(d++), o = r.charCodeAt(d++), h = r.charCodeAt(d), n += e[t >>> 3] + e[31 & (t << 2 | a >>> 6)] + e[a >>> 1 & 31] + e[31 & (a << 4 | o >>> 4)] + e[31 & (o << 1 | h >>> 7)] + e[h >>> 2 & 31] + e[h << 3 & 31] + "="), n }(r) : function (r) { var t, a, o, c, n, A, d, i = !1, C = "", f = 0, s = 0, g = r.length; if ("" === r) return C; do { for (h[0] = h[5], h[1] = h[6], h[2] = h[7], d = s; f < g && d < 5; ++f)(A = r.charCodeAt(f)) < 128 ? h[d++] = A : A < 2048 ? (h[d++] = 192 | A >> 6, h[d++] = 128 | 63 & A) : A < 55296 || A >= 57344 ? (h[d++] = 224 | A >> 12, h[d++] = 128 | A >> 6 & 63, h[d++] = 128 | 63 & A) : (A = 65536 + ((1023 & A) << 10 | 1023 & r.charCodeAt(++f)), h[d++] = 240 | A >> 18, h[d++] = 128 | A >> 12 & 63, h[d++] = 128 | A >> 6 & 63, h[d++] = 128 | 63 & A); s = d - 5, f === g && ++f, f > g && d < 6 && (i = !0), t = h[0], d > 4 ? (a = h[1], o = h[2], c = h[3], n = h[4], C += e[t >>> 3] + e[31 & (t << 2 | a >>> 6)] + e[a >>> 1 & 31] + e[31 & (a << 4 | o >>> 4)] + e[31 & (o << 1 | c >>> 7)] + e[c >>> 2 & 31] + e[31 & (c << 3 | n >>> 5)] + e[31 & n]) : 1 === d ? C += e[t >>> 3] + e[t << 2 & 31] + "======" : 2 === d ? (a = h[1], C += e[t >>> 3] + e[31 & (t << 2 | a >>> 6)] + e[a >>> 1 & 31] + e[a << 4 & 31] + "====") : 3 === d ? (a = h[1], o = h[2], C += e[t >>> 3] + e[31 & (t << 2 | a >>> 6)] + e[a >>> 1 & 31] + e[31 & (a << 4 | o >>> 4)] + e[o << 1 & 31] + "===") : (a = h[1], o = h[2], c = h[3], C += e[t >>> 3] + e[31 & (t << 2 | a >>> 6)] + e[a >>> 1 & 31] + e[31 & (a << 4 | o >>> 4)] + e[31 & (o << 1 | c >>> 7)] + e[c >>> 2 & 31] + e[c << 3 & 31] + "=") } while (!i); return C }(r) }, decode: A }; A.asBytes = n, t ? module.exports = d : (r.base32 = d, a && define(function () { return d })) }();
+        </script>
+        <script src="/js/create-toaster.js"></script>
+
+        <!--#import /includes/footer.html-->
+</body>
+
+</html>

@@ -10,21 +10,21 @@ import (
 	"github.com/toastate/toastainer/internal/utils"
 )
 
-type StatsResponse struct {
-	Success bool        `json:"success,omitempty"`
-	Stats   *statistics `json:"statistics,omitempty"`
+type UsageResponse struct {
+	Success bool   `json:"success,omitempty"`
+	Usage   *usage `json:"usage,omitempty"`
 }
 
-type statistics struct {
-	Duration   int64   `json:"duration_ms,omitempty"`
-	CPUS       int64   `json:"seconds_cpu,omitempty"`
-	Executions int64   `json:"runs,omitempty"`
-	RAM        float64 `json:"ram_gbs,omitempty"`
-	Ingress    float64 `json:"ingress_bytes,omitempty"`
-	Egress     float64 `json:"egress_bytes,omitempty"`
+type usage struct {
+	Duration   int64   `json:"duration_ms"`
+	CPUS       int64   `json:"cpu_seconds"`
+	Executions int64   `json:"runs"`
+	RAM        float64 `json:"ram_gbs"`
+	Ingress    float64 `json:"ingress_bytes"`
+	Egress     float64 `json:"egress_bytes"`
 }
 
-func Stats(w http.ResponseWriter, r *http.Request, userid string) {
+func Usage(w http.ResponseWriter, r *http.Request, userid string) {
 	var month, year string
 
 	tmp, ok := r.URL.Query()["month"]
@@ -44,7 +44,17 @@ func Stats(w http.ResponseWriter, r *http.Request, userid string) {
 	stats, err := redisdb.GetClient().HGetAll(context.Background(), "userstats_"+userid+"_"+month+year).Result()
 	if err != nil {
 		if err == redisdb.ErrNil {
-			utils.SendSuccess(w, nil)
+			utils.SendSuccess(w, &UsageResponse{
+				Success: true,
+				Usage: &usage{
+					Duration:   0,
+					CPUS:       0,
+					Executions: 0,
+					RAM:        0,
+					Ingress:    0,
+					Egress:     0,
+				},
+			})
 			return
 		}
 
@@ -59,9 +69,9 @@ func Stats(w http.ResponseWriter, r *http.Request, userid string) {
 	ingress, _ := strconv.ParseFloat(stats["ingress"], 64)
 	egress, _ := strconv.ParseFloat(stats["egress"], 64)
 
-	utils.SendSuccess(w, &StatsResponse{
+	utils.SendSuccess(w, &UsageResponse{
 		Success: true,
-		Stats: &statistics{
+		Usage: &usage{
 			Duration:   dms,
 			CPUS:       cpus,
 			Executions: executions,

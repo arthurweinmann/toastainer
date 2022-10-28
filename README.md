@@ -1,4 +1,4 @@
-# Toastainer
+# Toastainer - The gitlab of functions as a service platforms
 
 Toastainer is a self - hosted platform to run and auto-scale serverless code instances. An instance is started by the first request and can then be joined by multiple other requests. HTTP, Websocket and SSH requests are supported. Joining the same running code instance with different kind of requests is supported. You can set the timeout and maximum number of joiners for each instance in order to autoscale them naturally. You can also make a request force join a particular instance with its ID. You can setup your own OS image to support any programming language.
 

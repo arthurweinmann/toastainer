@@ -1,0 +1,74 @@
+/* links */
+
+.tab {
+    display: flex;
+}
+
+.tab__link {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding-right: 30px;
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tab__link:last-child {
+    padding-right: unset;
+    border-right: unset;
+}
+
+.tab__link:not(:first-child) {
+    padding-left: 30px;
+}
+
+.tab__link.active .tab__circle {
+    background-color: blue;
+    color: #fff;
+}
+
+.tab__link.active .tab__circle span {
+    color: #fff;
+}
+
+.tab__link.active .tab__label {
+    color: #fff;
+}
+
+.tab__circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    border-radius: 100%;
+    background: #414141;
+}
+
+.tab__circle span {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.tab__label {
+    margin-left: 14px;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 22px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* content */
+
+.tab__content {
+    display: none;
+}
+
+.tab__content.show {
+    display: block;
+}
+
+@media screen and (max-width: "{{.viewport_4}}") {
+    .tab__label {
+        font-size: 16px;
+        line-height: 20px;
+    }
+}

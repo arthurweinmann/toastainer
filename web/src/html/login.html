@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang=en>
+
+<head>
+     <!--#import /includes/head.html-->
+</head>
+
+<body>
+    <main class="main">
+        <div class="cont-title">
+            <h2>Toastainer</h2>
+            <h1>Sign in</h1>
+        </div>
+
+        <form class="form">
+            <div class="cont-inp">
+                <label>Email
+                    <input name="email" required />
+                </label>
+            </div>
+            <div class="cont-inp">
+                <label>Password
+                    <input name="password" type="password" autocomplete="password" required/>
+                </label>
+            </div>
+
+            <div class="form-err">
+                <p class="err__text">Une erreur est survenue.</p>
+            </div>
+
+            <button class="btn">Sign in</button>
+
+            <p class="p-redirect forget-password"><a class="link" href="/forget-password">Forgot password ?</a></p>
+            <p class="p-redirect">No account yet ? <a class="link" href="/signup">Sign up</a>.</p>
+        </form>
+    </main>
+
+    <div id="wrapper-modal"></div>
+
+     <!--#import /includes/publicfooter.html-->
+
+    <script src="/js/login.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,145 @@
+.title-stats {
+    margin-bottom: 30px;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 20px;
+    color: #FFFFFF;
+}
+
+.stats {
+    padding: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 20px;
+    transition: 0.8s ease;
+}
+
+.stats__list {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* head */
+
+.stats__head {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.stats__item-ellipse {
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    background: #FF7000;
+    box-shadow: 0px 8px 30px 8px rgba(255, 112, 0, 0.2);
+}
+
+.stats__val {
+    margin-left: 10px;
+    font-weight: 800;
+    font-size: 14px;
+    line-height: 15px;
+    text-align: center;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+/* body */
+
+.stats__body {
+    display: flex;
+    flex-direction: column;
+}
+
+.stats__type {
+    margin-bottom: 5px;
+    font-size: 10px;
+    line-height: 15px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.stats__line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stats__decoration {
+    width: 14.5px;
+    height: 6px;
+    background: linear-gradient(87.51deg, #FF7000 1.44%, #0047FF 97.66%);
+    border-radius: 20px;
+}
+
+.stats__name {
+    margin-left: 10px;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 15px;
+    text-align: center;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+@media screen and (max-width: "{{.viewport_14}}") {
+    .stats {
+        padding: 40px;
+    }
+    
+    .stats__val {
+        font-size: 13px;
+    }
+    
+    .stats__name {
+        font-size: 13px;
+    }
+}
+
+@media screen and (max-width: "{{.viewport_9}}") {
+    .stats {
+        padding: 30px;
+    }
+    
+    .stats__val {
+        font-size: 11px;
+    }
+    
+    .stats__name {
+        font-size: 11px;
+    }
+}
+
+@media screen and (max-width: "{{.viewport_7}}") {
+    .stats {
+        padding-top: 20px;
+    }
+
+    .stats__head {
+        margin-bottom: 20px;
+    }
+
+    .stats__list {
+        overflow-x: auto;
+        padding-bottom: 20px;
+    }
+
+    .stats__item {
+        min-width: 180px;
+    }
+}
+
+@media screen and (max-width: "{{.viewport_7}}") {
+    .title-stats {
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: "{{.viewport_4}}") {
+    .stats__item {
+        min-width: 135px;
+    }
+}

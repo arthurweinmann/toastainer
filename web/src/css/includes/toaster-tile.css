@@ -1,0 +1,280 @@
+
+.toastTile__list {
+    user-select: none;
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: all 0.2s;
+    will-change: transform;
+}
+
+.toastTile__item {
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    margin-right: 8px;
+    padding: 16px;
+    width: 300px;
+    min-width: 300px;
+    max-width: 300px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.toastTile {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+}
+
+.toastTile__wrapper {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.toastTile__toasty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 11px;
+    background-color: #034AFF;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.toastTile__item.most-called .toastTile__toasty {
+    background-color: #F1491F;
+}
+
+.toastTile__item.most-recent .toastTile__toasty {
+    background-color: #3E923C;
+}
+
+.toastTile__toasty svg {
+    fill: #fff;
+    width: 16px;
+}
+
+.toastFile__main {
+    flex: 1;
+}
+
+.toastTile__name {
+    margin-bottom: 8px;
+    max-width: 195px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 15px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.toastTile__infos {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    line-height: 17px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.toastTile__infos-author {
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 95px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 17px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.toastTile__more {
+    position: relative;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.toastTile__more span {
+    display: block;
+    transition: 0.3s ease;
+}
+
+.toastTile__more.show-menu {
+    background-color: #FF7000;
+}
+
+.toastTile__more.show-menu span {
+    transform: rotate(180deg);
+}
+
+.toastTile__more:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.toastTile__more.show-menu:hover {
+    background-color: #f38123;
+}
+
+/* menu */
+
+.toastTile__menu {
+    width: 100%;
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0);
+    transition: 0.3s ease;
+}
+
+.toastTile__menu.show-menu {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    height: 230px;
+    opacity: 1;
+}
+
+.toastTile__details {
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 10px;
+    line-height: 15px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.toastTile__item-detail {
+    display: flex;
+    align-items: center;
+    padding: 14px 8px;
+}
+
+.toastTile__label-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    width: 35px;
+    height: 35px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 10px;
+    line-height: 15px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.toastTile__detail-val {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    height: 35px;
+    font-size: 12px;
+    line-height: 15px;
+    letter-spacing: 0.1em;
+    color: #FFFFFF;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.toastTile__item-detail:last-child .toastTile__detail-val {
+    border-bottom: unset;
+}
+
+.toastTile__item-btn {
+    margin-bottom: 5px;
+}
+
+.toastTile__item-btn:last-child {
+    margin-bottom: unset;
+}
+
+.toastTile__item-btn button {
+    width: 100%;
+    height: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    font-weight: 600;
+    font-size: 12px;
+    color: #fff;
+    background: transparent;
+}
+
+.toastTile__item-btn button:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* empty toasters for item slider */
+.toastTile__empty-slider {
+    cursor: initial;
+}
+
+/* specific for search toasters */
+.toastTile__item.from-search {
+    display: flex;
+}
+
+.toastTile__item.from-search.hidden {
+    display: none;
+}
+
+.toastTile__empty-from-search {
+    display: none;
+    padding: 50px;
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 20px;
+    text-align: center;
+}
+
+.toastTile__empty-from-search.show {
+    display: block;
+}
+
+/* profile */
+.toastTile__profile {
+    display: inline-block;
+    margin: 0 5px;
+    width: 26px;
+    height: 26px;
+    border-radius: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+@media screen and (max-width: "{{.viewport_14}}") {
+    .toastTile__name {
+        font-size: 12px;
+    }
+
+    .toastTile__infos {
+        font-size: 11px;
+    }
+
+    .toastTile__infos-author {
+        font-size: 11px;
+    }
+}
+
+@media screen and (max-width: "{{.viewport_9}}") {
+    .toastTile__list  {
+        justify-content: center;
+    }
+}

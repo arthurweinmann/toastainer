@@ -1,0 +1,121 @@
+.modal-alert-step {
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.modal-alert-step__block {
+  background-color: rgba(0, 0, 0, .85);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.modal-alert-step__box {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.modal-alert-step__content {
+  padding: 30px;
+  vertical-align: middle;
+}
+
+.modal-alert-step__wrapper {
+  display: block;
+  margin: 0 auto;
+  max-width: 500px;
+  border-radius: 5px;
+  background-color: #1f1f1f;
+}
+
+.modal-alert-step__inner {
+  padding: 30px;
+}
+
+.modal-alert-step__title {
+  margin-bottom: 14px;
+  padding: 5px 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 24px;
+  text-align: center;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.modal-alert-step__text {
+  text-align: center;
+  line-height: 20px;
+  font-size: 14px;
+  color: #9b9b9b;
+  font-weight: 500;
+}
+
+.modal-alert-step__step {
+  text-align: right;
+  font-size: 13px;
+  font-weight: 300;
+}
+
+.modal-alert-step__warn {
+  margin-top: 16px;
+  padding: 5px;
+  text-align: center;
+  line-height: 20px;
+  font-size: 14px;
+  color: #fff;
+  background: #034aff;
+  font-weight: 500;
+}
+
+.modal-alert-step__buttons {
+  height: 44px;
+  border-top: none;
+  text-align: center;
+}
+
+.modal-alert-step__buttons--2 .modal-alert-step__button {
+  width: 50%;
+}
+
+.modal-alert-step__buttons--2 .modal-alert-step__button:last-child:before {
+  content: "";
+  position: absolute;
+  height: 44px;
+  width: 1px;
+  /* background: rgba(255,255,255,0.2); */
+  left: 0;
+}
+
+.modal-alert-step__button {
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  height: 44px;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 44px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  background-color: #034aff;
+  color: #fff;
+}
+
+.modal-alert-step__button:hover {
+  background-color: #185aff;
+}
+
+.modal-alert-step__button:first-child {
+  background-color: #353535;
+}
+
+.modal-alert-step__button:first-child:hover {
+  background-color: #3b3b3b;
+}

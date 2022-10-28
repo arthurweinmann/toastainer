@@ -6,12 +6,12 @@ import (
 	"unicode"
 )
 
-func ValidEmail(email string) bool {
+func IsValidEmail(email string) error {
 	_, err := mail.ParseAddress(email)
-	return err == nil
+	return err
 }
 
-func IsAlnumOrHyphen(s string) bool {
+func IsAlphaNumHyphen(s string) bool {
 	for _, r := range s {
 		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') && (r < '0' || r > '9') && r != '-' {
 			return false
@@ -45,11 +45,11 @@ func IsValidPassword(pass string) error {
 	}
 
 	if !upp {
-		// return fmt.Errorf("your password must contain at least one uppercase letter")
+		return fmt.Errorf("your password must contain at least one uppercase letter")
 	}
 
 	if !low {
-		// return fmt.Errorf("your password must contain at least one lowercase letter")
+		return fmt.Errorf("your password must contain at least one lowercase letter")
 	}
 
 	if !sym {

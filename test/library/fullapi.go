@@ -50,7 +50,7 @@ type FullAPITestOpts struct {
 	SetHostRedirection func(ip, hostname string) error
 }
 
-func NewFullAPITest(httpclientGenerator func() *http.Client, baseAPIURLWithoutLeadingSlash, apidomain, toasterdomain string, opts ...*FullAPITestOpts) (*FullAPITest, error) {
+func NewFullAPITest(httpclientGenerator func() *http.Client, baseAPIURLWithoutLeadingSlash, apidomain, toasterdomain, dashboarddomain string, opts ...*FullAPITestOpts) (*FullAPITest, error) {
 	rand.Seed(time.Now().UnixNano())
 
 	fat := &FullAPITest{

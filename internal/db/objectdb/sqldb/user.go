@@ -11,11 +11,15 @@ import (
 )
 
 func (c *Client) CreateUser(usr *model.User) error {
-	_, err := c.db.Exec("INSERT INTO users(id, email, password) VALUES (?,?,?)", usr.ID, usr.Email, usr.Password)
+	_, err := c.db.Exec("INSERT INTO users(id, email, username, password) VALUES (?,?,?,?)", usr.ID, usr.Email, usr.Username, usr.Password)
 	if err != nil {
 		// We need to query if the user already exists because error codes vary for each sql backends
 		// except for ErrNoRows
 		ok, _ := c.UserExistsByEmail(usr.Email)
+		if ok {
+			return objectdberror.ErrAlreadyExists
+		}
+		ok, _ = c.UserExistsByUsername(usr.Username)
 		if ok {
 			return objectdberror.ErrAlreadyExists
 		}
@@ -27,7 +31,7 @@ func (c *Client) CreateUser(usr *model.User) error {
 }
 
 func (c *Client) UpdateUser(usr *model.User) error {
-	_, err := c.db.Exec("UPDATE users SET email = ?, password = ? WHERE id = ?", usr.Email, usr.Password, usr.ID)
+	_, err := c.db.Exec("UPDATE users SET email = ?, username = ?, password = ? WHERE id = ?", usr.Email, usr.Username, usr.Password, usr.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return objectdberror.ErrNotFound
@@ -41,6 +45,22 @@ func (c *Client) UpdateUser(usr *model.User) error {
 func (c *Client) GetUserByEmail(email string) (*model.User, error) {
 	usrs := []model.User{}
 	err := c.db.Select(&usrs, "SELECT * FROM users WHERE email=?", email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, objectdberror.ErrNotFound
+		}
+		return nil, err
+	}
+	if len(usrs) == 0 {
+		return nil, objectdberror.ErrNotFound
+	}
+
+	return &usrs[0], nil
+}
+
+func (c *Client) GetUserByUsername(username string) (*model.User, error) {
+	usrs := []model.User{}
+	err := c.db.Select(&usrs, "SELECT * FROM users WHERE username=?", username)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, objectdberror.ErrNotFound
@@ -113,6 +133,19 @@ func (c *Client) RangeUsers(limit int, cursor string) (string, bool, []model.Use
 func (c *Client) UserExistsByEmail(email string) (bool, error) {
 	var exists bool
 	err := c.db.QueryRow("SELECT EXISTS(SELECT * FROM users WHERE email=?)", email).Scan(&exists)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil
+		}
+		return false, err
+	}
+
+	return exists, nil
+}
+
+func (c *Client) UserExistsByUsername(username string) (bool, error) {
+	var exists bool
+	err := c.db.QueryRow("SELECT EXISTS(SELECT * FROM users WHERE username=?)", username).Scan(&exists)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return false, nil

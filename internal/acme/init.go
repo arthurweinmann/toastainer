@@ -69,23 +69,21 @@ func Init() error {
 }
 
 func BuiltinCerts() [][]string {
+	perRootDomains := map[string][]string{}
+
+	perRootDomains[config.ToasterRootDomain] = append(perRootDomains[config.ToasterRootDomain], "*."+config.ToasterDomain)
+	if config.Region != "" {
+		perRootDomains[config.ToasterRootDomain] = append(perRootDomains[config.ToasterRootDomain], nodes.GetToasterLocalRegionAppSubdomain(config.ToasterDomain, config.Region))
+	}
+
+	perRootDomains[config.APIRootDomain] = append(perRootDomains[config.APIRootDomain], config.APIDomain)
+
+	perRootDomains[config.DashboardRootDomain] = append(perRootDomains[config.DashboardRootDomain], config.DashboardDomain)
+
 	var ret [][]string
 
-	if config.APIRootDomain == config.ToasterRootDomain {
-		tmp := []string{config.APIDomain, "*." + config.ToasterDomain}
-		if config.Region != "" {
-			tmp = append(tmp, nodes.GetToasterLocalRegionAppSubdomain(config.ToasterDomain, config.Region))
-		}
-
-		ret = append(ret, tmp)
-	} else {
-		tmp := []string{"*." + config.ToasterDomain}
-		if config.Region != "" {
-			tmp = append(tmp, nodes.GetToasterLocalRegionAppSubdomain(config.ToasterDomain, config.Region))
-		}
-
-		ret = append(ret, tmp)
-		ret = append(ret, []string{config.APIDomain})
+	for _, v := range perRootDomains {
+		ret = append(ret, v)
 	}
 
 	return ret

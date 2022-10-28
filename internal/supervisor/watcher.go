@@ -62,6 +62,10 @@ func (wat *Watcher) Shutdown() {
 	}
 }
 
+func (wat *Watcher) BlockUntilShutdownDone() {
+	<-wat.shutdownDone
+}
+
 func (wat *Watcher) httpWatcher() {
 	err := <-wat.srv.errs
 	if err != nil && atomic.LoadUint32(&wat.shuttingdown) == 0 {

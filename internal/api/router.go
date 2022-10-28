@@ -2,7 +2,12 @@ package api
 
 import (
 	"fmt"
+	"io"
+	"mime"
 	"net/http"
+	"os"
+	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/toastate/toastainer/internal/acme"
@@ -56,7 +61,114 @@ func (s *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if stripedhost == config.DashboardDomain {
+		if !s.isHTTPS {
+			utils.Redirect2HTTPS(w, r)
+			return
+		}
+
+		s.dashboard(w, r)
+		return
+	}
+
 	s.proxy2Toaster(w, r)
+}
+
+func (s *Router) dashboard(w http.ResponseWriter, r *http.Request) {
+	// Check for .. in the path and respond with an error if it is present
+	// otherwise users could access any file on the server
+	if utils.ContainsDotDot(r.URL.Path) {
+		// TODO: send web dedicated error page
+		utils.SendError(w, "invalid Path", "invalidPath", 400)
+		return
+	}
+
+	setupCORS(w, r.Header.Get("Origin"))
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	upath := r.URL.Path
+	if !strings.HasPrefix(upath, "/") {
+		upath = "/" + upath
+		r.URL.Path = upath
+	}
+
+	const indexPage = "index.html"
+
+	fullName := filepath.Join(config.Home, "web", filepath.FromSlash(path.Clean(upath)))
+
+	if fullName[len(fullName)-1] == '/' {
+		fullName = filepath.Join(fullName, indexPage)
+	}
+
+	info, err := os.Stat(fullName)
+
+	valid := false
+	if err != nil || info.IsDir() {
+		if err != nil && !os.IsNotExist(err) {
+			utils.SendInternalError(w, "router:dashboard", err)
+			return
+		}
+
+		info, err = os.Stat(fullName + ".html")
+		if err != nil || info.IsDir() {
+			if err != nil && !os.IsNotExist(err) {
+				utils.SendInternalError(w, "router:dashboard", err)
+				return
+			}
+
+			info, err := os.Stat(filepath.Join(fullName, indexPage))
+			if err != nil || info.IsDir() {
+				if err != nil && !os.IsNotExist(err) {
+					utils.SendInternalError(w, "router:dashboard", err)
+					return
+				}
+			} else {
+				fullName = filepath.Join(fullName, indexPage)
+				valid = true
+			}
+		} else {
+			fullName = fullName + ".html"
+			valid = true
+		}
+	} else {
+		valid = true
+	}
+
+	if !valid {
+		// TODO: use web 404 dedicated page
+		utils.SendError(w, "page not found", "notFound", 404)
+		return
+	}
+
+	content, err := os.Open(fullName)
+	if err != nil {
+		utils.SendInternalError(w, "router:dashboard", err)
+		return
+	}
+
+	ctype := mime.TypeByExtension(filepath.Ext(fullName))
+	if ctype == "" {
+		var buf [512]byte
+		n, _ := io.ReadFull(content, buf[:])
+		ctype = http.DetectContentType(buf[:n])
+
+		var nn int
+		for nn < n {
+			l, err := w.Write(buf[nn:])
+			nn += l
+			if err != nil {
+				utils.SendInternalError(w, "router:dashboard", err)
+				return
+			}
+		}
+	}
+
+	w.Header().Set("Content-Type", ctype)
+	io.Copy(w, content)
 }
 
 type rootResponse struct {
@@ -92,6 +204,12 @@ func (s *Router) api(w http.ResponseWriter, r *http.Request) {
 		case "cookiesignin":
 			userroute.CookieSignin(w, r)
 			return
+		case "forgotten-password":
+			userroute.ForgottenPasswordSendLink(w, r)
+			return
+		case "reset-password":
+			userroute.ForgottenPasswordReset(w, r)
+			return
 		default:
 			dynRoute := dynamicroutes.GetDynamicRoute(spath)
 			if dynRoute != nil {
@@ -113,8 +231,8 @@ func (s *Router) api(w http.ResponseWriter, r *http.Request) {
 		case "user":
 			if len(spath) > 1 {
 				switch spath[1] {
-				case "statistics":
-					userroute.Stats(w, r, user.ID)
+				case "usage":
+					userroute.Usage(w, r, user.ID)
 					return
 				case "changepassword":
 					userroute.UpdatePassword(w, r, user.ID)
@@ -124,6 +242,12 @@ func (s *Router) api(w http.ResponseWriter, r *http.Request) {
 					return
 				case "deleteaccount":
 					userroute.DeleteAccount(w, r, user.ID, sessToken)
+					return
+				}
+			} else {
+				switch r.Method {
+				case "GET":
+					userroute.GetUser(w, r, user.ID)
 					return
 				}
 			}
@@ -268,7 +392,7 @@ func setupCORS(w http.ResponseWriter, origin string) {
 	}
 
 	h.Add("Access-Control-Allow-Methods", "POST, PUT, GET, DELETE, OPTIONS")
-	h.Add("Access-Control-Allow-Headers", "X-TOASTATE-AUTH,X-TOASTATE-EXEID,X-TOASTATE-EXE-TIMEOUT-SEC,Origin,Accept,Access-Control-Allow-Origin,Access-Control-Allow-Methods,Access-Control-Allow-Headers,Access-Control-Allow-Credentials,Accept-Encoding,Accept-Language,Access-Control-Request-Headers,Access-Control-Request-Method,Cache-Control,Connection,Host,Pragma,Referer,Sec-Fetch-Dest,Sec-Fetch-Mode,Sec-Fetch-Site,Set-Cookie,User-Agent,Vary,Method,Content-Type,Content-Length") // todo: étoffer
+	h.Add("Access-Control-Allow-Headers", "X-TOASTAINER-AUTH,X-TOASTAINER-EXEID,X-TOASTAINER-EXE-TIMEOUT-SEC,Origin,Accept,Access-Control-Allow-Origin,Access-Control-Allow-Methods,Access-Control-Allow-Headers,Access-Control-Allow-Credentials,Accept-Encoding,Accept-Language,Access-Control-Request-Headers,Access-Control-Request-Method,Cache-Control,Connection,Host,Pragma,Referer,Sec-Fetch-Dest,Sec-Fetch-Mode,Sec-Fetch-Site,Set-Cookie,User-Agent,Vary,Method,Content-Type,Content-Length") // todo: étoffer
 	h.Add("Vary", "*")
 	h.Add("Cache-Control", "no-store")
 }

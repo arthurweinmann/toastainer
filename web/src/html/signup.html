@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang=en>
+
+<head>
+     <!--#import /includes/head.html-->
+</head>
+
+<body>
+    <main class="main">
+        <div class="cont-title">
+            <h2>Toastainer</h2>
+            <h1>Join us</h1>
+        </div>
+
+        <form class="form">
+            <div class="cont-inp">
+                <label>Email
+                    <input id="inp-email" name="email" type="email" required />
+                </label>
+            </div>
+            <div class="cont-inp">
+                <label>Username
+                    <input id="inp-username" name="username" required />
+                </label>
+            </div>
+            <div class="cont-inp">
+                <label>Password
+                    <input id="inp-password" name="password" type="password" autocomplete="password" required />
+                </label>
+            </div>
+            <ul class="pwd-validation__list">
+                <li class="pwd-validation__item">
+                    <p><span class="icon-check"></span> At least 8 characters</p>
+                </li>
+                <li class="pwd-validation__item">
+                    <p><span class="icon-check"></span> At least one number (0-9)</p>
+                </li>
+                <li class="pwd-validation__item">
+                    <p><span class="icon-check"></span> At least one symbol (.!?&$€£.@#~*()+,_-‘’')</p>
+                </li>
+            </ul>
+
+            <div class="form-err">
+                <p class="err__text"></p>
+            </div>
+
+            <button id="btn-signup" class="btn disabled">Sign up</button>
+
+            <p class="p-redirect">Already have an account ? <a class="link" href="/login">Sign in</a>.</p>
+        </form>
+    </main>
+
+    <div id="wrapper-modal"></div>
+
+     <!--#import /includes/publicfooter.html-->
+
+    <script src="/js/signup.js"></script>
+</body>
+
+</html>

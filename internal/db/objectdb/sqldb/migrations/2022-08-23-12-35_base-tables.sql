@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `cursor` INT NOT NULL AUTO_INCREMENT ,
     `id` VARCHAR(32) NOT NULL ,
     `email` VARCHAR(320) NOT NULL UNIQUE ,
+    `username` VARCHAR(320) NOT NULL UNIQUE ,
     `password` VARCHAR(128) NOT NULL ,
     PRIMARY KEY (`id`) ,
     KEY (`cursor`)) ENGINE = InnoDB;

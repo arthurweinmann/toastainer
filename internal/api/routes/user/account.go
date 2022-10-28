@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -11,12 +12,15 @@ import (
 	"github.com/toastate/toastainer/internal/api/settings"
 	"github.com/toastate/toastainer/internal/config"
 	"github.com/toastate/toastainer/internal/db/objectdb"
+	"github.com/toastate/toastainer/internal/db/objectstorage/objectstoragerror"
+	"github.com/toastate/toastainer/internal/db/redisdb"
+	"github.com/toastate/toastainer/internal/email"
+	"github.com/toastate/toastainer/internal/model"
 	"github.com/toastate/toastainer/internal/utils"
 )
 
 type ForgottenPasswordSendLinkRequest struct {
-	CurrentPassword string `json:"current_password,omitempty"`
-	NewPassword     string `json:"new_password,omitempty"`
+	Email string `json:"email,omitempty"`
 }
 
 type ForgottenPasswordSendLinkResponse struct {
@@ -24,11 +28,68 @@ type ForgottenPasswordSendLinkResponse struct {
 }
 
 func ForgottenPasswordSendLink(w http.ResponseWriter, r *http.Request) {
+	req := &ForgottenPasswordSendLinkRequest{}
+	body, err := io.ReadAll(io.LimitReader(r.Body, settings.MaxBodySize))
+	if err != nil {
+		utils.SendError(w, "could not read request body: "+err.Error(), "invalidBody", 400)
+		return
+	}
+
+	err = json.Unmarshal(body, req)
+	if err != nil {
+		utils.SendError(w, "malformed body: "+err.Error(), "invalidBody", 400)
+		return
+	}
+
+	err = utils.IsValidEmail(req.Email)
+	if err != nil {
+		utils.SendError(w, "invalid email address: "+err.Error(), "invalidBody", 400)
+		return
+	}
+
+	usr, err := objectdb.Client.GetUserByEmail(req.Email)
+	if err != nil {
+		if err == objectstoragerror.ErrNotFound {
+			// Sending success is necessary not to leak email addresses
+			utils.SendSuccess(w, &ForgottenPasswordSendLinkResponse{Success: true})
+			return
+		}
+
+		utils.SendInternalError(w, "ForgottenPasswordSendLink:objectdb.Client.GetUserByEmail", err)
+		return
+	}
+
+	if config.EmailProvider.Name == "" {
+		utils.SendError(w, "your toastainer instance is not configured to send emails", "notConfigured", 403)
+		return
+	}
+
+	token, err := utils.UniqueSecureID120()
+	if err != nil {
+		utils.SendInternalError(w, "ForgottenPasswordSendLink:utils.UniqueSecureID120", err)
+		return
+	}
+
+	err = redisdb.GetClient().Set(context.Background(), "pwdreset_"+token, usr.ID, 15*time.Minute).Err()
+	if err != nil {
+		utils.SendInternalError(w, "ForgottenPasswordSendLink:redis.Set", err)
+		return
+	}
+
+	link := "https://" + config.DashboardDomain + "/reset-password.html?token=" + token
+
+	err = email.Client.Send([]string{usr.Email}, "Toastainer Password Reset", "Please follow this link in order to reset your password", email.ResetPasswordTemplate(link))
+	if err != nil {
+		utils.SendInternalError(w, "ForgottenPasswordSendLink:email.Send", err)
+		return
+	}
+
+	utils.SendSuccess(w, &ForgottenPasswordSendLinkResponse{Success: true})
 }
 
 type ForgottenPasswordResetRequest struct {
-	CurrentPassword string `json:"current_password,omitempty"`
-	NewPassword     string `json:"new_password,omitempty"`
+	Token       string `json:"token,omitempty"`
+	NewPassword string `json:"new_password,omitempty"`
 }
 
 type ForgottenPasswordResetResponse struct {
@@ -36,6 +97,57 @@ type ForgottenPasswordResetResponse struct {
 }
 
 func ForgottenPasswordReset(w http.ResponseWriter, r *http.Request) {
+	req := &ForgottenPasswordResetRequest{}
+	body, err := io.ReadAll(io.LimitReader(r.Body, settings.MaxBodySize))
+	if err != nil {
+		utils.SendError(w, "could not read request body: "+err.Error(), "invalidBody", 400)
+		return
+	}
+
+	err = json.Unmarshal(body, req)
+	if err != nil {
+		utils.SendError(w, "malformed body: "+err.Error(), "invalidBody", 400)
+		return
+	}
+
+	err = utils.IsValidPassword(req.NewPassword)
+	if err != nil {
+		utils.SendError(w, "invalid new password: "+err.Error(), "invalidBody", 400)
+		return
+	}
+
+	usrid, err := redisdb.GetClient().Get(context.Background(), "pwdreset_"+req.Token).Result()
+	if err != nil {
+		if err == redisdb.ErrNil {
+			utils.SendError(w, "token not found", "notFound", 404)
+			return
+		}
+
+		utils.SendInternalError(w, "ForgottenPasswordReset:redis.Get", err)
+		return
+	}
+
+	usr, err := objectdb.Client.GetUserByID(usrid)
+	if err != nil {
+		utils.SendInternalError(w, "ForgottenPasswordReset:objectdb.Get", err)
+		return
+	}
+
+	p, err := utils.HashPassword(req.NewPassword)
+	if err != nil {
+		utils.SendInternalError(w, "ForgottenPasswordReset:utils.HashPassword", err)
+		return
+	}
+
+	usr.Password = p
+
+	err = objectdb.Client.UpdateUser(usr)
+	if err != nil {
+		utils.SendInternalError(w, "ForgottenPasswordReset:objectdb.update", err)
+		return
+	}
+
+	utils.SendSuccess(w, &ForgottenPasswordResetResponse{Success: true})
 }
 
 type UpdatePasswordRequest struct {
@@ -189,4 +301,22 @@ func DeleteAccount(w http.ResponseWriter, r *http.Request, userid, sessToken str
 	// they should be kept for some time
 
 	utils.SendSuccess(w, &DeleteAccountResponse{Success: true})
+}
+
+type GetUserResponse struct {
+	Success bool        `json:"success,omitempty"`
+	User    *model.User `json:"user,omitempty"`
+}
+
+func GetUser(w http.ResponseWriter, r *http.Request, userid string) {
+	usr, err := objectdb.Client.GetUserByID(userid)
+	if err != nil {
+		utils.SendInternalError(w, "GetUser:objectdb.Client.GetUserByID", err)
+		return
+	}
+
+	utils.SendSuccess(w, &GetUserResponse{
+		Success: true,
+		User:    usr,
+	})
 }

@@ -1,0 +1,19 @@
+.back__cont {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    opacity: 0.7;
+}
+
+.back__cont:hover {
+    opacity: 1;
+}
+
+.back__label {
+    margin-left: 5px;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 17px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}

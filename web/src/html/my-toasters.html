@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang=en>
+
+<head>
+     <!--#import /includes/head.html-->
+</head>
+
+<body>
+    <template data-access='["all"]'>
+
+        <main class="main">
+             <!--#import /includes/sidemenu.html-->
+
+            <div class="wrapper-content">
+                 <!--#import /includes/header.html-->
+
+                <div class="content">
+                    <div class="content__wrapper-title">
+                        <div class="content__title">
+                            <h2>Toasters Industry</h2>
+                            <h1>My Toasters</h1>
+                        </div>
+                    </div>
+                    <div class="content__body">
+                        <section class="section-most-recent-toasters" style="display: none;">
+                            <div class="cont-h3">
+                                <h3>Most recent</h3>
+                                <span class="tile grey tile__count"></span>
+                            </div>
+                            <div>
+                                <ul class="toastTile__list toastTile__list-most-recent">
+                                </ul>
+                            </div>
+                        </section>
+                        <section class="section-most-called-toasters" style="display: none;">
+                            <div class="cont-h3">
+                                <h3>Most called</h3>
+                                <span class="tile grey tile__count"></span>
+                            </div>
+                            <div>
+                                <ul class="toastTile__list toastTile__list-most-called">
+                                </ul>
+                            </div>
+                        </section>
+                        <section class="section-toasters">
+                            <div class="cont-h3">
+                                <h3>Toasters</h3>
+                                <span class="tile tile__count"></span>
+                            </div>
+                            <div>
+                                <div class="empty__zone">
+                                    <p class="empty__text">You have no Toasters yet.</p>
+                                    <div class="empty__btn">
+                                        <a class="btn" href="/create-toaster">Create your first Toaster</a>
+                                    </div>
+                                </div>
+                                <ul class="toastTile__list toastTile__list-all">
+                                </ul>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div id="wrapper-modal"></div>
+
+        <script src="/js/my-toasters.js"></script>
+
+         <!--#import /includes/footer.html-->
+</body>
+
+</html>

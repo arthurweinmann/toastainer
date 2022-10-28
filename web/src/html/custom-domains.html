@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang=en>
+
+<head>
+     <!--#import /includes/head.html-->
+</head>
+
+<body>
+    <template data-access='["all"]'>
+
+        <main class="main">
+             <!--#import /includes/sidemenu.html-->
+
+            <div class="wrapper-content">
+                 <!--#import /includes/header.html-->
+
+                <div class="content">
+                    <div class="content__wrapper-title">
+                        <div class="content__title">
+                            <h2>Manage custom domains</h2>
+                            <h1>Custom domains</h1>
+                        </div>
+                    </div>
+                    <div class="content__body">
+                        <div class="cont-btn">
+                            <button id="btn-create-domain" class="btn with-icon">
+                                <span class="icon-plus"></span>Create domain
+                            </button>
+                        </div>
+
+                        <div class="empty__zone">
+                            <p class="empty__text">You have no domains yet.</p>
+                        </div>
+
+                        <ul class="list-domains"></ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div id="wrapper-modal"></div>
+
+        <script src="/js/custom-domains.js"></script>
+
+         <!--#import /includes/footer.html-->
+</body>
+
+</html>

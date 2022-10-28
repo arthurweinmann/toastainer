@@ -1,0 +1,205 @@
+.content__body {
+    display: flex;
+    padding-top: 200px;
+    padding-bottom: 100px;
+    max-width: 1000px;
+}
+
+.separator {
+    margin: 60px 0;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* block left */
+
+.account__left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.account__left .btn {
+    padding: 12.5px 20px;
+    font-size: 13px;
+}
+
+.account__profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.account__profile-img {
+    margin-bottom: 30px;
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 100%;
+}
+
+.account__user {
+    margin-bottom: 20px;
+    font-size: 20px;
+    line-height: 25px;
+    color: #FFFFFF;
+}
+
+/* block right */
+
+.account__right {
+    flex: 1;
+}
+
+.cont-btn-modify {
+    padding-top: 30px;
+    text-align: center;
+}
+
+
+/* password validation */
+.pwd-validation__list {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.pwd-validation__item p {
+    font-size: 13px;
+    line-height: 16px;
+    color: rgba(255, 255, 255, 0.25);
+}
+
+.pwd-validation__item.is-valid p {
+    color: #a5a5a5;
+}
+
+.pwd-validation__list span.icon-check {
+    color: rgba(255, 255, 255, 0.25);
+}
+
+.pwd-validation__item.is-valid span.icon-check {
+    color: #007eff;
+}
+
+.btn-validation.disabled {
+    filter: grayscale(1);
+}
+
+/* plan user */
+.plan__item {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 16px;
+    min-width: 280px;
+    border-radius: 14px;
+    background-color: #1E1F20;
+}
+
+.plan__item.show {
+    display: block;
+}
+
+.plan__popular {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    background: #ff7000;
+    box-shadow: 0px 8px 30px 4px rgba(255, 112, 0, 0.2);
+}
+
+.plan__row {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.plan__type {
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 18px;
+    text-transform: uppercase;
+    color: #FF7000;
+}
+
+.plan__label {
+    font-weight: bold;
+    font-size: 20px;
+    line-height: 24px;
+    color: #FFFFFF;
+}
+
+.plan__text-bold {
+    font-weight: 500;
+    color: #fff;
+}
+
+.plan__cont-link {
+    margin-top: 20px;
+}
+
+.plan__cont-link button {
+    padding: 7px 10px;
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+}
+
+.inp-new-password.is-success {
+    border: 1px solid #2f762f;
+}
+
+@media screen and (max-width: "{{.viewport_14}}") {
+    #form-update-account {
+        margin: 0 auto;
+        max-width: 400px;
+    }
+
+    .account__left {
+        flex: 0.7;
+    }
+}
+
+@media screen and (max-width: "{{.viewport_9}}") {
+    .content__body {
+        padding-top: 180px !important;
+    }
+
+    .account__left {
+        flex: 0.6;
+    }
+
+    .account__profile-img {
+        width: 150px;
+        height: 150px;
+    }
+
+    .account__user {
+        font-size: 16px;
+    }
+}
+
+@media screen and (max-width: "{{.viewport_7}}") {
+    .content__body {
+        flex-direction: column;
+        padding-top: 80px !important;
+    }
+
+    .account__left {
+        margin-bottom: 50px;
+    }
+
+    .plan__item {
+        position: relative;
+        max-width: 300px;
+        margin: 0 auto 30px auto;
+    }
+}

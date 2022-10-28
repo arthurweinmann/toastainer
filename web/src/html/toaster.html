@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang=en>
+
+<head>
+     <!--#import /includes/head.html-->
+</head>
+
+<body>
+    <template data-access='["all"]'>
+
+        <main class="main">
+             <!--#import /includes/sidemenu.html-->
+
+            <div class="wrapper-content">
+                 <!--#import /includes/header.html-->
+
+                <div class="content">
+                    <div class="content__wrapper-title">
+                        <div class="content__title">
+                            <h2>Fiche Toaster</h2>
+                            <h1>
+                                <div class="shimmer shimmer__title"></div>
+                                <span id="name-toaster"></span>
+                                <span class="toaster-currently-running">
+                                    <svg width="18" height="14" viewBox="0 0 20 16" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M10 0C3.75 0 0 2.91875 0 5.28563C0 6.2325 0.841667 7 2.22222 7V15C2.22222 15.5522 2.78194 16 3.47222 16H16.5278C17.2181 16 17.7778 15.5522 17.7778 15V7C19.1583 7 20 6.2325 20 5.28563C20 2.91875 16.25 0 10 0ZM5.27778 14C5.11296 14 4.95184 13.956 4.8148 13.8736C4.67776 13.7912 4.57095 13.6741 4.50788 13.537C4.44481 13.4 4.4283 13.2492 4.46046 13.1037C4.49261 12.9582 4.57198 12.8246 4.68852 12.7197C4.80507 12.6148 4.95355 12.5434 5.1152 12.5144C5.27685 12.4855 5.44441 12.5003 5.59668 12.5571C5.74895 12.6139 5.8791 12.71 5.97067 12.8333C6.06224 12.9567 6.11111 13.1017 6.11111 13.25C6.11111 13.4489 6.02331 13.6397 5.86703 13.7803C5.71075 13.921 5.49879 14 5.27778 14V14ZM5.27778 11C5.11296 11 4.95184 10.956 4.8148 10.8736C4.67776 10.7912 4.57095 10.6741 4.50788 10.537C4.44481 10.4 4.4283 10.2492 4.46046 10.1037C4.49261 9.9582 4.57198 9.82456 4.68852 9.71967C4.80507 9.61478 4.95355 9.54335 5.1152 9.51441C5.27685 9.48547 5.44441 9.50033 5.59668 9.55709C5.74895 9.61386 5.8791 9.70999 5.97067 9.83332C6.06224 9.95666 6.11111 10.1017 6.11111 10.25C6.11111 10.4489 6.02331 10.6397 5.86703 10.7803C5.71075 10.921 5.49879 11 5.27778 11ZM8.61111 14C8.44629 14 8.28518 13.956 8.14814 13.8736C8.01109 13.7912 7.90428 13.6741 7.84121 13.537C7.77814 13.4 7.76164 13.2492 7.79379 13.1037C7.82594 12.9582 7.90531 12.8246 8.02186 12.7197C8.1384 12.6148 8.28689 12.5434 8.44854 12.5144C8.61019 12.4855 8.77774 12.5003 8.93001 12.5571C9.08229 12.6139 9.21243 12.71 9.304 12.8333C9.39557 12.9567 9.44444 13.1017 9.44444 13.25C9.44444 13.4489 9.35665 13.6397 9.20037 13.7803C9.04409 13.921 8.83212 14 8.61111 14V14Z"
+                                            fill="#fff" />
+                                        <path
+                                            d="M5.27767 12.5C5.11285 12.5 4.95174 12.544 4.8147 12.6264C4.67765 12.7088 4.57084 12.8259 4.50777 12.963C4.4447 13.1 4.42819 13.2508 4.46035 13.3963C4.4925 13.5418 4.57187 13.6754 4.68841 13.7803C4.80496 13.8852 4.95344 13.9567 5.11509 13.9856C5.27675 14.0145 5.4443 13.9997 5.59657 13.9429C5.74885 13.8861 5.87899 13.79 5.97056 13.6667C6.06213 13.5433 6.111 13.3983 6.111 13.25C6.111 13.0511 6.02321 12.8603 5.86693 12.7197C5.71065 12.579 5.49868 12.5 5.27767 12.5V12.5ZM5.27767 9.5C5.11285 9.5 4.95174 9.54399 4.8147 9.6264C4.67765 9.70881 4.57084 9.82594 4.50777 9.96299C4.4447 10.1 4.42819 10.2508 4.46035 10.3963C4.4925 10.5418 4.57187 10.6754 4.68841 10.7803C4.80496 10.8852 4.95344 10.9567 5.11509 10.9856C5.27675 11.0145 5.4443 10.9997 5.59657 10.9429C5.74885 10.8861 5.87899 10.79 5.97056 10.6667C6.06213 10.5433 6.111 10.3983 6.111 10.25C6.111 10.0511 6.02321 9.86032 5.86693 9.71967C5.71065 9.57902 5.49868 9.5 5.27767 9.5ZM8.61101 12.5C8.44619 12.5 8.28507 12.544 8.14803 12.6264C8.01099 12.7088 7.90418 12.8259 7.84111 12.963C7.77803 13.1 7.76153 13.2508 7.79368 13.3963C7.82584 13.5418 7.90521 13.6754 8.02175 13.7803C8.13829 13.8852 8.28678 13.9567 8.44843 13.9856C8.61008 14.0145 8.77764 13.9997 8.92991 13.9429C9.08218 13.8861 9.21233 13.79 9.3039 13.6667C9.39547 13.5433 9.44434 13.3983 9.44434 13.25C9.44434 13.0511 9.35654 12.8603 9.20026 12.7197C9.04398 12.579 8.83202 12.5 8.61101 12.5V12.5Z"
+                                            fill="#fff" />
+                                    </svg>
+                                    <span id="toaster-running"></span> currently running
+                                </span>
+                            </h1>
+
+                        </div>
+                    </div>
+                    <div class="content__body">
+                        <form id="form-toaster" disabled>
+                            <div class="toaster__header-line">
+                                <div class="shimmer shimmer__toaster-crypt"></div>
+                                <div class="crypt__wrapper">
+                                    <div class="crypt__icon">
+                                        <span class="icon-check"></span>
+                                    </div>
+                                    <span class="crypt__label">Cryptographically secured</span>
+                                </div>
+                                <p class="toaster__id">
+                                    <span class="toaster__id-label">ID</span>
+                                <div class="shimmer shimmer__toaster-id"></div>
+                                <input class="toaster__id-inp" name="toaster-id" value="" />
+                                </p>
+                                <div class="cont-btn-copy">
+                                    <div id="tooltip-copy-id" class="tooltip">Copied</div>
+                                    <button id="btn-copy-id" class="btn with-icon with-outline"><span class="icon-copy"></span>
+                                        Copy</button>
+                                </div>
+                            </div>
+                            <section class="toaster__header">
+                                <div class="wrapper-action">
+                                    <div id="btn-select-action" class="btn-select">Choose action <span
+                                            class="icon-chevron-down"></span></div>
+                                    <ul class="actions__list">
+                                        <li class="actions__item" data-action="edit">
+                                            <span class="icon-edit-3"></span>
+                                            <span class="actions__label">Edit</span>
+                                        </li>
+                                        <li class="actions__item" data-action="link">
+                                            <span class="icon-link-2"></span>
+                                            <span class="actions__label">Link</span>
+                                        </li>
+                                        <li class="actions__item" data-action="delete">
+                                            <span class="icon-trash"></span>
+                                            <span class="actions__label">Delete</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="wrapper-run">
+                                    <div id="btn-select-run" class="btn-select">Run <span
+                                            class="icon-chevron-down"></span></div>
+                                    <div class="run__content">
+                                        <div>
+                                            <p class="run__label">HTTPS</p>
+                                            <div class="cont-copy-run">
+                                                <input id="run-toaster" value="" />
+                                                <span id="btn-copy-run" class="icon-copy"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="shimmer shimmer__toaster-img"></div>
+                                <div class="toaster__image">
+                                    <svg width="90" height="90" viewBox="0 0 80 80" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <g opacity="0.1">
+                                            <path
+                                                d="M63.3333 10H16.6667C12.9848 10 10 12.9848 10 16.6667V63.3333C10 67.0152 12.9848 70 16.6667 70H63.3333C67.0152 70 70 67.0152 70 63.3333V16.6667C70 12.9848 67.0152 10 63.3333 10Z"
+                                                stroke="white" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path
+                                                d="M28.3335 33.3335C31.0949 33.3335 33.3335 31.0949 33.3335 28.3335C33.3335 25.5721 31.0949 23.3335 28.3335 23.3335C25.5721 23.3335 23.3335 25.5721 23.3335 28.3335C23.3335 31.0949 25.5721 33.3335 28.3335 33.3335Z"
+                                                stroke="white" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path d="M69.9998 50.0002L53.3332 33.3335L16.6665 70.0002" stroke="white"
+                                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                        </g>
+                                    </svg>
+                                </div>
+                                <div class="toaster__header-right">
+                                    <section>
+                                        <div class="cont-title-stats">
+                                            <h4 class="title-stats">Monthly statistics</h4>
+                                            <span class="toaster__date">Created <span class="toaster__created"></span> - updated <span class="toaster__modified"></span></span>
+                                        </div>
+                                        <div class="shimmer shimmer__toaster-stats"></div>
+                                        <div class="stats">
+                                            <ul class="stats__list">
+                                                <li class="stats__item">
+                                                    <div class="stats__head">
+                                                        <div class="stats__item-ellipse"></div>
+                                                        <span id="stat1" class="stats__val"></span>
+                                                    </div>
+                                                    <div class="stats__body">
+                                                        <span class="stats__type">Milliseconds</span>
+                                                        <div class="stats__line">
+                                                            <div class="stats__decoration"></div>
+                                                            <span class="stats__name">Aggr. duration</span>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="stats__item">
+                                                    <div class="stats__head">
+                                                        <div class="stats__item-ellipse"></div>
+                                                        <span id="stat2" class="stats__val"></span>
+                                                    </div>
+                                                    <div class="stats__body">
+                                                        <span class="stats__type">Seconds</span>
+                                                        <div class="stats__line">
+                                                            <div class="stats__decoration"></div>
+                                                            <span class="stats__name">CPU</span>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="stats__item">
+                                                    <div class="stats__head">
+                                                        <div class="stats__item-ellipse"></div>
+                                                        <span id="stat3" class="stats__val"></span>
+                                                    </div>
+                                                    <div class="stats__body">
+                                                        <span class="stats__type">Gigabytes / sec</span>
+                                                        <div class="stats__line">
+                                                            <div class="stats__decoration"></div>
+                                                            <span class="stats__name">RAM</span>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="stats__item">
+                                                    <div class="stats__head">
+                                                        <div class="stats__item-ellipse"></div>
+                                                        <span id="stat4" class="stats__val"></span>
+                                                    </div>
+                                                    <div class="stats__body">
+                                                        <span class="stats__type">Bytes</span>
+                                                        <div class="stats__line">
+                                                            <div class="stats__decoration"></div>
+                                                            <span class="stats__name">Net ingress</span>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="stats__item">
+                                                    <div class="stats__head">
+                                                        <div class="stats__item-ellipse"></div>
+                                                        <span id="stat5" class="stats__val"></span>
+                                                    </div>
+                                                    <div class="stats__body">
+                                                        <span class="stats__type">Bytes</span>
+                                                        <div class="stats__line">
+                                                            <div class="stats__decoration"></div>
+                                                            <span class="stats__name">Net egress</span>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </section>
+                                </div>
+                            </section>
+
+                            <div class="shimmer shimmer__markdown"></div>
+
+                            <section class="section-readme custom-section">
+                                <div id="markdown-content" class="markdown-body"></div>
+                            </section>
+
+                            <section class="section-keywords custom-section">
+                                <h4>Keywords</h4>
+                                <div class="shimmer shimmer__toaster-keywords"></div>
+                                <div class="shimmer shimmer__toaster-keywords"></div>
+                                <div class="shimmer shimmer__toaster-keywords"></div>
+                                <div class="shimmer shimmer__toaster-keywords"></div>
+                                <ul id="keywords-list" class="keywords__list">
+                                </ul>
+                            </section>
+
+                            <section class="section-envs custom-section">
+                                <h4>Environnements</h4>
+                                <div class="shimmer shimmer__toaster-envs"></div>
+                                <div class="shimmer shimmer__toaster-envs"></div>
+                                <div class="shimmer shimmer__toaster-envs"></div>
+                                <div class="shimmer shimmer__toaster-envs"></div>
+                                <ul id="environments-list" class="keywords__list">
+                                </ul>
+                            </section>
+
+                            <section class="section-configuration custom-section">
+                                <h4>Configuration</h4>
+
+                                <div class="config__first-line">
+                                    <div class="config__cmd-left">
+                                        <h5>Build command</h5>
+                                        <div class="shimmer shimmer__toaster-build-cmd"></div>
+                                        <div class="shimmer shimmer__toaster-build-cmd"></div>
+                                        <div class="shimmer shimmer__toaster-build-cmd"></div>
+                                        <ul id="build-cmd-list" class="commands__list"></ul>
+                                    </div>
+
+                                    <div class="config__cmd-right">
+                                        <h5>Execution command</h5>
+                                        <div class="shimmer shimmer__toaster-exe-cmd"></div>
+                                        <div class="shimmer shimmer__toaster-exe-cmd"></div>
+                                        <div class="shimmer shimmer__toaster-exe-cmd"></div>
+                                        <ul id="execution-cmd-list" class="commands__list"></ul>
+                                    </div>
+                                </div>
+                                <hr class="separator" />
+                                <div class="config__second-line">
+                                    <div class="cont-inp">
+                                        <label>Joinable for seconds
+                                            <div class="shimmer shimmer__toaster-inp"></div>
+                                            <input name="joinable-for-seconds" disabled />
+                                        </label>
+                                    </div>
+                                    <div class="cont-inp">
+                                        <label>Max concurrent joiners
+                                            <div class="shimmer shimmer__toaster-inp"></div>
+                                            <input name="max-concurrent-joiners" disabled />
+                                        </label>
+                                    </div>
+                                    <div class="cont-inp">
+                                        <label>Timeout seconds
+                                            <div class="shimmer shimmer__toaster-inp"></div>
+                                            <input name="timeout-seconds" disabled />
+                                        </label>
+                                    </div>
+                                </div>
+                            </section>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div id="wrapper-modal-link-custom-domain"></div>
+        <div id="wrapper-modal"></div>
+        <div id="wrapper-modal-step"></div>
+
+        <script src="/js/toaster.js"></script>
+
+         <!--#import /includes/footer.html-->
+</body>
+
+</html>

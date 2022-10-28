@@ -1,0 +1,67 @@
+@import "local://includes/toaster-loader.css";
+
+input {
+    min-width: 350px;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    padding: 50px;
+    border-radius: 20px;
+    background-color: #1E1F20;
+}
+
+.form-err {
+    display: none;
+    padding: 9px;
+    border: 1px solid #ee3737;
+    border-radius: 3px;
+    text-align: center;
+    font-size: 12px;
+    background: #ee3737;
+}
+
+.form-err.show {
+    display: block;
+}
+
+.form button {
+    margin: 20px 0;
+}
+
+.p-redirect {
+    font-size: 14px;
+    text-align: center;
+}
+
+.p-redirect.forget-password {
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+.p-redirect.forget-password a {
+    color: #009ce4;
+    text-decoration: none;
+}
+
+.p-redirect.forget-password a:hover {
+    color: #00adff;
+}
+
+@media screen and (max-width: "{{.viewport_4}}") { 
+    .form {
+        padding: 40px 30px;
+    }
+
+    input {
+        min-width: 220px;
+    }
+}

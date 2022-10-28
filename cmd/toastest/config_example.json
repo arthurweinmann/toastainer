@@ -1,6 +1,8 @@
 {
     "api_domain": "",
     "api_root_domain": "",
+    "dashboard_domain": "",
+    "dashboard_root_domain": "",
     "toaster_domain": "",
     "toaster_root_domain": "",
     "dns_provider": {

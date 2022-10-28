@@ -1,0 +1,716 @@
+@import "local://includes/statistics.css";
+@import "local://includes/keywords.css";
+@import "local://includes/command-lines.css";
+@import "local://includes/tabs.css";
+@import "local://includes/markdown.css";
+@import "local://includes/toaster-loader.css";
+
+.content__body {
+    max-width: 1200px;
+}
+
+section {
+    margin-bottom: 60px;
+}
+
+h4 {
+    margin-bottom: 30px;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 20px;
+    color: #fff;
+}
+
+h5 {
+    display: block;
+    margin-bottom: 30px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 18px;
+    color: #fff;
+}
+
+.separator {
+    margin: 40px 0;
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.content__title h1 {
+    display: flex;
+    align-items: center;
+}
+
+.tab {
+    margin-bottom: 60px;
+}
+
+/* code tab */
+
+.browse-file {
+    display: flex;
+    align-items: center;
+    padding: 80px 50px;
+    border: 1px solid rgba(255, 255, 255, .14);
+    border-radius: 20px;
+    transition: 0.3s ease;
+}
+
+.browse-file.is-dragging {
+    background-color: #ff7000;
+}
+
+.file__content {
+    display: none;
+    flex: 1;
+}
+
+.file__content.show {
+    display: block;
+}
+
+.file__text {
+    text-align: center;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.file__text .upload-files {
+    cursor: pointer;
+    color: #ffffff;
+}
+
+.file__text .upload-files:hover {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.file__text .upload-folder {
+    cursor: pointer;
+    color: #2196f3;
+}
+
+.file__text .upload-folder:hover {
+    color: #39a6ff;
+}
+
+
+.file__list {
+    display: none;
+    flex: 1;
+    margin-top: 30px;
+    margin-left: 50px;
+}
+
+.file__list.show {
+    display: block;
+}
+
+.file__item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, .14);
+}
+
+.file__item .icon-x {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    padding: 3px;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.file__item .icon-x:hover {
+    color: #fff;
+}
+
+.file__item:hover .icon-x {
+    display: block;
+}
+
+.file__label {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 17px;
+    color: #fff;
+}
+
+.file__infos {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 15px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.is-dragging__cont {
+    display: none;
+    flex: 1;
+}
+
+.is-dragging__cont.show {
+    display: block;
+}
+
+.is-dragging__label {
+    margin-bottom: 6px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 18px;
+    color: #fff;
+}
+
+.is-dragging__text {
+    text-align: center;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.icon-folder {
+    margin-right: 8px;
+    color: #5a5a5a;
+}
+
+/* information tab */
+
+/* toaster header */
+
+.toaster__header {
+    display: flex;
+}
+
+.toaster__header-left {
+    flex: 1;
+}
+
+.toaster__header-line {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* toaster image */
+
+.cont-toaster__image {
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-right: 40px;
+    width: 200px;
+    min-width: 200px;
+    height: 200px;
+    min-height: 200px;
+    background-color: rgba(255, 255, 255, 0.08);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.cont-toaster__image .icon-x {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: block;
+    font-size: 24px;
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.cont-toaster__image .icon-x:hover {
+    color: #fff;
+}
+
+.cont-toaster__image img {
+    width: 100%;
+    height: 100%;
+}
+
+.toaster__no-image {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.toaster__no-image svg {
+    font-size: 86px;
+    color: rgba(255, 255, 255, 0.1);
+}
+
+.toaster__no-image span {
+    margin-top: 5px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.toaster__id {
+    position: absolute;
+    top: -85px;
+    right: -40px;
+}
+
+.toaster__id-inp {
+    max-width: 200px;
+    overflow: hidden;
+    border: none;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    background: transparent;
+}
+
+.toaster__id-label {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 15px;
+    text-transform: uppercase;
+    color: #FFFFFF;
+}
+
+.toaster__content-right {
+    position: relative;
+}
+
+/* switch btn */
+label.switch {
+    position: absolute;
+    top: -30px;
+    right: 0;
+}
+
+/* configuration toaster */
+
+.config__first-line, .config__second-line {
+    display: flex;
+}
+
+.config__first-line .cont-inp, .config__second-line .cont-inp {
+    flex: 1;
+    margin-right: 20px;
+    max-width: 600px;
+}
+
+.config__first-line .cont-inp:last-child, .config__second-line .cont-inp:last-child {
+    margin-right: unset;
+}
+
+.config__cmd-left {
+    margin-right: 30px;
+    flex: 1;
+}
+
+.config__cmd-right {
+    flex: 1;
+}
+
+/* readme toaster */
+
+.section-readme {
+    margin-bottom: 40px !important;
+    padding: 40px;
+}
+
+.cont-readme {
+    display: flex;
+    align-items: center;
+}
+
+.cont-readme h3 {
+    margin-bottom: 50px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, .6);
+}
+
+.cont-readme h3:not(:first-child) {
+    padding-left: 30px;
+}
+
+.cont-readme h3:first-child {
+    padding-right: 30px;
+    border-right: 1px solid rgba(255, 255, 255, .2);
+}
+
+.cont-readme h3.active {
+    color: #fff;
+}
+
+.cont-btn-edit-toaster {
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+.cont-btn-next-step {
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+
+/* import type */
+.import__cont {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.import__item {
+    cursor: pointer;
+    padding: 20px;
+    width: 50%;
+    border-bottom: 3px solid #2a2a2a;;
+    text-align: center;
+}
+
+.import__item.active {
+    border-bottom: 3px solid #ff7000;
+}
+
+.import__item:hover:not(.active) {
+    border-bottom: 3px solid #363636;;
+}
+
+.import__item:hover p {
+    opacity: 1;
+}
+
+.import__item p {
+    font-weight: 500;
+    font-size: 15px;
+    color: rgba(255,255,255,0.7);
+    opacity: 0.7;
+}
+
+.import__item.active p {
+    color: #fff;
+    opacity: 1;
+}
+
+.import__cont-body {
+    display: none;
+    padding: 30px;
+}
+
+.import__cont-body.active {
+    display: block;
+}
+
+/* custom section */
+.custom-section {
+    margin-bottom: 14px;
+    padding: 40px;
+    background: #0e0e0e;
+}
+
+
+.label-required {
+    color: #ce4e4e
+}
+
+.cont-inp-line {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 10px;
+    padding: 16px;
+    border-radius: 3px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-iteration-count: infinite;
+}
+
+.cont-inp-line:last-child {
+    margin-bottom: 30px;
+}
+
+.cont-inp-line .cont-inp {
+    flex: 1;
+    margin-right: 20px;
+    margin-bottom: unset;
+}
+
+.cont-inp-line .cont-inp:last-child {
+    margin-right: unset;
+}
+
+.cont-inp-line.required {
+    animation-name: flash;
+}
+
+.cont-env-close {
+    cursor: pointer;
+    display: flex;
+    width: 45px;
+    height: 45px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+    opacity: 0.6;
+}
+
+.cont-env-close .icon-x{
+    font-size: 18px;
+}
+
+.cont-env-close:hover  {
+    opacity: 1;
+}
+
+@keyframes flash {
+    0%, 50%, 100% {
+        opacity: 1;
+    }
+
+    25%, 75% {
+        opacity: 0;
+    }
+}
+
+#btn-add-env, #btn-add-build-cmd, #btn-add-exe-cmd{
+    padding: 6px 20px;
+} 
+.build-value, .exe-value {
+    margin-right: 10px;
+}
+
+.build-value input, .exe-value input {
+    padding: 6px 10px;
+}
+
+.cont-build-close, .cont-exe-close {
+    cursor: pointer;
+    display: flex;
+    width: 30px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+    opacity: 0.6;
+}
+
+.cont-build-close .icon-x, .cont-exe-close .icon-x {
+    font-size: 14px;
+}
+
+.cont-build-close:hover , .cont-exe-close:hover  {
+    opacity: 1;
+}
+
+@media screen and (max-width: "{{.viewport_7}}") {
+
+    /* code */
+    .browse-file {
+        padding: 40px 20px;
+    }
+
+    .config__first-line, .config__second-line {
+        flex-direction: column;
+    }
+
+    .config__first-line .cont-inp, .config__second-line .cont-inp {
+        margin-right: unset;
+    }
+
+    .config__cmd-left {
+        margin-bottom: 50px;
+        margin-right: unset;
+    }
+
+    .file__list.show {
+        margin-left: 20px;
+    }
+
+    .file__text {
+        font-size: 12px;
+    }
+
+    .file__label {
+        font-size: 12px;
+        line-height: 15px;
+    }
+
+    .is-dragging__label {
+        font-size: 16px;
+    }
+
+    .is-dragging__text {
+        font-size: 11px;
+    }
+
+    .browse-file svg {
+        width: 50px;
+        height: 50px;
+    }
+
+    /* information*/
+    .cont-toaster__image {
+        margin: 0 auto 30px auto;
+        width: 150px;
+        min-width: 150px;
+        height: 150px;
+        min-height: 150px;
+    }
+
+    .toaster__no-image svg {
+        height: 66px;
+        width: 66px;
+    }
+
+    .toaster__header {
+        flex-direction: column;
+    }
+
+    .toaster__header-line {
+        flex-direction: column;
+        margin-bottom: 16px;
+    }
+
+    label.switch, .toaster__id {
+        position: relative;
+        top: unset;
+        right: unset;
+    }
+
+    .section-readme {
+        padding: 16px;
+    }
+
+    .keyword__item {
+        overflow: auto;
+        overflow-wrap: break-word;
+    }
+}
+
+
+@media screen and (max-width: "{{.viewport_4}}") {
+
+    /* code */
+    .browse-file {
+        padding: 40px 20px;
+    }
+
+    .config__first-line, .config__second-line {
+        flex-direction: column;
+    }
+
+    .config__first-line .cont-inp, .config__second-line .cont-inp {
+        margin-right: unset;
+    }
+
+    .config__cmd-left {
+        margin-bottom: 50px;
+        margin-right: unset;
+    }
+
+    .file__list.show {
+        margin-left: 20px;
+    }
+
+    .file__text {
+        font-size: 12px;
+    }
+
+    .file__label {
+        font-size: 12px;
+        line-height: 15px;
+    }
+
+    .is-dragging__label {
+        font-size: 16px;
+    }
+
+    .is-dragging__text {
+        font-size: 11px;
+    }
+
+    .browse-file svg {
+        width: 50px;
+        height: 50px;
+    }
+
+    /* information*/
+    .cont-toaster__image {
+        margin: 0 auto 30px auto;
+        width: 150px;
+        min-width: 150px;
+        height: 150px;
+        min-height: 150px;
+    }
+
+    .toaster__no-image svg {
+        height: 66px;
+        width: 66px;
+    }
+
+    .toaster__header {
+        flex-direction: column;
+    }
+
+    .toaster__header-line {
+        flex-direction: column;
+        margin-bottom: 16px;
+    }
+
+    label.switch, .toaster__id {
+        position: relative;
+        top: unset;
+        right: unset;
+    }
+
+    .section-readme {
+        padding: 16px;
+    }
+
+    .keyword__item {
+        max-width: 100%;
+        overflow: auto;
+        overflow-wrap: break-word;
+    }
+
+    
+    /* section */
+    .custom-section {
+        padding: 16px;
+    }
+
+    .build-value input, .exe-value input {
+        margin-right: 10px;
+    }
+
+    .import__item {
+        padding: 20px 10px;
+    }
+
+    .import__item p {
+        font-size: 13px;
+        line-height: 16px;
+    }
+
+    .list-envs .cont-inp-line {
+        flex-direction: column;
+        align-items: initial;
+    }
+
+    .list-envs .cont-env-close {
+        margin: 16px auto 0 auto;
+        width: 100%;
+    }
+
+    .list-envs .cont-inp {
+        margin-right: unset;
+        margin-bottom: 10px;
+    }
+
+    .import__cont-body {
+        padding: 16px;
+    }
+}

@@ -1,0 +1,21 @@
+.empty__zone {
+    display: none;
+    padding: 50px;
+    border: 1px solid rgba(255, 255, 255, .14);
+    border-radius: 20px;
+}
+
+.empty__zone.show {
+    display: block;
+}
+
+.empty__text {
+    text-align: center;
+    font-size: 14px;
+    color: rgba(255, 255, 255, .6);
+}
+
+.empty__btn {
+    margin-top: 20px;
+    text-align: center;
+}

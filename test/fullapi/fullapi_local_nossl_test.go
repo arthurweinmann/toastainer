@@ -1,7 +1,6 @@
 package test
 
 import (
-	"bytes"
 	"crypto/tls"
 	"crypto/x509/pkix"
 	"fmt"
@@ -10,7 +9,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
-	"sync"
 	"testing"
 
 	"github.com/toastate/toastainer/internal/acme"
@@ -18,6 +16,7 @@ import (
 	"github.com/toastate/toastainer/internal/config"
 	"github.com/toastate/toastainer/internal/supervisor"
 	"github.com/toastate/toastainer/internal/utils"
+	"github.com/toastate/toastainer/test/helpers"
 	"github.com/toastate/toastainer/test/library"
 
 	_ "embed"
@@ -43,7 +42,7 @@ func fullAPILocalNoSSL() error {
 	if err != nil {
 		return err
 	}
-	config.Home = filepath.Join(wd, "../build")
+	config.Home = filepath.Join(wd, "../../build")
 
 	tmpdir, err := os.MkdirTemp(config.Home, "fullapitest")
 	if err != nil {
@@ -113,13 +112,13 @@ func fullAPILocalNoSSL() error {
 
 	utils.Info("msg", "Started HTTPS Test Server on "+ts.URL)
 
-	hostredicter := newetchostmodifier()
+	hostredicter := helpers.NewETChostmodifier()
 	defer hostredicter.Reset()
 
 	fat, err := library.NewFullAPITest(func() *http.Client {
 		c := &http.Client{Transport: ts.Client().Transport}
 		return c
-	}, ts.URL, config.APIDomain, config.ToasterDomain, &library.FullAPITestOpts{
+	}, ts.URL, config.APIDomain, config.ToasterDomain, config.DashboardDomain, &library.FullAPITestOpts{
 		SetHostRedirection: hostredicter.SetHostRedirection,
 	})
 	if err != nil {
@@ -132,59 +131,5 @@ func fullAPILocalNoSSL() error {
 	}
 
 	log.Println("All tests passed successfully")
-	return nil
-}
-
-type etchostmodifier struct {
-	original []byte
-	mu       sync.Mutex
-}
-
-func newetchostmodifier() *etchostmodifier {
-	return &etchostmodifier{}
-}
-
-func (m *etchostmodifier) SetHostRedirection(ip, hostname string) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	b, err := os.ReadFile("/etc/hosts")
-	if err != nil {
-		return err
-	}
-
-	if m.original == nil {
-		m.original = b
-	}
-
-	line := ip + " " + hostname
-
-	if !bytes.Contains(b, []byte(line)) {
-		b = append(b, fmt.Sprintf("\n%v\n", line)...)
-		err = os.Truncate("/etc/hosts", 0)
-		if err != nil {
-			return err
-		}
-		err = os.WriteFile("/etc/hosts", b, 0777)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *etchostmodifier) Reset() error {
-	if m.original != nil {
-		err := os.Truncate("/etc/hosts", 0)
-		if err != nil {
-			return err
-		}
-		err = os.WriteFile("/etc/hosts", m.original, 0644)
-		if err != nil {
-			return err
-		}
-	}
-
 	return nil
 }

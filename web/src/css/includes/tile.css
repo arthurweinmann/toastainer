@@ -1,0 +1,15 @@
+.tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+    font-size: 12px;
+    font-weight: 600;
+    background-color: #F78B1D;
+}
+
+.tile.grey {
+    background-color: #4B4D5A;
+}

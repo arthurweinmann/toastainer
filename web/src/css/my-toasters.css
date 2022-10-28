@@ -1,0 +1,41 @@
+@import "local://includes/empty-zone.css";
+
+.cont-h3 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.cont-h3 h3 {
+    margin-right: 10px;
+}
+
+.section-most-recent-toasters {
+    padding-bottom: 60px;
+}
+
+.section-most-called-toasters {
+    padding-bottom: 60px;
+}
+
+.section-toasters {
+    padding-bottom: 60px;
+}
+
+/* toastTile */
+.toastTile__list {
+    flex-wrap: wrap;
+}
+
+.toastTile__item {
+    margin-bottom: 8px;
+}
+
+
+@media screen and (max-width: "{{.viewport_4}}") {
+    .toastTile__item {
+        margin-right: unset;
+        width: 100%;
+        min-width: 100%;
+    }
+}

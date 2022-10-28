@@ -27,6 +27,8 @@ var IsRunner bool
 
 var APIDomain string
 var APIRootDomain string
+var DashboardDomain string
+var DashboardRootDomain string
 var ToasterDomain string
 var ToasterRootDomain string
 var ToasterDomainSplitted []string

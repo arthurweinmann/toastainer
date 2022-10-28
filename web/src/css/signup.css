@@ -1,0 +1,97 @@
+@import "local://includes/toaster-loader.css";
+
+input:not([type="checkbox"]) {
+    min-width: 350px;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    padding: 50px;
+    border-radius: 20px;
+    background-color: #1E1F20;
+}
+
+.form-err {
+    display: none;
+    padding: 9px;
+    border: 1px solid #ee3737;
+    border-radius: 3px;
+    text-align: center;
+    font-size: 12px;
+    background: #ee3737;
+}
+
+.form-err.show {
+    display: block;
+}
+
+.form button {
+    margin: 20px 0;
+}
+
+.p-redirect {
+    font-size: 14px;
+    text-align: center;
+}
+
+.label-cb p {
+    line-height: 1.4;
+    max-width: 310px;
+}
+
+.link {
+    display: inline;
+}
+
+.btn.disabled {
+    filter: grayscale(1);
+}
+
+.link-terms {
+    color: #009de0;
+}
+
+/* password validation */
+.pwd-validation__list {
+    margin-bottom: 20px;
+}
+
+.pwd-validation__item p {
+    font-size: 13px;
+    line-height: 16px;
+    color: rgba(255, 255, 255, 0.25);
+}
+
+.pwd-validation__item.is-valid p {
+    color: #a5a5a5;
+}
+
+.pwd-validation__list span.icon-check {
+    color: rgba(255, 255, 255, 0.25);
+}
+
+.pwd-validation__item.is-valid span.icon-check {
+    color: #007eff;
+}
+
+@media screen and (max-width: "{{.viewport_4}}") {
+    .form {
+        padding: 40px 30px;
+    }
+
+    input:not([type=checkbox]) {
+        min-width: 200px;
+    }
+
+    .label-cb p {
+        max-width: 200px;
+    }
+}
