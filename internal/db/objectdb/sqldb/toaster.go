@@ -8,12 +8,13 @@ import (
 )
 
 func (c *Client) CreateToaster(toaster *model.Toaster) error {
-	_, err := c.db.Exec("INSERT INTO toasters(id, code_id, owner_id, build_command, execution_command, environment_variables, joinable_for_seconds, max_concurrent_joiners, timeout_seconds, name, last_modified, created, git_url, git_username, git_branch, git_access_token, git_password, files, readme, keywords) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+	_, err := c.db.Exec("INSERT INTO toasters(id, code_id, owner_id, build_command, execution_command, image, environment_variables, joinable_for_seconds, max_concurrent_joiners, timeout_seconds, name, last_modified, created, git_url, git_username, git_branch, git_access_token, git_password, files, readme, keywords) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 		toaster.ID,
 		toaster.CodeID,
 		toaster.OwnerID,
 		toaster.BuildCmd,
 		toaster.ExeCmd,
+		toaster.Image,
 		toaster.Env,
 		toaster.JoinableForSec,
 		toaster.MaxConcurrentJoiners,
@@ -38,10 +39,11 @@ func (c *Client) CreateToaster(toaster *model.Toaster) error {
 }
 
 func (c *Client) UpdateToaster(toaster *model.Toaster) error {
-	_, err := c.db.Exec("UPDATE toasters SET code_id = ?, build_command = ?, execution_command = ?, environment_variables = ?, joinable_for_seconds = ?, max_concurrent_joiners = ?, timeout_seconds = ?, name = ?, last_modified = ?, git_url = ?, git_username = ?, git_branch = ?, git_access_token = ?, git_password = ?, files = ?, readme = ?, keywords = ? WHERE id = ?",
+	_, err := c.db.Exec("UPDATE toasters SET code_id = ?, build_command = ?, execution_command = ?, image = ?, environment_variables = ?, joinable_for_seconds = ?, max_concurrent_joiners = ?, timeout_seconds = ?, name = ?, last_modified = ?, git_url = ?, git_username = ?, git_branch = ?, git_access_token = ?, git_password = ?, files = ?, readme = ?, keywords = ?, picture_ext = ? WHERE id = ?",
 		toaster.CodeID,
 		toaster.BuildCmd,
 		toaster.ExeCmd,
+		toaster.Image,
 		toaster.Env,
 		toaster.JoinableForSec,
 		toaster.MaxConcurrentJoiners,
@@ -56,6 +58,7 @@ func (c *Client) UpdateToaster(toaster *model.Toaster) error {
 		toaster.Files,
 		toaster.Readme,
 		toaster.Keywords,
+		toaster.PictureExtension,
 		toaster.ID,
 	)
 	if err != nil {

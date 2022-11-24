@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/rs/xid"
 	"github.com/toastate/toastainer/internal/api/common"
@@ -41,12 +42,17 @@ func Create(w http.ResponseWriter, r *http.Request, userid string) {
 	}
 
 	if req.Name == "" {
-		utils.SendError(w, "you must provide a domain name", "invalidBody", 400)
+		utils.SendError(w, "you must provide a subdomain name", "invalidBody", 400)
 		return
 	}
 
 	if !utils.IsAlphaNumHyphen(req.Name) {
 		utils.SendError(w, "invalid domain name, it can only contain alphanumeric characters and hyphens", "invalidBody", 400)
+		return
+	}
+
+	if strings.HasPrefix(req.Name, "t_") {
+		utils.SendError(w, "invalid domain name, it cannot start with t_ because toaster ids start with this prefix", "invalidBody", 400)
 		return
 	}
 

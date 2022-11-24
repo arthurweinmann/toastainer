@@ -84,7 +84,7 @@ func signin(w http.ResponseWriter, r *http.Request) (string, bool) {
 		return "", false
 	}
 
-	sess, err := auth.CreateSession(usr)
+	sess, err := auth.CreateSession(usr, 24*time.Hour)
 	if err != nil {
 		utils.SendInternalError(w, "signup:auth.CreateSession", err)
 		return "", false

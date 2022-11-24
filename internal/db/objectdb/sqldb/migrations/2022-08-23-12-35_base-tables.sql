@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     `id` VARCHAR(32) NOT NULL ,
     `email` VARCHAR(320) NOT NULL UNIQUE ,
     `username` VARCHAR(320) NOT NULL UNIQUE ,
+    `picture_ext` VARCHAR(32) NOT NULL DEFAULT '',
     `password` VARCHAR(128) NOT NULL ,
     PRIMARY KEY (`id`) ,
     KEY (`cursor`)) ENGINE = InnoDB;
@@ -35,6 +36,7 @@ CREATE TABLE IF NOT EXISTS `toasters` (
     `id` VARCHAR(128) NOT NULL ,
     `code_id` VARCHAR(128) NOT NULL ,
     `owner_id` VARCHAR(128) NOT NULL ,
+    `image` VARCHAR(128) NOT NULL ,
     `build_command` MEDIUMBLOB ,
     `execution_command` MEDIUMBLOB ,
     `environment_variables` MEDIUMBLOB ,
@@ -52,6 +54,7 @@ CREATE TABLE IF NOT EXISTS `toasters` (
     `files` MEDIUMBLOB ,
     `readme` MEDIUMTEXT ,
     `keywords` TINYBLOB ,
+    `picture_ext` VARCHAR(32) NOT NULL DEFAULT '',
     PRIMARY KEY (`id`) ,
     KEY (`cursor`)) ENGINE = InnoDB;
 

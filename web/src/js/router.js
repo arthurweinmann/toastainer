@@ -31,32 +31,7 @@ const routes = [
     {
         authenticated: true,
         userAccess: ["all"],
-        path: "/custom-domains"
-    },
-    {
-        authenticated: true,
-        userAccess: ["all"],
         path: "/subdomains"
-    },
-    {
-        authenticated: true,
-        userAccess: ["all"],
-        path: "/create-domain"
-    },
-    {
-        authenticated: true,
-        userAccess: ["all"],
-        path: "/edit-domain"
-    },
-    {
-        authenticated: true,
-        userAccess: ["all"],
-        path: "/create-subdomain"
-    },
-    {
-        authenticated: true,
-        userAccess: ["all"],
-        path: "/pricing"
     },
     {
         authenticated: true,

@@ -103,7 +103,7 @@ func Create(w http.ResponseWriter, r *http.Request, userid string) {
 	}
 
 	toaster := &model.Toaster{
-		ID:      tid,
+		ID:      "t_" + tid, // the t_ is mostly used to forbid subdomain from taking a toaster id like name
 		CodeID:  xid.New().String(),
 		OwnerID: userid,
 

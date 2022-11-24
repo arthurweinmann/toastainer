@@ -130,7 +130,6 @@ func (fp *factProfile) run() {
 
 	// Save here
 	fp.writeFact()
-
 }
 
 func (fp *factProfile) writeFact() {

@@ -31,7 +31,7 @@ func (c *Client) CreateUser(usr *model.User) error {
 }
 
 func (c *Client) UpdateUser(usr *model.User) error {
-	_, err := c.db.Exec("UPDATE users SET email = ?, username = ?, password = ? WHERE id = ?", usr.Email, usr.Username, usr.Password, usr.ID)
+	_, err := c.db.Exec("UPDATE users SET email = ?, username = ?, password = ?, picture_ext = ? WHERE id = ?", usr.Email, usr.Username, usr.Password, usr.PictureExtension, usr.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return objectdberror.ErrNotFound

@@ -10,14 +10,14 @@ import (
 )
 
 /*
-	KEYS[1] = {toasterid}
-	KEYS[2] = {toasterid}_exeinfo (concatenated exeid and tvsip)
-	KEYS[3] = {exeid}
-	ARGV[1] = maxjoiners
-	ARGV[2] = exeinfo  (concatenated exeid and tvsip)
-	ARGV[3] = tvsip
-	ARGV[4] = joinable for seconds
-	ARGV[5] = execution timeout in seconds
+KEYS[1] = {codeid}
+KEYS[2] = {codeid}_joininfo
+KEYS[3] = {exeid}
+ARGV[1] = maxjoiners
+ARGV[2] = (concatenated exeid and tvsip)
+ARGV[3] = tvsip
+ARGV[4] = joinable for seconds
+ARGV[5] = execution timeout in seconds
 */
 var toggleNewExecutionScript = redis.NewScript(`
 local maxjoiners = tonumber(ARGV[1])
@@ -49,10 +49,10 @@ redis.call("SET", KEYS[3], ARGV[3], "EX", ARGV[5])
 return ARGV[2]
 `)
 
-func JoinOrCreateExecution(toasterID, exeid, tvsip string, maxConcurrentJoiners, joinableForSec, timeoutSec int) (string, string, error) {
+func JoinOrCreateExecution(codeID, exeid, tvsip string, maxConcurrentJoiners, joinableForSec, timeoutSec int) (string, string, error) {
 	tmpExeid := exeid + "---" + tvsip
 
-	res, err := toggleNewExecutionScript.Run(context.Background(), GetClient(), []string{toasterID, toasterID + "_exeinfo", exeid}, maxConcurrentJoiners, tmpExeid, tvsip, joinableForSec, timeoutSec).Text()
+	res, err := toggleNewExecutionScript.Run(context.Background(), GetClient(), []string{codeID, codeID + "_joininfo", exeid}, maxConcurrentJoiners, tmpExeid, tvsip, joinableForSec, timeoutSec).Text()
 	if err != nil {
 		return "", "", err
 	}
@@ -62,25 +62,25 @@ func JoinOrCreateExecution(toasterID, exeid, tvsip string, maxConcurrentJoiners,
 }
 
 // Can be used for example after a code update to force new request to start a new updated toaster
-func ForceRefreshAutojoin(toasterID string) error {
-	return GetClient().Del(context.Background(), toasterID, toasterID+"_exeinfo").Err()
+func ForceRefreshAutojoin(codeID string) error {
+	return GetClient().Del(context.Background(), codeID, codeID+"_joininfo").Err()
 }
 
 // Same as ForceRefreshAutojoin, but with a delay in case of an error not to overwhelm a TVS
-func DelayedForceRefreshAutojoin(toasterID string, in time.Duration) error {
+func DelayedForceRefreshAutojoin(codeID string, in time.Duration) error {
 	pipe := GetClient().Pipeline()
 
-	pipe.Expire(context.Background(), toasterID, in)
-	pipe.Expire(context.Background(), toasterID+"_exeinfo", in)
+	pipe.Expire(context.Background(), codeID, in)
+	pipe.Expire(context.Background(), codeID+"_joininfo", in)
 
 	_, err := pipe.Exec(context.Background())
 	return err
 }
 
 /*
-	KEYS[1] = {exeid}
-	ARGV[1] = tvsip
-	ARGV[2] = execution timeout in seconds
+KEYS[1] = {exeid}
+ARGV[1] = tvsip
+ARGV[2] = execution timeout in seconds
 */
 var joinForceExeIDScript = redis.NewScript(`
 if redis.call("EXISTS", KEYS[1]) == 1 then

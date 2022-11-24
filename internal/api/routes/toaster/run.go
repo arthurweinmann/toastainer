@@ -48,7 +48,7 @@ func RunToaster(w http.ResponseWriter, r *http.Request, exeid, toasteridOrSubdom
 
 		exeid, tvsIP, err = toggleNewExecution(toaster)
 		if err != nil {
-			utils.SendInternalError(w, "RunToaster:toggleNewExecution", err)
+			utils.SendInternalError(w, "RunToaster:toggleNewExecution", fmt.Errorf("codeid: %v, err: %v", toaster.CodeID, err))
 			return
 		}
 	} else {
@@ -103,7 +103,7 @@ func startExecution(exeid, userid string, runnerip net.IP, toaster *model.Toaste
 
 	defer func() {
 		if err != nil {
-			terr := redisdb.DelayedForceRefreshAutojoin(toaster.ID, 30*time.Second)
+			terr := redisdb.DelayedForceRefreshAutojoin(toaster.CodeID, 30*time.Second)
 			if terr != nil {
 				fmt.Println("ERROR startExecution redis.DelayedForceRefreshAutojoin:", terr)
 			}
@@ -130,7 +130,7 @@ func startExecution(exeid, userid string, runnerip net.IP, toaster *model.Toaste
 		ExeID:      exeid,
 		UserID:     userid,
 		ExeCmd:     toaster.ExeCmd,
-		TimeoutSec: toaster.TimeoutSec + 60, // we offset the timeout so we are sure not to send more request to a shutdown exeid
+		TimeoutSec: toaster.TimeoutSec,
 		Env:        append(toaster.Env, "TOASTAINER_EXE_ID="+exeid),
 	}
 	b, err := json.Marshal(cmd)
@@ -158,7 +158,7 @@ func startExecution(exeid, userid string, runnerip net.IP, toaster *model.Toaste
 	return nil
 }
 
-func generateExeID(toasterid string) (string, error) {
+func generateExeID() (string, error) {
 	exeid, err := utils.UniqueSecureID60()
 	if err != nil {
 		return "", err
@@ -167,7 +167,7 @@ func generateExeID(toasterid string) (string, error) {
 }
 
 func toggleNewExecution(toaster *model.Toaster) (string, net.IP, error) {
-	tmpexeid, err := generateExeID(toaster.ID)
+	tmpexeid, err := generateExeID()
 	if err != nil {
 		return "", nil, err
 	}
@@ -176,7 +176,7 @@ func toggleNewExecution(toaster *model.Toaster) (string, net.IP, error) {
 	tmptvsip := nodes.PickTVS()
 	tmptvsipstr := tmptvsip.String()
 
-	exeid, tvsipstr, err := redisdb.JoinOrCreateExecution(toaster.ID, tmpexeid, tmptvsipstr, toaster.MaxConcurrentJoiners, toaster.JoinableForSec, toaster.TimeoutSec)
+	exeid, tvsipstr, err := redisdb.JoinOrCreateExecution(toaster.CodeID, tmpexeid, tmptvsipstr, toaster.MaxConcurrentJoiners, toaster.JoinableForSec, toaster.TimeoutSec)
 	if err != nil {
 		return "", nil, err
 	}

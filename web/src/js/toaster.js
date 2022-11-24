@@ -1,9 +1,7 @@
 import "local://includes/routes/toaster.js";
-import "local://includes/routes/custom-domain.js";
 import "local://includes/counter.js";
 import "local://includes/markdown.js";
 import "local://includes/alert-step.js";
-import "local://includes/modal-link-custom-domain.js";
 import "local://includes/utils/date.js";
 
 var formToaster = document.getElementById("form-toaster");
@@ -27,7 +25,7 @@ var timeoutTooltipId;
 var timeoutTooltipRun;
 var toasterIdFromURL = new URLSearchParams(window.location.search).get("id");
 var gToaster = null;
-var gCustomDomains = [];
+var gSubdomains = [];
 
 if (toasterIdFromURL) {
     setToaster(toasterIdFromURL);
@@ -58,18 +56,20 @@ else {
 }
 
 function setToaster(toasterId) {
-    getToasterStats(toasterId).then(cb => {
+    getToasterUsage(toasterId).then(cb => {
         if (cb && cb.success) {
-            let stats = cb.stats;
+            console.log(cb);
+
+            let usage = cb.usage;
 
             document.querySelector(".shimmer__toaster-stats").style.display = "none";
             document.querySelector(".stats").classList.add("show");
 
-            counterAnim("#stat1", 0, stats.durationms ? stats.durationms : 0, 300, "MS");
-            counterAnim("#stat2", 0, stats.cpus ? stats.cpus : 0, 300, "S");
-            counterAnim("#stat3", 0, stats.ramgbs ? stats.ramgbs : 0, 300, "GB/S");
-            counterAnim("#stat4", 0, stats.ingress ? stats.ingress : 0, 300, "B");
-            counterAnim("#stat5", 0, stats.egress ? stats.egress : 0, 300, "B");
+            counterAnim("#stat1", 0, usage.duration_ms ? usage.duration_ms : 0, 300, "MS");
+            counterAnim("#stat2", 0, usage.seconds_cpus ? usage.seconds_cpus : 0, 300, "S");
+            counterAnim("#stat3", 0, usage.ram_gbs ? usage.ram_gbs : 0, 300, "GBS");
+            counterAnim("#stat4", 0, usage.ingress_bytes ? usage.ingress_bytes : 0, 300, "B");
+            counterAnim("#stat5", 0, usage.egress_bytes ? usage.egress_bytes : 0, 300, "B");
         }
     });
 
@@ -78,8 +78,10 @@ function setToaster(toasterId) {
 
         document.querySelector(".toaster-currently-running").classList.add("show");
 
+        console.log(cb);
+
         if (cb && cb.success) {
-            toasterCountRunning = cb.running;
+            toasterCountRunning = cb.count;
         }
 
         document.getElementById("toaster-running").textContent = toasterCountRunning;
@@ -90,10 +92,9 @@ function setToaster(toasterId) {
             document.querySelectorAll(".shimmer").forEach(shimmer => shimmer.style.display = "none");
             toasterImgElem.classList.add("show");
             document.querySelector(".toaster__id-inp").classList.add("show");
-            document.querySelector(".crypt__wrapper").classList.add("show");
             document.querySelector(".section-readme").classList.add("show");
             document.querySelectorAll(".cont-inp").forEach(contInp => contInp.classList.add("show"));
-            document.getElementById("run-toaster").value = "https://" + cb.domain;
+            document.getElementById("run-toaster").value = cb.toaster.run_link;
 
             gToaster = cb.toaster;
  
@@ -192,7 +193,7 @@ function setInputValues(toaster) {
 
     // readme
     if (toaster.readme) {
-        markdownContent.innerHTML = marked.parse(toaster.readme);
+        markdownContent.innerHTML = toaster.readme;
     }
     else {
         document.querySelector(".section-readme").style.display = "none";
@@ -279,9 +280,6 @@ for (let action of actionsListElem.children) {
             case "delete":
                 handleDeleteToaster();
                 break;
-            case "link":
-                handleLinkToaster();
-                break;
             default:
         }
     });
@@ -311,7 +309,16 @@ function handleDeleteToaster() {
                         if (cb && cb.success) {
                             ALERT_MOD.call({
                                 title: "Information",
-                                text: "Your Toaster has been successfully removed."
+                                text: "Your Toaster has been successfully removed.",
+                                buttons: [
+                                    {
+                                        text: "OK",
+                                        onClick: function () {
+                                            ALERT_MOD.close();
+                                            window.location = "/my-toasters";
+                                        }
+                                    },
+                                ]
                             });
                         }
                         else if (cb && !cb.success) {
@@ -327,91 +334,6 @@ function handleDeleteToaster() {
     });
 }
 
-function handleLinkToaster() {
-    listCustomDomains().then(cb => {
-        if (cb && cb.success) {
-            gCustomDomains = cb.custom_domains;
-
-            if (gCustomDomains) {
-                MODAL_LINK_CUSTOM_DOM.call({
-                    title: "Link to custom domain",
-                    text: "Select custom domains to link to your Toaster.",
-                    toasterId: gToaster.id,
-                    customDomains: gCustomDomains,
-                    buttons: [
-                        {
-                            text: "CANCEL",
-                            onClick: function () {
-                                MODAL_LINK_CUSTOM_DOM.close();
-                            }
-                        },
-                        {
-                            text: "LINK",
-                            onClick: function () {
-                                let linkCustomDomain = {};
-    
-                                for (let i = 0; i < gCustomDomains.length; i++) {
-                                    if (gCustomDomains[i].linked_toasters) {
-                                        for (let subdomain in gCustomDomains[i].linked_toasters) {
-                                            if (gCustomDomains[i].linked_toasters[subdomain] === gToaster.id) {
-                                                linkCustomDomain[gCustomDomains[i]["id"]] = {
-                                                    domains: gCustomDomains[i].subdomains,
-                                                    rootDomain: gCustomDomains[i].root_domain,
-                                                    toasters: gCustomDomains[i].linked_toasters
-                                                };
-                                            }
-                                        }
-                                    }
-                                }
-    
-                                document.querySelectorAll(".domain__item input").forEach(checkbox => {
-                                    let cDomainId = checkbox.getAttribute("data-custom-domain");
-                                    let cDomain = gCustomDomains.find(customDomain => customDomain.id === cDomainId);
-    
-                                    if (checkbox.checked) {
-                                        if (!linkCustomDomain[cDomainId] && cDomain) {
-                                            linkCustomDomain[cDomainId] = {
-                                                rootDomain: cDomain.root_domain,
-                                                domains: cDomain.subdomains,
-                                                toasters: cDomain.linked_toasters ? cDomain.linked_toasters : {}
-                                            };
-                                        }
-    
-                                        linkCustomDomain[cDomainId] = {
-                                            ...linkCustomDomain[cDomainId],
-                                            toasters: {
-                                                ...linkCustomDomain[cDomainId].toasters,
-                                                [checkbox.value]: gToaster.id
-                                            }
-                                        };
-                                    }
-                                    else if (cDomain.linked_toasters && cDomain.linked_toasters[checkbox.value] === gToaster.id) {
-                                        delete linkCustomDomain[cDomainId].toasters[checkbox.value];
-                                    }
-                                });
-    
-                                handleUpdateDomain(1, linkCustomDomain);
-                            }
-                        },
-                    ]
-                });
-            }
-            else {
-                ALERT_MOD.call({
-                    title: "Information",
-                    text: "You have no custom domains yet."
-                });
-            }
-        }
-        else if (cb && !cb.success) {
-            ALERT_MOD.call({
-                title: "Information",
-                text: cb.code + " : " + cb.message
-            });
-        }
-    });
-}
-
 /* ==== markdown ==== */
 const typed = () => {
     let text = ""; //localStorage.markupValue || markupArea.value;
@@ -421,58 +343,3 @@ const typed = () => {
 };
 
 typed();
-
-/* ==== handle update domain step */
-async function handleUpdateDomain(step, linkCustomDomain) {
-    let nbSteps = Object.keys(linkCustomDomain).length;     // equal to nb of custom domain updates
-    let cDomainId = Object.keys(linkCustomDomain)[step - 1];
-
-    console.log(gCustomDomains);
-    if (step <= nbSteps) {
-        updateCustomDomain(cDomainId, linkCustomDomain[cDomainId].subdomains, linkCustomDomain[cDomainId].toasters).then(cb => {
-            if (cb && cb.success) {
-                ALERT_STEP_MOD.call({
-                    title: linkCustomDomain[cDomainId].rootDomain,
-                    step: step,
-                    nbSteps: nbSteps,
-                    withCheckmark: true, 
-                    text: "Your Toaster has been successfully linked.",
-                    buttons: [
-                        {
-                            text: step === nbSteps ? "OK" : "NEXT",
-                            onClick: function () {
-                                step++;
-                                handleUpdateDomain(step, linkCustomDomain);
-                                if (step > nbSteps) {
-                                    ALERT_STEP_MOD.close();
-                                    MODAL_LINK_CUSTOM_DOM.close();
-                                }
-                            }
-                        },
-                    ]
-                });
-            }
-            else if (cb && !cb.success) {
-                ALERT_STEP_MOD.call({
-                    title: linkCustomDomain[cDomainId].rootDomain,
-                    step: step,
-                    nbSteps: nbSteps,
-                    text: cb.code + " : " + cb.message,
-                    buttons: [
-                        {
-                            text: step === nbSteps ? "OK" : "NEXT",
-                            onClick: function () {
-                                step++;
-                                handleUpdateDomain(step, linkCustomDomain);
-                                if (step > nbSteps) {
-                                    ALERT_STEP_MOD.close();
-                                    MODAL_LINK_CUSTOM_DOM.close();
-                                }
-                            }
-                        },
-                    ]
-                });
-            }
-        });
-    }
-}

@@ -159,10 +159,14 @@ func serveDashboard(t *testing.T) error {
 	ts.TLS.Certificates = []tls.Certificate{cert}
 
 	ts.StartTLS()
-	defer ts.Close()
+	defer func() {
+		go ts.Close() // sometimes unclosed connections will make it hang
+	}()
 
 	_, port := utils.SplitHostPort(strings.Replace(ts.URL, "https://", "", 1))
 	utils.Info("msg", "Started HTTPS Test Server on https://"+config.DashboardDomain+":"+port)
+
+	config.APIPort = port
 
 	hostredicter := helpers.NewETChostmodifier()
 	defer hostredicter.Reset()
@@ -177,11 +181,23 @@ func serveDashboard(t *testing.T) error {
 		return err
 	}
 
+	err = hostredicter.SetHostRedirection("127.0.0.1", "test."+config.ToasterDomain)
+	if err != nil {
+		return err
+	}
+
+	err = hostredicter.SetHostRedirection("127.0.0.1", "test2."+config.ToasterDomain)
+	if err != nil {
+		return err
+	}
+
 	cmd := exec.Command("/bin/bash", "-c", "rm -rf ../build/web && mkdir ../build/web && TOASTAINER_API_HOST="+fmt.Sprintf("%q", config.APIDomain+":"+port)+" ../build/toastfront serve --build-dir=../build/web")
 	cmd.Dir = filepath.Join(wd, "../../web")
 	cmd.CombinedOutput()
 
 	wat.BlockUntilShutdownDone()
+
+	utils.Info("msg", "Shutdown done")
 
 	return nil
 }

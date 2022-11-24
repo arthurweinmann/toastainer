@@ -11,14 +11,16 @@ getUsage((new Date().getMonth() + 1) + "", new Date().getFullYear() + "").then(c
         if (cb.usage) {
             let usage = cb.usage;
 
+            console.log(usage);
+
             sectionStatsElem.classList.add("show");
 
             counterAnim("#stat1", 0, usage.runs ? usage.runs : 0, 300, "");
-            counterAnim("#stat2", 0, usage.duration_ms ? usage.durationms : 0, 300, "MS");
+            counterAnim("#stat2", 0, usage.duration_ms ? usage.duration_ms : 0, 300, "MS");
             counterAnim("#stat3", 0, usage.cpu_seconds ? usage.cpu_seconds : 0, 300, "S");
-            counterAnim("#stat4", 0, usage.ram_gbs ? usage.ram_gbs : 0, 300, "GB/S");
-            counterAnim("#stat5", 0, usage.ingress_bytes ? usage.ingress_bytes : 0, 300, "B");
-            counterAnim("#stat6", 0, usage.egress_bytes ? usage.egress_bytes : 0, 300, "B");
+            counterAnim("#stat4", 0, usage.ram_gbs ? usage.ram_gbs : 0, 300, "GBS");
+            counterAnim("#stat5", 0, usage.net_ingress ? usage.net_ingress : 0, 300, "B");
+            counterAnim("#stat6", 0, usage.net_egress ? usage.net_egress : 0, 300, "B");
         }
     }
 });

@@ -1,27 +1,19 @@
 package user
 
 import (
-	"context"
 	"net/http"
 	"strconv"
 	"time"
 
-	"github.com/toastate/toastainer/internal/db/redisdb"
+	"github.com/toastate/toastainer/internal/db/objectdb"
+	"github.com/toastate/toastainer/internal/db/objectdb/objectdberror"
+	"github.com/toastate/toastainer/internal/model"
 	"github.com/toastate/toastainer/internal/utils"
 )
 
 type UsageResponse struct {
-	Success bool   `json:"success,omitempty"`
-	Usage   *usage `json:"usage,omitempty"`
-}
-
-type usage struct {
-	Duration   int64   `json:"duration_ms"`
-	CPUS       int64   `json:"cpu_seconds"`
-	Executions int64   `json:"runs"`
-	RAM        float64 `json:"ram_gbs"`
-	Ingress    float64 `json:"ingress_bytes"`
-	Egress     float64 `json:"egress_bytes"`
+	Success bool                  `json:"success,omitempty"`
+	Usage   *model.UserStatistics `json:"usage,omitempty"`
 }
 
 func Usage(w http.ResponseWriter, r *http.Request, userid string) {
@@ -41,43 +33,31 @@ func Usage(w http.ResponseWriter, r *http.Request, userid string) {
 		year = strconv.Itoa(time.Now().Year())
 	}
 
-	stats, err := redisdb.GetClient().HGetAll(context.Background(), "userstats_"+userid+"_"+month+year).Result()
+	stats, err := objectdb.Client.GetUserStatistics(userid, month+year)
 	if err != nil {
-		if err == redisdb.ErrNil {
+		if err == objectdberror.ErrNotFound {
 			utils.SendSuccess(w, &UsageResponse{
 				Success: true,
-				Usage: &usage{
-					Duration:   0,
+				Usage: &model.UserStatistics{
+					UserID:     userid,
+					Monthyear:  month + year,
+					DurationMS: 0,
 					CPUS:       0,
 					Executions: 0,
-					RAM:        0,
-					Ingress:    0,
-					Egress:     0,
+					RAMGBS:     0,
+					NetIngress: 0,
+					NetEgress:  0,
 				},
 			})
 			return
 		}
 
-		utils.SendError(w, err.Error(), "notFound", 404)
+		utils.SendInternalError(w, "user.Usage:objectdb.Client.GetUserStatistics", err)
 		return
 	}
 
-	dms, _ := strconv.ParseInt(stats["durationms"], 10, 64)
-	cpus, _ := strconv.ParseInt(stats["cpus"], 10, 64)
-	executions, _ := strconv.ParseInt(stats["executions"], 10, 64)
-	ramgbs, _ := strconv.ParseFloat(stats["ramgbs"], 64)
-	ingress, _ := strconv.ParseFloat(stats["ingress"], 64)
-	egress, _ := strconv.ParseFloat(stats["egress"], 64)
-
 	utils.SendSuccess(w, &UsageResponse{
 		Success: true,
-		Usage: &usage{
-			Duration:   dms,
-			CPUS:       cpus,
-			Executions: executions,
-			RAM:        ramgbs,
-			Ingress:    ingress,
-			Egress:     egress,
-		},
+		Usage:   stats,
 	})
 }

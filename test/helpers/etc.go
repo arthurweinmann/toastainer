@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"sync"
+
+	"github.com/toastate/toastainer/internal/utils"
 )
 
 type ETChostmodifier struct {
@@ -47,6 +49,8 @@ func (m *ETChostmodifier) SetHostRedirection(ip, hostname string) error {
 }
 
 func (m *ETChostmodifier) Reset() error {
+	utils.Info("msg", "resetting /etc/hosts")
+
 	if m.original != nil {
 		err := os.Truncate("/etc/hosts", 0)
 		if err != nil {

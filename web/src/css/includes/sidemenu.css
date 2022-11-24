@@ -51,6 +51,11 @@
     filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.7));
 }
 
+.sidemenu .toastainer-logo {
+    font-weight: bold;
+    vertical-align: middle;
+}
+
 .sidemenu__cont-icon {
     display: flex;
     align-items: center;
@@ -318,7 +323,8 @@
         display: flex;
     }
 
-    .sidemenu__header, .sidemenu__content {
+    .sidemenu__header,
+    .sidemenu__content {
         display: none;
     }
 

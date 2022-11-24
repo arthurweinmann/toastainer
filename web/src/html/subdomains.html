@@ -17,80 +17,27 @@
                 <div class="content">
                     <div class="content__wrapper-title">
                         <div class="content__title">
-                            <h2>Manage sub domains</h2>
-                            <h1 class="h1-rootdomain"></h1>
+                            <h2>Manage my subdomains</h2>
+                            <h1>Subdomains</h1>
                         </div>
                     </div>
                     <div class="content__body">
-                        <div class="back__cont" style="display: none;">
-                            <span class="icon-chevron-left"></span>
-                            <span class="back__label">back</span>
-                        </div>
-
-                        <div class="dns__cont">
-                            <div class="token">
-                                <div class="token__line">
-                                    <div class="token__decoration"></div>
-                                    <span class="token__name">Verification Token</span>
-                                    <input class="token__value" value=""></input>
-                                    <div class="cont-btn-copy">
-                                        <div id="btn-copy-tooltip" class="tooltip">Copied</div>
-                                        <button id="btn-copy-id" class="btn with-icon"><span
-                                                class="icon-copy"></span>
-                                            Copy</button>
-                                    </div>
-                                </div>
-                                <button class="btn-howto">How to add DNS <span
-                                        class="icon-chevron-down"></span></button>
+                        <form id="form-create-subdomain">
+                            <div class="cont-inp">
+                                <label>Subdomain name
+                                    <input name="subdomainName" spellcheck="false"/>
+                                </label>
                             </div>
-                            <div class="dns__content">
-                                <p class="add-dns-infos">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                    Integer tempor in sit
-                                    aliquam vitae. Habitant libero volutpat tellus sed blandit. Lectus ut quis eleifend
-                                    viverra integer id ullamcorper sed duis. A, interdum commodo lectus mattis donec
-                                    lobortis quis. Aliquam lorem ultricies nec cursus aliquam sagittis nulla odio. Eu
-                                    iaculis est mattis ut in ut. Nulla morbi non, vel elementum vel sed.
-                                    Dignissim varius in feugiat est sapien sed et sit. Nulla scelerisque consequat,
-                                    risus lacus. At ut malesuada eu nisl ac a aenean praesent. Dictumst nam nisl sit
-                                    ultricies pulvinar. Placerat ligula sollicitudin in mauris, pretium viverra.
-                                    Pretium, et tellus eget orci, sollicitudin at in ultrices porttitor. Maecenas
-                                    volutpat fames ut habitasse. Feugiat ac nibh nam nisl enim aenean fringilla. Aliquet
-                                    lacus, enim venenatis consectetur vitae ac. Sed id proin interdum nullam fermentum
-                                    lobortis volutpat viverra. Dolor mi orci enim feugiat vulputate tempus. Et imperdiet
-                                    interdum.</p>
-
-                                <div>
-                                    <label>DNS records</label>
-                                    <ul class="mobile-record__list"></ul>
-                                    <div class="cont-table">
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th>Name</th>
-                                                    <th>TTL</th>
-                                                    <th>Type</th>
-                                                    <th>Value</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="subdomain__table-body">
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                            <div class="cont-btn-inline">
+                                <button id="btn-create-subdomain" class="btn">Create subdomain</button>
                             </div>
-                        </div>
-
-                        <div class="cont-btn">
-                            <button id="btn-create-subdomain" class="btn with-icon">
-                                <span class="icon-plus"></span>Create sub domain
-                            </button>
-                        </div>
+                        </form>
 
                         <div class="empty__zone">
-                            <p class="empty__text">You have no domains yet.</p>
+                            <p class="empty__text">You have no subdomains yet.</p>
                         </div>
-                        
-                        <ul class="list-subdomains"></ul>
+
+                        <ul class="list-domains"></ul>
                     </div>
                 </div>
             </div>

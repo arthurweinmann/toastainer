@@ -1,238 +1,121 @@
-import "local://includes/routes/custom-domain.js";
+import "local://includes/routes/subdomains.js";
 import "local://includes/routes/toaster.js";
 import "local://includes/modal-link-toaster.js";
 
-var customDomainId = new URLSearchParams(window.location.search).get("domain");
-var isFromCustomDomains = customDomainId ? true : false;
-var h1RootDomain = document.querySelector(".h1-rootdomain");
-var btnBack = document.querySelector(".back__cont");
-var btnHowTo = document.querySelector(".btn-howto");
-var dnsContent = document.querySelector(".dns__content");
-var btnCreateSubdomain = document.getElementById("btn-create-subdomain");
-var listSubdomainsElem = document.querySelector(".list-subdomains");
-var verificationTokenInp = document.querySelector(".token__value");
-var btnCopyToken = document.getElementById("btn-copy-id");
-var btnCopyTooltip = document.getElementById("btn-copy-tooltip");
-var timeoutTooltip;
+var btnCreateDomain = document.getElementById("btn-create-subdomain");
+var formCreateSubdomain = document.getElementById("form-create-subdomain");
+var listDomainsElem = document.querySelector(".list-domains");
+var gSubDomains = [];
 
-var gCustomDomain;
-var gToasters = [];
+setSubDomainsList();
 
-if (isFromCustomDomains) {
-    btnBack.style.display = "flex";
-}
-else {
-    btnBack.style.display = "none";
-}
-
-if (customDomainId) {
-    setCustomDomain();
-}
-else {
-    window.location = "/custom-domains";
-}
-
-btnBack.addEventListener("click", function () {
-    window.location = "/custom-domains";
-});
-
-btnCreateSubdomain.addEventListener("click", function () {
-    window.location = "/create-subdomain?from=" + customDomainId;
-});
-
-btnHowTo.addEventListener("click", function () {
-    if (btnHowTo.classList.contains("show")) {
-        btnHowTo.classList.remove("show");
-        dnsContent.classList.remove("show");
-    }
-    else {
-        btnHowTo.classList.add("show");
-        dnsContent.classList.add("show");
-    }
-});
-
-/* ===== copy ==== */
-btnCopyToken.addEventListener("click", function (e) {
-    e.preventDefault();
-
-    clearTimeout(timeoutTooltip);
-    btnCopyTooltip.classList.add("show");
-
-    timeoutTooltip = setTimeout(() => {
-        btnCopyTooltip.classList.remove("show");
-    }, 800);
-
-    verificationTokenInp.select();
-    verificationTokenInp.setSelectionRange(0, 99999); /* For mobile devices */
-
-    navigator.clipboard.writeText(verificationTokenInp.value);
-});
-
-/* ===== render & set custom domain ==== */
-function setCustomDomain() {
-    getCustomDomain(customDomainId).then(cb => {
+function setSubDomainsList() {
+    listSubDomains().then(cb => {
         if (cb && cb.success) {
-            if (cb.custom_domain) {
-                gCustomDomain = cb.custom_domain;
-
-                h1RootDomain.textContent = gCustomDomain.root_domain;
-                verificationTokenInp.value = gCustomDomain.verification_token;
-
-                renderDNSRecords(cb);
-
-                if (gCustomDomain.subdomains && gCustomDomain.subdomains.length > 0) {
-                    renderSubdomains(gCustomDomain.subdomains);
-                }
-                else {
-                    document.querySelector(".empty__zone").classList.add("show");
-                    renderSubdomains([]);
-                }
+            if (cb.subdomains) {
+                gSubDomains = cb.subdomains;
+                document.querySelector(".empty__zone").classList.remove("show");
+                renderSubDomains();
             }
-        }
-        else if (cb && !cb.success) {
-            ALERT_MOD.call({
-                title: "Information",
-                text: "An error occurred while loading the domain.",
-                buttons: [
-                    {
-                        text: "RETURN",
-                        onClick: function () {
-                            ALERT_MOD.close();
-                            window.location = "/custom-domains";
-                        }
-                    },
-                ]
-            });
-        }
-        else {
-            window.location = "/custom-domains";
+            else {
+                gSubDomains = [];
+                document.querySelector(".empty__zone").classList.add("show");
+                renderSubDomains();
+            }
         }
     });
 }
 
-function renderSubdomains(subdomains) {
-    listSubdomainsElem.innerHTML = ``;
+function renderSubDomains() {
+    listDomainsElem.innerHTML = ``;
 
-    for (let i = 0; i < subdomains.length; i++) {
-        let isFirst = i === 0;
-        listSubdomainsElem.insertAdjacentHTML("beforeend", getSubdomainItemHTML(subdomains[i], isFirst));
-        attachEventSubdomainItem(subdomains[i]);
+    for (let i = 0; i < gSubDomains.length; i++) {
+        listDomainsElem.insertAdjacentHTML("beforeend", getSubDomainItemHTML(gSubDomains[i]));
+        attachEventDomainItem(gSubDomains[i].id);
     }
 }
 
-function getSubdomainItemHTML(subdomain, isFirst) {
-    return `<li id="subdomain-` + subdomain + `"  class="subdomain-item">
-        <div class="subdomain__left">
-            <div class="subdomain__name">
-                <div class="ellipse"></div>
-                <span>`+ subdomain.substring(4) + `</span>
-            </div>
+function getSubDomainItemHTML(subdomain) {
+    let linked = "";
+
+    if (subdomain.toaster_id && subdomain.toaster_id !== "") {
+        linked = `
+        <li class="domain__spec">
+            <svg width="14" height="14" viewBox="0 0 9 9" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_43_1052)">
+                    <path
+                        d="M0.781677 4.44019L1.434 3.78804C1.60697 3.61507 1.90474 3.73003 1.91371 3.97437C1.92506 4.28992 1.98244 4.60212 2.08404 4.90109C2.10142 4.95109 2.1044 5.00497 2.09266 5.05659C2.08091 5.10821 2.0549 5.1555 2.0176 5.19306L1.7875 5.42316C1.29531 5.91534 1.27949 6.71796 1.76728 7.21612C1.88445 7.3354 2.02408 7.4303 2.17811 7.49536C2.33213 7.56042 2.49751 7.59434 2.66471 7.59517C2.83191 7.59601 2.99762 7.56373 3.15229 7.50022C3.30696 7.4367 3.44752 7.34319 3.56588 7.22509L4.74642 6.04331C4.98359 5.80598 5.11682 5.48419 5.11682 5.14867C5.11682 4.81315 4.98359 4.49136 4.74642 4.25404C4.69042 4.19853 4.6296 4.14812 4.56467 4.10339C4.52842 4.07858 4.49849 4.04562 4.47728 4.00716C4.45606 3.9687 4.44415 3.9258 4.4425 3.88191C4.43873 3.78498 4.45512 3.68833 4.49064 3.59807C4.52617 3.50781 4.58004 3.42591 4.64886 3.35755L5.01906 2.98841C5.06613 2.94158 5.12821 2.91285 5.19437 2.90725C5.26053 2.90166 5.32655 2.91957 5.38082 2.95782C5.7003 3.1809 5.96715 3.47113 6.16266 3.80819C6.35817 4.14525 6.47762 4.52098 6.51263 4.90906C6.54765 5.29714 6.49739 5.68818 6.36537 6.05479C6.23335 6.42141 6.02277 6.75472 5.74838 7.03138L5.74205 7.03788L4.5608 8.21913C3.51894 9.26098 1.82388 9.26081 0.781501 8.21913C-0.260881 7.17745 -0.260178 5.48187 0.781677 4.44019Z"
+                        fill="#9B9B9B" />
+                    <path
+                        d="M7.21303 3.57681C7.70521 3.08463 7.72103 2.28201 7.23324 1.78385C7.11605 1.66459 6.9764 1.56971 6.82236 1.50469C6.66832 1.43966 6.50294 1.40577 6.33574 1.40497C6.16854 1.40417 6.00283 1.43648 5.84818 1.50002C5.69352 1.56357 5.55298 1.65711 5.43465 1.77523L4.2541 2.95666C4.01693 3.19398 3.8837 3.51578 3.8837 3.8513C3.8837 4.18682 4.01693 4.50861 4.2541 4.74593C4.3101 4.80144 4.37093 4.85185 4.43586 4.89658C4.47207 4.92141 4.50197 4.95438 4.52315 4.99284C4.54433 5.0313 4.55622 5.07419 4.55785 5.11806C4.5617 5.21498 4.54536 5.31164 4.50986 5.40191C4.47437 5.49218 4.42049 5.57408 4.35166 5.64242L3.98147 6.01244C3.93437 6.05923 3.8723 6.08795 3.80615 6.09354C3.74 6.09914 3.67399 6.08125 3.61971 6.04303C3.30008 5.81996 3.0331 5.52969 2.8375 5.19255C2.64189 4.85541 2.52239 4.47957 2.48737 4.09138C2.45235 3.70318 2.50266 3.31203 2.63477 2.94533C2.76688 2.57863 2.9776 2.24526 3.25215 1.96859L3.25848 1.96209L4.43973 0.780837C5.48158 -0.261018 7.17664 -0.260842 8.21902 0.780837C9.2614 1.82252 9.26088 3.51775 8.21902 4.56013L7.5667 5.21228C7.39373 5.38525 7.09596 5.27029 7.08699 5.02595C7.07564 4.7104 7.01826 4.3982 6.91666 4.09924C6.89928 4.04923 6.89629 3.99535 6.90804 3.94373C6.91979 3.89211 6.9458 3.84482 6.9831 3.80726L7.21303 3.57681Z"
+                        fill="white" />
+                </g>
+                <defs>
+                    <clipPath id="clip0_43_1052">
+                        <rect width="9" height="9" fill="white" />
+                    </clipPath>
+                </defs>
+            </svg>
+            <span class="domain__spec-label">Linked</span>
+            <span class="displaynone linkedToasterID">` + subdomain.toaster_id + `</span>
+        </li>
+        `;
+    }
+
+    return `<li id="domain-` + subdomain.id + `" class="domain-item">
+    <div class="domain__left">
+        <div class="domain__name">
+            <div class="ellipse"></div>
+            <span class="spanDomainName">`+ subdomain.name + `</span>
         </div>
-        <div class="subdomain__cont-action">
-            <div class="subdomain__action unlinkToaster`+ (!gCustomDomain.linked_toasters || (gCustomDomain.linked_toasters && !gCustomDomain.linked_toasters[subdomain]) ? " disabled" : "") + `">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="rgba(255,255,255,.5)"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                >
-                    <path d="M18.84 12.25L20.56 10.54H20.54C21.4606 9.58604 21.9651 8.30573 21.9426 6.98018C21.9201 5.65462 21.3725 4.39217 20.42 3.47C19.4869 2.57019 18.2412 2.06739 16.945 2.06739C15.6488 2.06739 14.4031 2.57019 13.47 3.47L11.75 5.18" />
-                    <path d="M5.17 11.75L3.46 13.46C2.53937 14.414 2.03492 15.6943 2.05742 17.0198C2.07992 18.3454 2.62752 19.6078 3.58 20.53C4.51305 21.4298 5.75876 21.9326 7.055 21.9326C8.35124 21.9326 9.59695 21.4298 10.53 20.53L12.24 18.82" />
-                    <path d="M8 2V5" />
-                    <path d="M2 8H5" />
-                    <path d="M16 19V22" />
-                    <path d="M19 16H22" />
-                    <path d="M19 19L21 21" />
-                    <path d="M3 3L5 5" />
-                </svg>
-                `+ (isFirst ? `<span class="subdomain__action-label">Unlink</span>` : ``) + `
-            </div>
-            <div class="subdomain__action linkToaster">
+        <ul class="domain__list-specs">`+ linked + `</ul>
+        </div>
+        <div class="domain__cont-action">
+            <div class="domain__action linkToaster">
                 <span class="icon-link-2"></span>
-                `+ (isFirst ? `<span class="subdomain__action-label">Link</span>` : ``) + `
+                <span class="domain__action-label">Link</span>
             </div>
-            <div class="subdomain__action delete">
+            <div class="domain__action delete">
                 <span class="icon-trash"></span>
-                `+ (isFirst ? ` <span class="subdomain__action-label">Delete</span>` : ``) + `
+                <span class="domain__action-label">Delete</span>
             </div>
         </div>
     </li>`;
 }
 
-function attachEventSubdomainItem(domainId) {
-    var subdomainElem = document.getElementById("subdomain-" + domainId);
+function attachEventDomainItem(subdomainid) {
+    var domainElem = document.getElementById("domain-" + subdomainid);
 
-    subdomainElem.querySelector(".subdomain__action.delete").addEventListener("click", function (e) {
+    domainElem.querySelector(".domain__action.linkToaster").addEventListener("click", function (e) {
         e.preventDefault();
         e.stopPropagation();
 
-        handleDeleteDomains(domainId);
+        var linkedToasterIDContainer = document.getElementById("domain-" + subdomainid).querySelector(".linkedToasterID");
+        var linkedToaster = "";
+        if (linkedToasterIDContainer) {
+            linkedToaster = linkedToasterIDContainer.textContent;
+        }
+
+        handleLinkToaster(subdomainid, linkedToaster);
     });
 
-    subdomainElem.querySelector(".subdomain__action.linkToaster").addEventListener("click", function (e) {
+    domainElem.querySelector(".domain__action.delete").addEventListener("click", function (e) {
         e.preventDefault();
         e.stopPropagation();
-
-        handleLinkToaster(domainId);
-    });
-
-    subdomainElem.querySelector(".subdomain__action.unlinkToaster").addEventListener("click", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        handleUnlinkToaster(domainId);
+        handleDeleteSubDomain(subdomainid);
     });
 }
 
-function handleDeleteDomains(domainId) {
-    let domains = gCustomDomain.subdomains.filter(dom => dom !== domainId);
-
-    ALERT_MOD.call({
-        title: "Confirmation",
-        text: "Are you sure to delete this domain ?",
-        buttons: [
-            {
-                text: "CANCEL",
-                onClick: function () {
-                    ALERT_MOD.close();
-                }
-            },
-            {
-                text: "DELETE",
-                onClick: function () {
-                    ALERT_MOD.close();
-
-                    updateCustomDomain(customDomainId, domains).then(cb => {
-                        if (cb && cb.success) {
-                            setCustomDomain();
-                        }
-                        else if (cb && !cb.success) {
-                            ALERT_MOD.call({
-                                title: "Information",
-                                text: cb.code + " : " + cb.message
-                            });
-                        }
-                    });
-                }
-            },
-        ]
-    });
-}
-
-function handleLinkToaster(domainId) {
+function handleLinkToaster(subdomainid, linkedToaster) {
     listToasters().then(cb => {
         if (cb && cb.success) {
             gToasters = cb.toasters;
 
             MODAL_LINK_TOASTER.call({
                 title: "Link Toaster",
-                text: "Select Toaster to link to your custom domain.",
-                linkedToaster: gCustomDomain.linked_toasters ? (gCustomDomain.linked_toasters[domainId] ? gCustomDomain.linked_toasters[domainId] : "") : "",
+                text: "Select Toaster to link to your subdomain.",
+                linkedToaster: linkedToaster,
                 toasters: gToasters,
                 buttons: [
                     {
@@ -244,23 +127,22 @@ function handleLinkToaster(domainId) {
                     {
                         text: "LINK",
                         onClick: function () {
-                            let toastersToLink = gCustomDomain.linked_toasters ? gCustomDomain.linked_toasters : {};
+                            let toasterToLink = "";
 
                             document.querySelectorAll(".toaster__item input").forEach(checkbox => {
                                 if (checkbox.checked) {
-                                    let toaster = gToasters.find(toaster => toaster.id === checkbox.value);
-                                    toastersToLink[domainId] = toaster.id;
+                                    toasterToLink = checkbox.value;
                                 }
                             });
 
-                            updateCustomDomain(gCustomDomain.id, gCustomDomain.subdomains, toastersToLink).then(cb => {
+                            updateSubDomain(subdomainid, toasterToLink).then(cb => {
                                 if (cb && cb.success) {
                                     MODAL_LINK_TOASTER.close();
                                     ALERT_MOD.call({
                                         title: "Information",
                                         text: "Your Toaster has been successfully linked."
                                     });
-                                    setCustomDomain();
+                                    setSubDomainsList();
                                 }
                                 else if (cb && !cb.success) {
                                     MODAL_LINK_TOASTER.close();
@@ -284,66 +166,62 @@ function handleLinkToaster(domainId) {
     });
 }
 
-function handleUnlinkToaster(domainId) {
-    var toastersLinked = gCustomDomain.linked_toasters ? gCustomDomain.linked_toasters : {};
+function handleDeleteSubDomain(subdomainid) {
+    ALERT_MOD.call({
+        title: "Confirmation",
+        text: "Are you sure to delete this subdomain ?",
+        buttons: [
+            {
+                text: "CANCEL",
+                onClick: function () {
+                    ALERT_MOD.close();
+                }
+            },
+            {
+                text: "DELETE",
+                onClick: function () {
+                    ALERT_MOD.close();
+                    deleteSubDomain(subdomainid).then(cb => {
+                        if (cb && cb.success) {
+                            setSubDomainsList();
+                        }
+                        else if (cb && !cb.success) {
+                            ALERT_MOD.call({
+                                title: "Information",
+                                text: cb.code + " : " + cb.message
+                            });
+                        }
+                    })
+                }
+            },
+        ]
+    });
+}
 
-    delete toastersLinked[domainId];
+formCreateSubdomain.addEventListener("submit", function (e) {
+    e.preventDefault();
 
-    updateCustomDomain(gCustomDomain.id, gCustomDomain.subdomains, toastersLinked).then(cb => {
+    createSubDomain(this.elements["subdomainName"].value.trim().toLowerCase(), "").then(cb => {
         if (cb && cb.success) {
-            MODAL_LINK_TOASTER.close();
             ALERT_MOD.call({
-                title: "Information",
-                text: "Your Toaster has been successfully unlinked."
+                title: "Success",
+                text: "You have successfully created a subdomain.",
+                buttons: [
+                    {
+                        text: "OK",
+                        onClick: function () {
+                            ALERT_MOD.close();
+                            setSubDomainsList();
+                        }
+                    },
+                ]
             });
-
-            setCustomDomain();
         }
         else if (cb && !cb.success) {
-            MODAL_LINK_TOASTER.close();
             ALERT_MOD.call({
                 title: "Information",
                 text: cb.code + " : " + cb.message
             });
         }
     });
-}
-
-function renderDNSRecords(customDomain) {
-    var tableBodyRecord = document.querySelector(".subdomain__table-body");
-    var mobileRecordsList = document.querySelector(".mobile-record__list");
-    let recordsHTML = `<tr>
-        <td>${customDomain.ownership_check_txt_record_name}</td>
-        <td>300</td>
-        <td>TXT</td>
-        <td>${customDomain.ownership_check_txt_record_value}</td>
-    </tr>`;
-    let recordsMobileHTML = `<li class="mobile-record__item">
-        <span><b>Name</b> ${customDomain.ownership_check_txt_record_name}</span>
-        <span><b>TTL</b> 300</span>
-        <span><b>Type</b> TXT</span>
-        <span><b>Value</b> ${customDomain.ownership_check_txt_record_value}</span>
-    </li>`;
-
-    tableBodyRecord.innerHTML = ``;
-    mobileRecordsList.innerHTML = ``;
-
-    for (let cname in customDomain.cnames_record) {
-        recordsHTML += `<tr>
-            <td>${cname}</td>
-            <td>300</td>
-            <td>CNAME</td>
-            <td>${customDomain.cnames_record[cname]}</td>
-        </tr>`;
-
-        recordsMobileHTML += `<li class="mobile-record__item">
-            <span><b>Name</b> ${cname}</span>
-            <span><b>TTL</b> 300</span>
-            <span><b>Type</b> CNAME</span>
-            <span><b>Value</b> ${customDomain.cnames_record[cname]}</span>
-        </li>`;
-    }
-
-    tableBodyRecord.innerHTML = recordsHTML;
-    mobileRecordsList.innerHTML = recordsMobileHTML;
-}
+});

@@ -1,55 +1,62 @@
 {
     "api_domain": "",
     "api_root_domain": "",
-    "aws_s3": {
-        "aws_region": "",
-        "bucket": "",
-        "secret_access_key": "",
-        "access_key_id": ""
-    },
-    "aws_ses": {
-        "aws_region": "",
-        "secret_access_key": "",
-        "access_key_id": "",
-        "reply_to": null,
-        "source_email": ""
-    },
+    "dashboard_domain": "",
+    "dashboard_root_domain": "",
+    "toaster_domain": "",
+    "toaster_root_domain": "",
     "dns_provider": {
-        "configuration": null,
-        "name": ""
+        "configuration": {
+            "AWS_ACCESS_KEY_ID": "",
+            "AWS_SECRET_ACCESS_KEY": "",
+            "AWS_HOSTED_ZONE_ID": ""
+        },
+        "name": "route53"
     },
     "is_api": true,
     "is_runner": true,
-    "local_filestorage": {
-        "path": ""
+    "log_level": "debug",
+    "aws_s3": {
+        "bucket": "",
+        "secret_access_key": "",
+        "access_key_id": "",
+        "region": ""
     },
-    "log_level": "",
+    "aws_ses": {
+        "region": "",
+        "secret_access_key": "",
+        "access_key_id": "",
+        "source_email": "",
+        "reply_to": [
+            ""
+        ]
+    },
     "node_discovery": false,
-    "node_local_private_network_ip": "",
     "redis": {
         "db_number": 0,
-        "hosts": null,
-        "password": "",
-        "username": ""
+        "hosts": [
+            "127.0.0.1:6379"
+        ]
     },
-    "region": "",
     "runner": {
         "btrfs_filepath": "",
-        "btrfs_filesize": 0,
+        "btrfs_filesize": 5368709120,
         "btrfs_mountpoint": "",
-        "non_root_gid": 0,
-        "non_root_uid": 0,
         "overlayfs_mountpoint": "",
-        "use_unmounted_disks": false
+        "non_root_gid": 1000,
+        "non_root_uid": 1000,
+        "use_unmounted_disks": false,
+        "toaster_port": 8080,
+        "network_interface": ""
     },
     "sqldb": {
         "db_name": "",
-        "hosts": null,
+        "hosts": [
+            ""
+        ],
         "password": "",
         "syntax": "",
         "username": ""
     },
-    "ssl_certificate_contact_email": "",
-    "toaster_domain": "",
-    "toaster_root_domain": ""
+    "ssl_certificate_contact_email": ""
 }

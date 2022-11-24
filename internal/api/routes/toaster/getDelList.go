@@ -33,7 +33,7 @@ func Get(w http.ResponseWriter, r *http.Request, userid, toasterid string) {
 
 	utils.SendSuccess(w, &GetResponse{
 		Success: true,
-		Toaster: toaster,
+		Toaster: completeToasterDynFields(toaster, r.FormValue("donotrendermarkdown") != "true"),
 	})
 }
 
@@ -58,7 +58,7 @@ func Delete(w http.ResponseWriter, r *http.Request, userid, toasterid string) {
 	if DeleteToasterHelper(w, userid, toaster) {
 		utils.SendSuccess(w, &GetResponse{
 			Success: true,
-			Toaster: toaster,
+			Toaster: completeToasterDynFields(toaster, true),
 		})
 	}
 }
@@ -71,6 +71,12 @@ func DeleteToasterHelper(w http.ResponseWriter, userid string, toaster *model.To
 	}
 
 	err = objectstorage.Client.DeleteFolder(filepath.Join("clearcode", toaster.ID))
+	if err != nil && err != objectstoragerror.ErrNotFound {
+		utils.SendInternalError(w, "Toaster.Del:objectstorage.Client.DeleteFolder", err)
+		return false
+	}
+
+	err = objectstorage.Client.DeleteFolder(filepath.Join("toaster/picture/", toaster.ID))
 	if err != nil && err != objectstoragerror.ErrNotFound {
 		utils.SendInternalError(w, "Toaster.Del:objectstorage.Client.DeleteFolder", err)
 		return false
@@ -121,6 +127,10 @@ func List(w http.ResponseWriter, r *http.Request, userid string) {
 	if err != nil {
 		utils.SendInternalError(w, "Toaster.List:objectdb.Client.ListUsertoasters", err)
 		return
+	}
+
+	for i := 0; i < len(toasters); i++ {
+		toasters[i] = completeToasterDynFields(toasters[i], false)
 	}
 
 	utils.SendSuccess(w, &ListResponse{

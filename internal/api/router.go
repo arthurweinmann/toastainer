@@ -237,6 +237,18 @@ func (s *Router) api(w http.ResponseWriter, r *http.Request) {
 				case "changepassword":
 					userroute.UpdatePassword(w, r, user.ID)
 					return
+				case "picture":
+					switch r.Method {
+					case "POST":
+						userroute.UpdateUserPictureRoute(w, r, user.ID)
+						return
+					case "GET":
+						if len(spath) > 3 {
+							userroute.GetUserPicture(w, r, user.ID, spath[2], spath[3])
+							return
+						}
+					}
+
 				case "signout":
 					userroute.Signout(w, r, user.ID, sessToken)
 					return
@@ -256,6 +268,11 @@ func (s *Router) api(w http.ResponseWriter, r *http.Request) {
 			case "POST":
 				if len(spath) > 1 {
 					switch spath[1] {
+					case "picture":
+						if len(spath) > 2 {
+							toaster.UpdateToasterPictureRoute(w, r, user.ID, spath[2])
+							return
+						}
 					}
 				} else {
 					toaster.Create(w, r, user.ID)
@@ -278,6 +295,11 @@ func (s *Router) api(w http.ResponseWriter, r *http.Request) {
 					}
 				} else if len(spath) > 2 {
 					switch spath[1] {
+					case "picture":
+						if len(spath) > 3 {
+							toaster.GetToasterPicture(w, r, user.ID, spath[2], spath[3])
+							return
+						}
 					case "build":
 						toaster.GetBuildResult(w, r, user.ID, spath[2])
 						return
@@ -290,8 +312,8 @@ func (s *Router) api(w http.ResponseWriter, r *http.Request) {
 					case "runningcount":
 						toaster.RunningCount(w, r, user.ID, spath[2])
 						return
-					case "statistics":
-						toaster.Stats(w, r, user.ID, spath[2])
+					case "usage":
+						toaster.Usage(w, r, user.ID, spath[2])
 						return
 					}
 				}
@@ -312,6 +334,16 @@ func (s *Router) api(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 			case "GET":
+				if len(spath) > 1 {
+					switch spath[1] {
+					case "list":
+						subdomain.List(w, r, user.ID)
+						return
+					default:
+						subdomain.Get(w, r, user.ID, spath[1])
+						return
+					}
+				}
 			case "DELETE":
 				if len(spath) > 1 {
 					subdomain.Delete(w, r, user.ID, spath[1])
@@ -331,7 +363,7 @@ func (s *Router) proxy2Toaster(w http.ResponseWriter, r *http.Request) {
 
 	// Custom Domain
 	if !strings.HasSuffix(domain, config.ToasterDomain) {
-		utils.SendError(w, "custom domains not yet supported", "invalidHost", 400)
+		utils.SendError(w, "custom domains are not yet supported", "invalidHost", 400)
 		return
 	}
 

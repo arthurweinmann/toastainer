@@ -1,33 +1,30 @@
-# Toastainer - The gitlab of functions as a service platforms
+# Toastainer
 
-Toastainer is a self - hosted platform to run and auto-scale serverless code instances. An instance is started by the first request and can then be joined by multiple other requests. HTTP, Websocket and SSH requests are supported. Joining the same running code instance with different kind of requests is supported. You can set the timeout and maximum number of joiners for each instance in order to autoscale them naturally. You can also make a request force join a particular instance with its ID. You can setup your own OS image to support any programming language.
+Toastainer is an open source self - hosted platform to run serverless code instances. An instance is started by the first request and can then be joined by multiple other requests. HTTP and Websocket requests are supported. Joining the same running code instance with different kind of requests is supported. You can set the timeout and maximum number of joiners for each instance in order to autoscale them naturally. You can also make a request force join a particular instance with its ID. You can setup your own OS image to support any programming language.
 
 # Motivation
 
-At Toastate, we need a way to quickly deploy and run autoscaled code instances. We need those instance to be reachable by multiple request of distinct types. We could not vendor lock clients from our web agency. This is why we developed Toastainer> We believe it can also be useful for other projects and this is why we release it to the community. We also provide a hosted version at toastainer.toastate.com.
+At Toastate, we need a way to quickly deploy and run autoscaled code instances. We need those instance to be reachable by multiple request of distinct types. We could not vendor lock clients from our web agency. This is why we developed Toastainer. We believe it can also be useful for other projects and this is why we release it to the community.
+
+# Project status
+
+This project is currently in development.
 
 # Installation
 
 ## Requirements
 
-TODO: checkout those requirements references for other non apt systems
-With APT package manager: autoconf bison flex gcc g++ git libprotobuf-dev libnl-route-3-dev libtool make pkg-config btrfs-progs protobuf-compiler uidmap
+- Install packages with APT package manager: apt-get install autoconf bison flex gcc g++ git libprotobuf-dev libnl-route-3-dev libtool make pkg-config btrfs-progs protobuf-compiler uidmap
 
-## Ubuntu 20.04
+- Redis instance
 
-- provide link to an image already done
+- Relational database (MySQL, Mariadb)
 
-## Standalone
+## Rootfs
 
-## Multi - Nodes and Multi - Cloud
+See docs/rootfs
 
-### IP Addresses
-
-To maintain security, IP addresses of nodes must be in a private CIDR (10.0.0.0/8 or 172.16.0.0/12 or 192.168.0.0/16). This means they must be in the same private network or VPN. Toatscloud will throw an error if it is not the case.
-
-## Installation from source
-
-### Runner network setup
+## Setup
 
 ```bash
 
@@ -78,14 +75,31 @@ echo "nameserver 8.8.8.8" >> /etc/resolv.conf
 
 Also the home folder and all its ancestors should be owned by toastainer user, for example ubuntu or uid/gid 1000
 
+## Build the toastainer binary
+
+Run
+
+```bash
+make build
+```
+
 # Usage
 
-# Full Configuration example
+```bash
+./toastainer
+```
 
 # Roadmap
 
+- [ ] Toaster build and execution commands defaults for other languages
 
-- [ ] Packaging and automated installation for major OS
+- [ ] Custom domain names for toasters
+
+- [ ] Full Documentation
+
+- [ ] Support other email and object storage providers
+
+- [ ] Packaging and automated installation for major environments
 
 - [ ] Live update support
 

@@ -3,13 +3,14 @@ package auth
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/toastate/toastainer/internal/db/redisdb"
 	"github.com/toastate/toastainer/internal/model"
 	"github.com/toastate/toastainer/internal/utils"
 )
 
-func CreateSession(user *model.User) (string, error) {
+func CreateSession(user *model.User, expiration time.Duration) (string, error) {
 	b, err := json.Marshal(user)
 	if err != nil {
 		return "", nil
@@ -20,7 +21,7 @@ func CreateSession(user *model.User) (string, error) {
 		return "", nil
 	}
 
-	err = redisdb.GetClient().Set(context.Background(), "sess_"+sess, b, 0).Err()
+	err = redisdb.GetClient().Set(context.Background(), "sess_"+sess, b, expiration).Err()
 	if err != nil {
 		return "", nil
 	}

@@ -2,7 +2,7 @@ package model
 
 type Toaster struct {
 	ID     string `json:"id,omitempty" db:"id"`
-	Cursor int    `json:"cursor,omitempty" db:"cursor"`
+	Cursor int    `json:"-" db:"cursor"`
 
 	CodeID string `json:"code_id,omitempty" db:"code_id"`
 
@@ -32,4 +32,9 @@ type Toaster struct {
 
 	Readme   string      `json:"readme,omitempty" db:"readme"`
 	Keywords ArrayString `json:"keywords,omitempty" db:"keywords"`
+
+	PictureExtension string `json:"-" db:"picture_ext"`
+	PictureLink      string `json:"picture_link" db:"-"`
+
+	RunLink string `json:"run_link" db:"-"`
 }

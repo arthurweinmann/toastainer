@@ -1,18 +1,28 @@
 
 var domain = CONFIG.domain;
 
-async function getToaster(id) {
-    return fetch(domain + "/toaster/" + id, {
-        method: "GET",
-        credentials: "include"
-    })
-        .then(response => response.json())
-        .then(resp => Promise.resolve(resp))
-        .catch(err => console.log(err));
+async function getToaster(id, donotrendermarkdown) {
+    if (donotrendermarkdown) {
+        return fetch(domain + "/toaster/" + id + "?donotrendermarkdown=true", {
+            method: "GET",
+            credentials: "include"
+        })
+            .then(response => response.json())
+            .then(resp => Promise.resolve(resp))
+            .catch(err => console.log(err));
+    } else {
+        return fetch(domain + "/toaster/" + id, {
+            method: "GET",
+            credentials: "include"
+        })
+            .then(response => response.json())
+            .then(resp => Promise.resolve(resp))
+            .catch(err => console.log(err));
+    }
 }
 
-async function getToasterStats(id) {
-    return fetch(domain + "/toaster/stats/" + id, {
+async function getToasterUsage(id) {
+    return fetch(domain + "/toaster/usage/" + id, {
         method: "GET",
         credentials: "include"
     })
@@ -22,7 +32,7 @@ async function getToasterStats(id) {
 }
 
 async function getToasterRunningCount(id) {
-    return fetch(domain + "/toaster/count/" + id, {
+    return fetch(domain + "/toaster/runningcount/" + id, {
         method: "GET",
         credentials: "include"
     })
@@ -62,13 +72,23 @@ async function getToasterExecutionLogs(id, exeID) {
         .catch(err => console.log(err));
 }
 
-async function deleteToaster(...ids) {
+async function deleteToasters(...ids) {
     return fetch(domain + "/toaster", {
         method: "DELETE",
         credentials: "include",
         body: JSON.stringify({
             "toaster_ids": ids
         })
+    })
+        .then(response => response.json())
+        .then(resp => Promise.resolve(resp))
+        .catch(err => console.log(err));
+}
+
+async function deleteToaster(id) {
+    return fetch(domain + "/toaster/"+id, {
+        method: "DELETE",
+        credentials: "include"
     })
         .then(response => response.json())
         .then(resp => Promise.resolve(resp))

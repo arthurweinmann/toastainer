@@ -33,6 +33,8 @@ var ToasterDomain string
 var ToasterRootDomain string
 var ToasterDomainSplitted []string
 
+var APIPort string
+
 var LocalPrivateIP string
 var LocalPublicIP string
 

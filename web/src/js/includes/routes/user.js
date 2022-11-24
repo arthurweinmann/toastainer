@@ -74,37 +74,6 @@ async function getUser() {
         .catch(err => console.log(err));
 }
 
-async function setupBilling() {
-    return fetch(domain + "/user/setupbilling", {
-        method: "POST",
-        credentials: "include"
-    })
-        .then(response => response.json())
-        .then(resp => {
-            const stripe = Stripe("pk_test_4dkqFvYXK0cuLdyrchV0xI9900jT8ZxPhI");
-            return stripe.redirectToCheckout({ sessionId: resp.session_id });
-        })
-        .then(function (result) {
-            // If `redirectToCheckout` fails due to a browser or network
-            // error, you should display the localized error message to your
-            // customer using `error.message`.
-            if (result.error) {
-                alert(result.error.message);
-            }
-        })
-        .catch(err => console.log(err));
-}
-
-async function stripeCustomerPortal() {
-    return fetch(domain + "/user/stripe-customer-portal", {
-        method: "POST",
-        credentials: "include"
-    })
-        .then(response => response.json())
-        .then(resp => Promise.resolve(resp))
-        .catch(err => console.log(err));
-}
-
 async function changePassword(oldPassword, newPassword) {
     return fetch(domain + "/user/change-password", {
         method: "POST",

@@ -49,16 +49,13 @@ func Update(w http.ResponseWriter, r *http.Request, userid, subdomainid string) 
 		return
 	}
 
-	if req.ToasterID == nil {
-		utils.SendSuccess(w, &UpdateSubDomainResponse{
-			Success:   true,
-			SubDomain: sub,
-		})
-		return
-	}
-
 	var toaster *model.Toaster
-	if *req.ToasterID != "" {
+
+	if req.ToasterID == nil || *req.ToasterID == "" {
+		sub.ToasterID = ""
+	} else {
+		sub.ToasterID = *req.ToasterID
+
 		toaster, err = objectdb.Client.GetUserToaster(userid, *req.ToasterID)
 		if err != nil {
 			if err == objectdberror.ErrNotFound {
@@ -70,8 +67,6 @@ func Update(w http.ResponseWriter, r *http.Request, userid, subdomainid string) 
 			return
 		}
 	}
-
-	sub.ToasterID = *req.ToasterID
 
 	err = objectdb.Client.UpdateSubDomain(sub)
 	if err != nil {

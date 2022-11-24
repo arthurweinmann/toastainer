@@ -94,6 +94,15 @@ function createButtonEventToaster(option) {
     });
 }
 
+function modalLinkToasterCheckboxUnselectOnClick(id) {
+    console.log(document.getElementById(id).checked);
+    if (document.getElementById(id).checked) {
+        document.getElementById(id).checked = false;
+    } else {
+        document.getElementById(id).checked = true;
+    }
+}
+
 // alert templateToaster 
 function templateToaster(options) {
     let buttons = options.buttons;
@@ -109,9 +118,9 @@ function templateToaster(options) {
     for (let i = 0; i < options.toasters.length; i++) {
         let toaster = options.toasters[i];
 
-        toastersHTML += `<li class="toaster__item" data-toaster-id="` + toaster.id + `">
+        toastersHTML += `<li onclick="event.stopPropagation(); event.preventDefault(); modalLinkToasterCheckboxUnselectOnClick('linkToaster-` + i + `')" class="toaster__item" data-toaster-id="` + toaster.id + `">
             <label class="checkbox">
-                <input type="radio" name="toaster" value="`+ toaster.id + `" ` + (options.linkedToaster === toaster.id ? "checked" : "") + `>
+                <input type="radio" id="linkToaster-` + i + `" name="toaster" value="` + toaster.id + `" ` + (options.linkedToaster === toaster.id ? "checked" : "") + `>
                 `+ toaster.name + `
             </label>
         </li>`;

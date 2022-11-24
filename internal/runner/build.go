@@ -91,7 +91,7 @@ func buildCommandInternal(cmd *BuildCommand, connR *bufio.Reader) (logs []byte, 
 		return nil, err
 	}
 
-	workdir := filepath.Join(ovlr.MountPoint, "/minifaas")
+	workdir := filepath.Join(ovlr.MountPoint, "/toastainer")
 
 	err = os.MkdirAll(workdir, 0755)
 	if err != nil {
@@ -121,7 +121,7 @@ func buildCommandInternal(cmd *BuildCommand, connR *bufio.Reader) (logs []byte, 
 	ip := smartdhcp.Get()
 	nscmd := nsjailCommand(
 		ovlr.MountPoint,
-		"/minifaas",
+		"/toastainer",
 		600,
 		cmd.Env,
 		"10.166."+ipStr(ip),

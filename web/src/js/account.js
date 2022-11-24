@@ -8,10 +8,8 @@ var form = document.getElementById("form-update-account");
 var btnModify = document.getElementById("btn-modify");
 var validationItemsElem = document.querySelectorAll(".pwd-validation__item");
 var isFromSubscription = new URLSearchParams(window.location.search).get("session_id");
-var planItemElem = document.querySelector(".plan__item");
 var newPicture;
 var accountUser = document.querySelector(".account__user");
-var btnManagePlanElem = document.getElementById("btn-manage-plan");
 var inpNewPassword = document.querySelector(".inp-new-password");
 
 if (isFromSubscription) {
@@ -25,13 +23,6 @@ if (isFromSubscription) {
 if (USER) {
     form.elements["username"].value = USER.username;
     form.elements["email"].value = USER.email;
-
-    if (USER.active_billing) {
-        planItemElem.classList.add("show");
-    }
-    else {
-        planItemElem.remove();
-    }
 
     if (USER.picture_link) {
         profileImg.src = USER.picture_link;
@@ -63,16 +54,6 @@ fileInp.addEventListener("change", function (e) {
     }
 }, false);
 
-if (btnManagePlanElem) {
-    btnManagePlanElem.addEventListener("click", function () {
-        stripeCustomerPortal().then(cb => {
-            if (cb && cb.success) {
-                openInNewTab(cb.url);
-            }
-        })
-    });    
-}
-
 function openInNewTab(href) {
     Object.assign(document.createElement('a'), {
         target: '_blank',
@@ -80,12 +61,17 @@ function openInNewTab(href) {
     }).click();
 }
 
-btnModify.addEventListener("click", function () {
+btnModify.addEventListener("click", function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+    
     let oldText = this.textContent;
     this.classList.add("btn-clicked");
     this.disabled = true;
 
     if (newPicture) {
+        console.log("new picture");
+
         var formData = new FormData();
         formData.append('file', newPicture);
 
@@ -152,7 +138,6 @@ btnModify.addEventListener("click", function () {
             }
         });
     }
-
 });
 
 form.elements["newpassword"].addEventListener("keyup", function (e) {

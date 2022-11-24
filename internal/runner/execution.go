@@ -158,7 +158,7 @@ func (exe *executionInProgress) start() (err error) {
 
 	exe.nscmd = nsjailCommand(
 		exe.ovlr.MountPoint,
-		"/minifaas",
+		"/toastainer",
 		exe.cmd.TimeoutSec,
 		exe.cmd.Env,
 		exe.ip,

@@ -110,7 +110,7 @@ btnNextStep.addEventListener("click", function (e) {
 });
 
 function setToaster(toasterId) {
-    getToaster(toasterId).then(cb => {
+    getToaster(toasterId, true).then(cb => {
         if (cb && cb.success) {
             gToaster = cb.toaster;
             setInputValues(gToaster);
@@ -885,6 +885,33 @@ formToaster.addEventListener("submit", function (e) {
                             text: "Your Toaster has been successfully modified.",
                             buttons: [
                                 {
+                                    text: "See Logs",
+                                    onClick: function () {
+                                        ALERT_MOD.close();
+        
+                                        var logs = "No logs";
+        
+                                        if (cb.build_logs && cb.build_logs.length > 0) {
+                                            logs = `<pre class="buildlogs-pre">` + atob(cb.build_logs) +"</pre>";
+                                        }
+        
+                                        ALERT_MOD.call({
+                                            title: "Build Logs",
+                                            withCheckmark: false,
+                                            text: logs,
+                                            buttons: [
+                                                {
+                                                    text: "OK",
+                                                    onClick: function () {
+                                                        ALERT_MOD.close();
+                                                        window.location = "/toaster?id=" + cb.toaster.id;
+                                                    }
+                                                },
+                                            ]
+                                        });
+                                    }
+                                },
+                                {
                                     text: "OK",
                                     onClick: function () {
                                         ALERT_MOD.close();
@@ -918,6 +945,33 @@ formToaster.addEventListener("submit", function (e) {
                     withCheckmark: true,
                     text: "Your Toaster has been successfully modified.",
                     buttons: [
+                        {
+                            text: "See Logs",
+                            onClick: function () {
+                                ALERT_MOD.close();
+
+                                var logs = "No logs";
+
+                                if (cb.build_logs && cb.build_logs.length > 0) {
+                                    logs = `<pre class="buildlogs-pre">` + atob(cb.build_logs) +"</pre>";
+                                }
+
+                                ALERT_MOD.call({
+                                    title: "Build Logs",
+                                    withCheckmark: false,
+                                    text: logs,
+                                    buttons: [
+                                        {
+                                            text: "OK",
+                                            onClick: function () {
+                                                ALERT_MOD.close();
+                                                window.location = "/toaster?id=" + cb.toaster.id;
+                                            }
+                                        },
+                                    ]
+                                });
+                            }
+                        },
                         {
                             text: "OK",
                             onClick: function () {

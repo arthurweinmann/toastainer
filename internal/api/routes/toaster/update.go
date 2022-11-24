@@ -273,7 +273,7 @@ func Update(w http.ResponseWriter, r *http.Request, userid, toasterID string) {
 
 	err = objectdb.Client.UpdateToaster(toaster)
 	if err != nil {
-		utils.SendInternalError(w, "CreateToaster:objectdb.Client.CreateToaster", err)
+		utils.SendInternalError(w, "UpdateToaster:objectdb.Client.CreateToaster", err)
 		return
 	}
 
@@ -281,6 +281,13 @@ func Update(w http.ResponseWriter, r *http.Request, userid, toasterID string) {
 		err = objectstorage.Client.UploadFolder(tmpFolder, filepath.Join("clearcode", toaster.ID, toaster.CodeID))
 		if err != nil {
 			utils.SendInternalError(w, "CreateToaster:objectstorage.Client.UploadFolder", err)
+			return
+		}
+	} else {
+		// if we did not call buildToasterCode that usually handles propagating exe info into redis
+		err = setToasterExeInfo(toaster)
+		if err != nil {
+			utils.SendInternalError(w, "UpdateToaster:setToasterExeInfo", err)
 			return
 		}
 	}

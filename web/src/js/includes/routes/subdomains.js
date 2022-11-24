@@ -1,12 +1,12 @@
 var domain = CONFIG.domain;
 
-async function createCustomDomain(domains, linkedToasters) {
-    return fetch(domain + "/customdomain", {
+async function createSubDomain(name, optionalToasterID) {
+    return fetch(domain + "/subdomain", {
         method: "POST",
         credentials: "include",
         body: JSON.stringify({
-            "subdomains": domains,
-            "linked_toasters": linkedToasters
+            "name": name,
+            "toaster_id": optionalToasterID
         })
     })
         .then(response => response.json())
@@ -14,8 +14,8 @@ async function createCustomDomain(domains, linkedToasters) {
         .catch(err => console.log(err));
 }
 
-async function listCustomDomains() {
-    return fetch(domain + "/customdomain/list", {
+async function listSubDomains() {
+    return fetch(domain + "/subdomain/list", {
         method: "GET",
         credentials: "include"
     })
@@ -24,13 +24,12 @@ async function listCustomDomains() {
         .catch(err => console.log(err));
 }
 
-async function updateCustomDomain(id, domains, linkedToasters) {
-    return fetch(domain + "/customdomain/" + id, {
+async function updateSubDomain(id, linkToasterID) {
+    return fetch(domain + "/subdomain/" + id, {
         method: "PUT",
         credentials: "include",
         body: JSON.stringify({
-            "subdomains": domains,
-            "linked_toasters": linkedToasters
+            "toaster_id": linkToasterID
         })
     })
         .then(response => response.json())
@@ -38,18 +37,8 @@ async function updateCustomDomain(id, domains, linkedToasters) {
         .catch(err => console.log(err));
 }
 
-async function verifyCustomDomain(id) {
-    return fetch(domain + "/customdomain/verify/" + id, {
-        method: "POST",
-        credentials: "include"
-    })
-        .then(response => response.json())
-        .then(resp => Promise.resolve(resp))
-        .catch(err => console.log(err));
-}
-
-async function getCustomDomain(id) {
-    return fetch(domain + "/customdomain/" + id, {
+async function getSubDomain(id) {
+    return fetch(domain + "/subdomain/" + id, {
         method: "GET",
         credentials: "include"
     })
@@ -59,8 +48,8 @@ async function getCustomDomain(id) {
 }
 
 
-async function deleteCustomDomain(id) {
-    return fetch(domain + "/customdomain/" + id, {
+async function deleteSubDomain(id) {
+    return fetch(domain + "/subdomain/" + id, {
         method: "DELETE",
         credentials: "include"
     })

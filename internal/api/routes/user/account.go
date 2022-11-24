@@ -3,8 +3,11 @@ package user
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
+	"path/filepath"
 	"time"
 
 	"github.com/toastate/toastainer/internal/api/auth"
@@ -12,6 +15,7 @@ import (
 	"github.com/toastate/toastainer/internal/api/settings"
 	"github.com/toastate/toastainer/internal/config"
 	"github.com/toastate/toastainer/internal/db/objectdb"
+	"github.com/toastate/toastainer/internal/db/objectstorage"
 	"github.com/toastate/toastainer/internal/db/objectstorage/objectstoragerror"
 	"github.com/toastate/toastainer/internal/db/redisdb"
 	"github.com/toastate/toastainer/internal/email"
@@ -285,6 +289,12 @@ func DeleteAccount(w http.ResponseWriter, r *http.Request, userid, sessToken str
 		return
 	}
 
+	err = objectstorage.Client.DeleteFolder(filepath.Join("user/picture/", usr.ID))
+	if err != nil && err != objectstoragerror.ErrNotFound {
+		utils.SendInternalError(w, "User.Del:objectstorage.Client.DeleteFolder", err)
+		return
+	}
+
 	err = auth.DeleteSession(sessToken)
 	if err != nil {
 		utils.SendInternalError(w, "DeleteAccount:auth.DeleteSession", err)
@@ -311,12 +321,114 @@ type GetUserResponse struct {
 func GetUser(w http.ResponseWriter, r *http.Request, userid string) {
 	usr, err := objectdb.Client.GetUserByID(userid)
 	if err != nil {
-		utils.SendInternalError(w, "GetUser:objectdb.Client.GetUserByID", err)
+		// May be trigerred by older session with user ids that do not exist anymore
+		utils.SendInternalError(w, "GetUser:objectdb.Client.GetUserByID", fmt.Errorf("%v: %v", userid, err))
+		return
+	}
+
+	if usr.PictureExtension != "" {
+		usr.PictureLink = "https://" + config.APIDomain + "/user/picture/" + usr.ID + "/picture" + usr.PictureExtension
+	}
+	utils.SendSuccess(w, &GetUserResponse{
+		Success: true,
+		User:    completeToasterDynFields(usr),
+	})
+}
+
+func GetUserPicture(w http.ResponseWriter, r *http.Request, userid, useridInURL, lastURLPart string) {
+	err := objectstorage.Client.DownloadFileInto(w, filepath.Join("user/picture/", useridInURL, lastURLPart))
+	if err != nil {
+		if err == objectstoragerror.ErrNotFound {
+			utils.SendError(w, err.Error(), "notFound", 404)
+			return
+		}
+
+		utils.SendInternalError(w, "GetUserPicture:objectstorage.Client.DownloadFileInto", err)
+		return
+	}
+}
+
+func UpdateUserPictureRoute(w http.ResponseWriter, r *http.Request, userid string) {
+	if !utils.IsMultipart(r) {
+		utils.SendError(w, "you must use a multipart request", "invalidRequest", 400)
+		return
+	}
+
+	usr, err := objectdb.Client.GetUserByID(userid)
+	if err != nil {
+		utils.SendInternalError(w, "UpdateUserPictureRoute:objectdb.Client.GetUserByID", err)
+		return
+	}
+
+	err = r.ParseMultipartForm(settings.MultipartMaxMemory)
+	if err != nil {
+		utils.SendError(w, "could not read multipart request body: "+err.Error(), "invalidBody", 400)
+		return
+	}
+
+	var f1 multipart.File
+	var ext string
+
+F1:
+	for _, v := range r.MultipartForm.File {
+		if len(v) == 0 {
+			utils.SendError(w, "the request did not contain any image", "invalid", 400)
+			return
+		}
+
+		f1, err = v[0].Open()
+		if err != nil {
+			utils.SendError(w, err.Error(), "invalidBody", 400)
+			return
+		}
+
+		ext = filepath.Ext(v[0].Filename)
+		break F1
+	}
+
+	if ext == "" {
+		ext, err = utils.GuessImageFormat(f1)
+		if err != nil {
+			utils.SendError(w, "could not guess image format/extension", "invalidBody", 400)
+			return
+		}
+
+		ext = "." + ext
+
+		_, err = f1.Seek(0, 0)
+		if err != nil {
+			utils.SendInternalError(w, "UpdateUserPictureRoute:seek", err)
+			return
+		}
+	}
+
+	err = objectstorage.Client.PushReader(f1, filepath.Join("user/picture/", usr.ID, "/picture"+usr.PictureExtension))
+	if err != nil {
+		utils.SendInternalError(w, "UpdateUserPictureRoute:objectstorage.Client.PushReader", err)
+		return
+	}
+
+	usr.PictureExtension = ext
+	err = objectdb.Client.UpdateUser(usr)
+	if err != nil {
+		utils.SendInternalError(w, "UpdateUserPictureRoute:objectdb.Client.UpdateUser", err)
 		return
 	}
 
 	utils.SendSuccess(w, &GetUserResponse{
 		Success: true,
-		User:    usr,
+		User:    completeToasterDynFields(usr),
 	})
+}
+
+func completeToasterDynFields(usr *model.User) *model.User {
+	if usr.PictureExtension != "" {
+		if config.APIPort != "" {
+			usr.PictureLink = "https://" + config.APIDomain + ":" + config.APIPort + "/user/picture/" + usr.ID + "/picture" + usr.PictureExtension
+		} else {
+			usr.PictureLink = "https://" + config.APIDomain + "/user/picture/" + usr.ID + "/picture" + usr.PictureExtension
+		}
+	}
+
+	return usr
 }

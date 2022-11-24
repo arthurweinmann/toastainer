@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/rs/xid"
-	"github.com/toastate/toastainer/internal/api/common"
 	"github.com/toastate/toastainer/internal/db/objectstorage"
 	"github.com/toastate/toastainer/internal/db/redisdb"
 	"github.com/toastate/toastainer/internal/model"
@@ -25,7 +24,7 @@ import (
 
 var ErrUnsuccessfulBuild = errors.New("build failed")
 
-// buildToasterCode must be called after the toaster object is fully set since it handles saving the execution information into redis
+// buildToasterCode must be called after the toaster object is fully set since it must handle saving the execution information into redis
 func buildToasterCode(toaster *model.Toaster, tarpath string) (string, []byte, error) {
 	var f *os.File
 	f, err := os.Open(tarpath)
@@ -115,11 +114,8 @@ func buildToasterCode(toaster *model.Toaster, tarpath string) (string, []byte, e
 			return
 		}
 
-		// the exe information dump contains the toaster's codeID and not its ID
-		// this allows code updates which do not require runner cache invalidations
-		errR = redisdb.GetClient().Set(context.Background(), "exeinfo_"+toaster.ID, common.DumpToaterExeInfo(toaster), 0).Err()
-		if err != nil {
-			errR = fmt.Errorf("could not save exe info in redis: %v", errR)
+		errR = setToasterExeInfo(toaster)
+		if errR != nil {
 			return
 		}
 	}()
