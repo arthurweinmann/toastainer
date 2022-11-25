@@ -83,7 +83,7 @@ func (s *Router) dashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setupCORS(w, r.Header.Get("Origin"))
+	setupCORS(w, config.DashboardDomain)
 
 	if r.Method == "OPTIONS" {
 		w.WriteHeader(http.StatusOK)
