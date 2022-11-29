@@ -773,8 +773,6 @@ document.getElementById("form-create-toaster").addEventListener("submit", functi
         keywords: keywords
     };
 
-    console.log("create Toaster", toaster);
-
     ALERT_MOD.call({
         isLoading: true,
         loadingText: "Loading..."
@@ -801,76 +799,31 @@ document.getElementById("form-create-toaster").addEventListener("submit", functi
         toaster.keywords                    // []string
     ));
 
-    promise.then((cb) => {
-        if (cb && cb.success) {
-            var handleBuildFn = function (cb) {
-                if (gListToastersForSearch) {
-                    gListToastersForSearch = null;
-                }
+    var handleBuildFn = function (cb) {
+        if (!cb.success) {
+            if (cb.build_error) {
+                ALERT_MOD.call({
+                    title: "Unsuccessful Build ",
+                    text: `<pre class="buildlogs-pre">` + atob(cb.build_error) +"</pre>",
+                    withCheckmark: false
+                });
+            } else {
+                ALERT_MOD.call({
+                    title: "Information",
+                    text: cb.code + " : " + cb.message
+                });
+            }
 
-                if (imgToaster) {
-                    postToasterPicture(formDataImage, cb.toaster.id).then(cbImg => {
-                        if (cbImg && cbImg.success) {
-                            ALERT_MOD.call({
-                                title: "Information",
-                                withCheckmark: true,
-                                text: "Your Toaster has been successfully created.",
-                                buttons: [
-                                    {
-                                        text: "See Logs",
-                                        onClick: function () {
-                                            ALERT_MOD.close();
+            return;
+        }
+    
+        if (gListToastersForSearch) {
+            gListToastersForSearch = null;
+        }
 
-                                            var logs = "No logs";
-
-                                            if (cb.build_logs && cb.build_logs.length > 0) {
-                                                logs = atob(cb.build_logs);
-                                            }
-
-                                            ALERT_MOD.call({
-                                                title: "Build Logs",
-                                                withCheckmark: false,
-                                                text: logs,
-                                                buttons: [
-                                                    {
-                                                        text: "OK",
-                                                        onClick: function () {
-                                                            ALERT_MOD.close();
-                                                            window.location = "/toaster?id=" + cb.toaster.id;
-                                                        }
-                                                    },
-                                                ]
-                                            });
-                                        }
-                                    },
-                                    {
-                                        text: "OK",
-                                        onClick: function () {
-                                            ALERT_MOD.close();
-                                            window.location = "/toaster?id=" + cb.toaster.id;
-                                        }
-                                    },
-                                ]
-                            });
-                        }
-                        else if (cbImg && !cbImg.success) {
-                            ALERT_MOD.call({
-                                title: "Information",
-                                text: "An error occurred during Toaster image upload. Please, try again or contact us.",
-                                buttons: [
-                                    {
-                                        text: "OK",
-                                        onClick: function () {
-                                            ALERT_MOD.close();
-                                            window.location = "/toaster?id=" + cb.toaster.id;
-                                        }
-                                    },
-                                ]
-                            });
-                        }
-                    });
-                }
-                else {
+        if (imgToaster) {
+            postToasterPicture(formDataImage, cb.toaster.id).then(cbImg => {
+                if (cbImg && cbImg.success) {
                     ALERT_MOD.call({
                         title: "Information",
                         withCheckmark: true,
@@ -884,7 +837,7 @@ document.getElementById("form-create-toaster").addEventListener("submit", functi
                                     var logs = "No logs";
 
                                     if (cb.build_logs && cb.build_logs.length > 0) {
-                                        logs = `<pre class="buildlogs-pre">` + atob(cb.build_logs) + "</pre>";
+                                        logs = `<pre class="buildlogs-pre">` + atob(cb.build_logs) +"</pre>";
                                     }
 
                                     ALERT_MOD.call({
@@ -913,25 +866,99 @@ document.getElementById("form-create-toaster").addEventListener("submit", functi
                         ]
                     });
                 }
-
-                localStorage.removeItem("markupValue");
-            };
-
-            if (cb.build_id && cb.build_id.length > 0) {
-                var checkRecursiveBuildend = function(cb) {
-
-                };
-
-                checkRecursiveBuildend(cb);
-            } else {
-                handleBuildFn();
-            }
+                else if (cbImg && !cbImg.success) {
+                    ALERT_MOD.call({
+                        title: "Information",
+                        text: "An error occurred during Toaster image upload. Please, try again or contact us.",
+                        buttons: [
+                            {
+                                text: "OK",
+                                onClick: function () {
+                                    ALERT_MOD.close();
+                                    window.location = "/toaster?id=" + cb.toaster.id;
+                                }
+                            },
+                        ]
+                    });
+                }
+            });
         }
-        else if (cb && !cb.success) {
+        else {
             ALERT_MOD.call({
                 title: "Information",
-                text: cb.code + " : " + cb.message
+                withCheckmark: true,
+                text: "Your Toaster has been successfully created.",
+                buttons: [
+                    {
+                        text: "See Logs",
+                        onClick: function () {
+                            ALERT_MOD.close();
+
+                            var logs = "No logs";
+
+                            if (cb.build_logs && cb.build_logs.length > 0) {
+                                logs = `<pre class="buildlogs-pre">` + atob(cb.build_logs) + "</pre>";
+                            }
+
+                            ALERT_MOD.call({
+                                title: "Build Logs",
+                                withCheckmark: false,
+                                text: logs,
+                                buttons: [
+                                    {
+                                        text: "OK",
+                                        onClick: function () {
+                                            ALERT_MOD.close();
+                                            window.location = "/toaster?id=" + cb.toaster.id;
+                                        }
+                                    },
+                                ]
+                            });
+                        }
+                    },
+                    {
+                        text: "OK",
+                        onClick: function () {
+                            ALERT_MOD.close();
+                            window.location = "/toaster?id=" + cb.toaster.id;
+                        }
+                    },
+                ]
             });
+        }
+
+        localStorage.removeItem("markupValue");
+    };
+
+    promise.then((cb) => {
+        if (cb && cb.success) {
+            if (cb.build_id && cb.build_id.length > 0) {
+                var build_id = cb.build_id;
+
+                var checkRecursiveBuildend = function() {
+                    getToasterBuildResult(build_id).then(cbbuild => {
+                        if (cbbuild && cbbuild.success) {
+                            if (!cbbuild.in_progress) {
+                                clearInterval(checkbuildinterval);
+                                handleBuildFn(cbbuild);
+                                clearInterval(checkbuildinterval);
+                            }
+                        } else {
+                            ALERT_MOD.call({
+                                title: "Information",
+                                text: cbbuild.code + " : " + cbbuild.message
+                            });
+                            clearInterval(checkbuildinterval);
+                        }
+                    });
+                };
+
+                var checkbuildinterval = setInterval(checkRecursiveBuildend, 5000);
+            } else {
+                handleBuildFn(cb);
+            }
+        } else {
+            handleBuildFn(cb);
         }
     });
 });

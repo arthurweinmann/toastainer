@@ -31,6 +31,16 @@ async function getToasterUsage(id) {
         .catch(err => console.log(err));
 }
 
+async function getToasterBuildResult(buildid) {
+    return fetch(domain + "/toaster/build/" + buildid, {
+        method: "GET",
+        credentials: "include"
+    })
+        .then(response => response.json())
+        .then(resp => Promise.resolve(resp))
+        .catch(err => console.log(err));
+}
+
 async function getToasterRunningCount(id) {
     return fetch(domain + "/toaster/runningcount/" + id, {
         method: "GET",

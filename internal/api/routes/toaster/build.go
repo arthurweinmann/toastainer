@@ -76,9 +76,16 @@ func buildToasterCode(toaster *model.Toaster, tarpath string) (string, []byte, e
 
 			buildid := <-buildidChan
 			if buildid != "" {
-				b := make([]byte, 8, 8+len(payloadR))
+				tb, err2 := json.Marshal(toaster)
+				if err2 != nil {
+					panic(err2) // should not happen, better to panic during tests
+				}
+
+				b := make([]byte, 16, 16+len(payloadR)+len(tb))
 				binary.BigEndian.PutUint64(b[0:8], uint64(len(payloadR)))
+				binary.BigEndian.PutUint64(b[8:16], uint64(len(tb)))
 				b = append(b, payloadR...)
+				b = append(b, tb...)
 				if errR != nil {
 					b = append(b, 1)
 					b = append(b, errR.Error()...)
@@ -86,7 +93,7 @@ func buildToasterCode(toaster *model.Toaster, tarpath string) (string, []byte, e
 					b = append(b, 0)
 				}
 
-				err2 := objectstorage.Client.PushReader(bytes.NewReader(b), filepath.Join("buildresults", toaster.OwnerID, buildid))
+				err2 = objectstorage.Client.PushReader(bytes.NewReader(b), filepath.Join("buildresults", toaster.OwnerID, buildid))
 				if err2 != nil {
 					utils.Error("msg", "buildToasterCode:goroutibe:objectstorage.PushReader", "Error", err2)
 				}

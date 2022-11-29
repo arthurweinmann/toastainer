@@ -256,6 +256,8 @@ func (fat *FullAPITest) toaster1Create() (string, error) {
 				return "", fmt.Errorf("example toaster compilation result retrieval timed out")
 			}
 		}
+	} else if !toasterCreateResp.Success {
+		return "", fmt.Errorf("compilation error: %v", string(toasterCreateResp.BuildError))
 	}
 
 	if fat.opts != nil && fat.opts.SetHostRedirection != nil {

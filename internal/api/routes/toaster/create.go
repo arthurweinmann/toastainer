@@ -49,10 +49,11 @@ type CreateRequest struct {
 }
 
 type CreateResponse struct {
-	Success   bool           `json:"success,omitempty"`
-	BuildLogs []byte         `json:"build_logs,omitempty"` // base64 encoded string, see https://pkg.go.dev/encoding/json#Marshal
-	BuildID   string         `json:"build_id,omitempty"`
-	Toaster   *model.Toaster `json:"toaster,omitempty"`
+	Success    bool           `json:"success"`
+	BuildLogs  []byte         `json:"build_logs,omitempty"`  // base64 encoded string, see https://pkg.go.dev/encoding/json#Marshal
+	BuildError []byte         `json:"build_error,omitempty"` // base64 encoded string, see https://pkg.go.dev/encoding/json#Marshal
+	BuildID    string         `json:"build_id,omitempty"`
+	Toaster    *model.Toaster `json:"toaster,omitempty"`
 }
 
 func Create(w http.ResponseWriter, r *http.Request, userid string) {
@@ -261,7 +262,11 @@ func Create(w http.ResponseWriter, r *http.Request, userid string) {
 	buildid, buildLogs, err := buildToasterCode(toaster, tarpath)
 	if err != nil {
 		if err == ErrUnsuccessfulBuild {
-			utils.SendError(w, fmt.Sprintf("build failed: %s", string(buildLogs)), "buildFailed", 400)
+			utils.SendSuccess(w, &CreateResponse{
+				Success:    false,
+				BuildError: buildLogs,
+				Toaster:    toaster,
+			})
 		} else {
 			utils.SendInternalError(w, "CreateToaster:buildToasterCode", err)
 		}
