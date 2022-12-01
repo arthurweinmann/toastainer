@@ -8,7 +8,7 @@ At Toastate, we need a way to quickly deploy and run autoscaled code instances. 
 
 # Project status
 
-This project still under active development. It's usable, but expect some rough edges while work is underway.
+This project is still under active development. It's usable, but expect some rough edges while work is underway.
 
 # Installation
 
