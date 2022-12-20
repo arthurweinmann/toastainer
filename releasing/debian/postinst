@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+
+systemctl enable toastainer.service
+read -p "Do not forget to edit /usr/share/toastainer/config.json and to setup your instance network. Type enter to continue.." resp

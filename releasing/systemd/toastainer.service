@@ -1,0 +1,14 @@
+[Unit]
+Description=Unit file for toastainer
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+WorkingDirectory=/usr/share/toastainer
+ExecStart=/usr/local/bin/toastainer start -h /usr/share/toastainer
+User=root
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

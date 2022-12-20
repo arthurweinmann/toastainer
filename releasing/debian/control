@@ -1,0 +1,6 @@
+Package: toastainer
+Version: 0.1
+Architecture: amd64
+Maintainer: Toastate.com <contact@toastate.com>
+Description: A self-hosted and open-source serverless platform
+Depends: btrfs-progs (>= 5.4.1-2), uidmap (>= 1:4.8.1)

@@ -21,7 +21,7 @@ import (
 )
 
 var upgrader = websocket.Upgrader{
-	HandshakeTimeout: 60 * time.Second,
+	HandshakeTimeout: 5 * time.Second,
 	Error: func(w http.ResponseWriter, r *http.Request, status int, reason error) {
 		utils.SendError(w, reason.Error(), "websocketProtocol", status)
 	},

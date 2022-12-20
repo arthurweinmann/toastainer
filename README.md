@@ -93,7 +93,7 @@ make build
 
 - [ ] Toaster build and execution commands defaults for other languages
 
-- [ ] Custom domain names for toasters
+- [ ] Custom non root domain names for toasters
 
 - [ ] Full Documentation
 
@@ -110,3 +110,5 @@ make build
 - [ ] Databases as a service for toasters
 
 - [ ] Full featured with fast boot times virtual machines instead of containers in order to be able to install and run any program
+
+- [ ] Support root custom domain names with a custom nameserver for their DNS Zone

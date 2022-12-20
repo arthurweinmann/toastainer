@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+systemctl stop toastainer.service || true
+systemctl disable toastainer.service || true
+rm -f /etc/systemd/system/toastainer.service
+rm -f /etc/systemd/system/toastainer.service # and symlinks that might be related
+rm -f /usr/lib/systemd/system/toastainer.service 
+rm -f /usr/lib/systemd/system/toastainer.service # and symlinks that might be related
+systemctl daemon-reload
+systemctl reset-failed

@@ -51,6 +51,10 @@ build: $(BUILDDIR)/nsjail $(BUILDDIR)/toastfront build-toastainer build-test
 build-toastainer: $(BUILDDIR)
 	@cd $(CURDIR)/cmd/toastainer && go build && mv -f toastainer $(BUILDDIR)
 
+.PHONY: debpackage
+debpackage: build
+	@$(CURDIR)/makescripts/debpackage.sh $(BUILDDIR) $(CURDIR) $(VERSION) $(REVISION) $(ARCHI)
+
 .PHONY: build-test
 build-test: $(BUILDDIR) build-toastainer
 	@cd $(CURDIR)/cmd/toastest && go build && mv -f toastest $(BUILDDIR)
