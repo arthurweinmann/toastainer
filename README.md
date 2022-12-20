@@ -8,7 +8,7 @@ At Toastate, we need a way to quickly deploy and run autoscaled code instances. 
 
 # Project status
 
-This project is still under active development. It's usable, but expect some rough edges while work is underway. If you are interested in working on or building with Toastainer, please join our [Discord](https://discord.gg/kdF5wnUJXf) and let us know. We are happy to get you started.
+This project is still under active development. It's usable, but expect some rough edges while work is underway. If you are interested in working on or building with Toastainer, please join our [Discord](https://discord.gg/NC8sgX6E75) and let us know. We are happy to get you started.
 
 # Installation
 
