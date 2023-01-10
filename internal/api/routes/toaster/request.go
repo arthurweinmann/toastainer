@@ -20,7 +20,7 @@ func readRequest(w http.ResponseWriter, r *http.Request, req interface{}) bool {
 		}
 		js, ok := r.MultipartForm.Value["request"]
 		if !ok || len(js) == 0 {
-			utils.SendError(w, "you provided toaster information in json format in the request field of your multipart HTTP request", "invalidBody", 400)
+			utils.SendError(w, "you must provide toaster information in json format in the request field of your multipart HTTP request", "invalidBody", 400)
 			return false
 		}
 		err = json.Unmarshal([]byte(js[0]), req)

@@ -153,6 +153,13 @@ func Create(w http.ResponseWriter, r *http.Request, userid string) {
 					return
 				}
 
+				// Check for .. in the path and respond with an error if it is present
+				// otherwise users could access any file on the server
+				if utils.ContainsDotDot(string(fld32)) {
+					utils.SendError(w, "filepath cannot contain double dots", "invalidPath", 400)
+					return
+				}
+
 				dest := filepath.Join(tmpdir, "code", string(fld32))
 				if utils.DirExists(dest) {
 					f1.Close()
@@ -185,6 +192,13 @@ func Create(w http.ResponseWriter, r *http.Request, userid string) {
 		}
 	case len(req.FilePaths) > 0:
 		for i := 0; i < len(req.FilePaths); i++ {
+			// Check for .. in the path and respond with an error if it is present
+			// otherwise users could access any file on the server
+			if utils.ContainsDotDot(req.FilePaths[i]) {
+				utils.SendError(w, "filepath cannot contain double dots", "invalidPath", 400)
+				return
+			}
+
 			dest := filepath.Join(tmpdir, "code", req.FilePaths[i])
 
 			err = os.MkdirAll(filepath.Dir(dest), 0755)
