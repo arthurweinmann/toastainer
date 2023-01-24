@@ -7,7 +7,7 @@ cd $BUILDDIR
 mkdir tmp
 cd tmp
 
-git clone git@github.com:toastate/toastfront.git
+git clone https://github.com/toastate/toastfront.git
 cd toastfront/cmd/toastfront
 go build
 mv -f toastfront $BUILDDIR
