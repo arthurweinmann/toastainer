@@ -1,10 +1,22 @@
 # Toastainer
 
-Toastainer is an open source self - hosted platform to run serverless code instances. An instance is started by the first request and can then be joined by multiple other requests. HTTP and Websocket requests are supported. Joining the same running code instance with different kind of requests is supported. You can set the timeout and maximum number of joiners for each instance in order to autoscale them naturally. You can also make a request force join a particular instance with its ID. You can setup your own OS image to support any programming language.
+Toastainer is an open-source self - hosted platform designed for running serverless code instances on your own infrastructure. Serverless computing offers a streamlined way for teams to share computing resources without the hassle of managing and maintaining physical servers. This approach delivers a highly scalable and cost-efficient solution for deploying and managing applications, enabling teams to focus on innovation and collaboration.
 
-# Motivation
+Here's an overview of the key features and concepts of Toastainer:
 
-At Toastate, we need a way to quickly deploy and run autoscaled code instances. We need those instance to be reachable by multiple request of distinct types. We could not vendor lock clients from our web agency. This is why we developed Toastainer. We believe it can also be useful for other projects and this is why we release it to the community.
+- Self-hosted: Toastainer can be installed and run on your own hardware or cloud infrastructure, giving you control over the environment in which your serverless code instances operate.
+
+- Code instances: In the context of Toastainer, an instance refers to a single execution of your serverless code. Instances are initiated by incoming requests and can be joined by multiple following requests simultaneously. This unique feature enables new possibilities in serverless computing, such as live messaging, video streaming, and gaming.
+
+- Supported protocols: Toastainer supports both HTTP and Websocket requests, allowing for a wide range of application use cases. This also allows the platform to connect different types of requests within the same running code instance, further enhancing its real-time capabilities.
+
+- Autoscaling: Toastainer allows you to set a timeout and maximum number of joiners for each live code instance, enabling instances to scale up or down based on incoming requests. This ensures efficient resource usage and optimal responsiveness.
+
+- Instance control: You have the option to force a request to join a specific instance by providing its ID. This can be useful in certain scenarios where you need some users to join the same instance.
+
+- Custom OS images: Toastainer supports the use of custom OS images, which means you can configure your environment to work with any programming language. This provides flexibility in choosing the technology stack that best suits your application's requirements.
+
+In summary, Toastainer offers a powerful serverless platform that can handle multiple requests concurrently within a single code instance, unlocking new possibilities for real-time applications like live messaging, video streaming, and gaming. Its self-hosted nature, supported protocols, autoscaling features, instance control, and custom OS image support make it a robust solution for a wide range of serverless applications.
 
 # Project status
 
